@@ -1,8 +1,8 @@
-# 🧠 LangGraph: Hub de Estudio Universitario
+# 🤖 Agentic Chat System: Full Stack Study Hub
 
-> **Orquestación de Agentes de IA que piensan en ciclos**
+> **Arquitectura de 3 Capas Integradas para Construir Chat IA Empresarial**
 
-Este repositorio es un **hub de estudio progresivo** sobre LangGraph, diseñado para que aprendas desde cero hasta construir agentes complejos. Todo en español, opinionado, y con ejemplos que funcionan.
+Este es un **hub de estudio universitario** completo sobre cómo construir un **sistema de chat IA con Generative UI** siguiendo la arquitectura moderna recomendada: Frontend (Vercel) → Orchestration (LangGraph) → Runtime (AWS AgentCore).
 
 ---
 
