@@ -1,0 +1,486 @@
+# Intro Vercel AI SDK
+
+# 🎨 Módulo 9: Vercel AI SDK - Streaming Básico
+
+> **Cómo conectar tu backend de agentes con un frontend React que recibe respuestas en tiempo real**
+
+---
+
+## 1️⃣ CONCEPTO: ¿Qué es Streaming?
+
+### La Experiencia del Usuario
+
+**Sin Streaming (Malo):**
+```
+Usuario escribe: "¿Stock del medicamento X?"
+                 ┃
+          [5 segundos de silencio]
+                 ┃
+        Respuesta completa aparece de golpe
+"El stock del medicamento X es 1500 unidades"
+```
+
+**Con Streaming (Bueno):**
+```
+Usuario escribe: "¿Stock del medicamento X?"
+                 ┃
+    El stock... [token] ...del... [token] ...medicamento...
+          [respuesta aparece mientras se genera]
+        ...X... [token] ...es... [token] ...1500... [token]
+```
+
+### Cómo Funciona Técnicamente
+
+**Sin Streaming: REST API tradicional**
+```
+Frontend          Backend
+   │                 │
+   │ POST /chat      │
+   │────────────────>│
+   │                 │ (Procesa 5 segundos)
+   │                 │
+   │ Response JSON   │
+   │<────────────────│
+   │                 │
+```
+
+**Con Streaming: Server-Sent Events (SSE)**
+```
+Frontend          Backend
+   │                 │
+   │ POST /chat      │
+   │────────────────>│
+   │                 │ (Abre conexión)
+   │ token: "El"     │
+   │<────────────────│ (Envía token 1)
+   │ token: " stock" │
+   │<────────────────│ (Envía token 2)
+   │ token: " del"   │
+   │<────────────────│ (Envía token 3)
+   │ ...             │
+   │ [FIN]           │
+   │<────────────────│ (Cierra conexión)
+```
+
+---
+
+## 2️⃣ PARA QUÉ SIRVE
+
+### Caso: Ask Sage Farmacéutico
+
+**Sin Streaming:**
+```
+Javier abre Ask Sage
+"¿Cuál es el stock del medicamento X?"
+
+⏳ Espera...
+⏳ Espera...
+⏳ Espera... (¿Se colgó la app?)
+⏳ Espera...
+
+Finalmente aparece:
+"El stock del medicamento X es 1500 unidades.
+ Stock bajo en dos sucursales. Requisición automática
+ en proceso. Siguiente actualización en 2 horas."
+
+Javier: "¿Qué pasó? ¿Se quedó pegado?"
+```
+
+**Con Streaming:**
+```
+Javier abre Ask Sage
+"¿Cuál es el stock del medicamento X?"
+
+El stock...
+El stock del...
+El stock del medicamento...
+El stock del medicamento X...
+El stock del medicamento X es...
+El stock del medicamento X es 1500...
+El stock del medicamento X es 1500 unidades...
+
+[Mientras sigue leyendo...]
+
+Stock bajo en dos sucursales...
+Requisición automática en proceso...
+
+Javier: "Veo que está generando la respuesta"
+```
+
+**Ventajas:**
+✅ Sensación de "responsividad"
+✅ Usuario ve progreso
+✅ Se siente más rápido (aunque sea igual de tiempo)
+✅ No parece que se colgó
+
+---
+
+## 3️⃣ HISTORIA: ¿Por Qué Streaming?
+
+### 2015-2020: Era de los Chatbots Simples
+```
+Chatbots: Si/No responses
+Esperas: 100-200ms (no se nota)
+Streaming: Innecesario
+```
+
+### 2022: ChatGPT Cambia Todo
+```
+ChatGPT usa streaming desde día 1
+Genera 100-200 tokens/segundo
+Usuario ESPERA ver cada token
+Streaming es ESPERADO
+
+Sin streaming = app rota (se ve)
+```
+
+### 2024: Estándar Moderno
+```
+OpenAI Streaming
+Anthropic Streaming
+Google Gemini Streaming
+Vercel AI SDK: abstracción sobre todo
+
+Las aplicaciones serias SIEMPRE stream
+```
+
+---
+
+## 4️⃣ EJEMPLOS BÁSICOS
+
+### Ejemplo 1: Backend - Crear un Endpoint de Streaming
+
+**Archivo: `app/api/chat/route.ts` (Next.js)**
+
+```typescript
+import { streamText } from 'ai';
+import { Bedrock } from '@anthropic-ai/sdk';
+
+// Configurar Bedrock
+const bedrock = new Bedrock({
+  region: 'us-east-1',
+});
+
+export async function POST(req: Request) {
+  // 1. Recibir el mensaje del usuario
+  const { message } = await req.json();
+  
+  // 2. Preparar el stream
+  const result = await streamText({
+    model: bedrock,
+    system: `Eres un asistente farmacéutico experto en Ask Sage.
+             Tu trabajo es ayudar a consultar stock, precios y información.
+             Sé conciso pero informativo.`,
+    messages: [
+      { role: 'user', content: message }
+    ]
+  });
+  
+  // 3. Retornar el stream
+  return result.toDataStream();
+  // ^ Esto retorna Server-Sent Events (SSE)
+}
+```
+
+**Qué hace cada parte:**
+- `streamText()`: Conecta con el LLM y configura streaming
+- `.toDataStream()`: Convierte a formato Server-Sent Events
+- El cliente recibe tokens continuamente
+
+---
+
+### Ejemplo 2: Frontend - Recibir el Stream
+
+**Archivo: `components/ChatComponent.tsx` (React)**
+
+```typescript
+import { useChat } from 'ai/react';
+
+export default function ChatComponent() {
+  // 1. Hook que maneja TODO
+  const { 
+    messages,        // Array de mensajes
+    input,          // Texto en el input
+    handleInputChange, // Cuando usuario escribe
+    handleSubmit    // Cuando usuario envía
+  } = useChat({
+    api: '/api/chat' // Tu endpoint de streaming
+  });
+  
+  return (
+    <div className="chat-container">
+      {/* 2. Mostrar mensajes */}
+      <div className="messages">
+        {messages.map((msg) => (
+          <div key={msg.id} className={msg.role}>
+            {/* ✨ El contenido llega en STREAMING */}
+            {/* React lo renderiza automáticamente */}
+            {msg.content}
+          </div>
+        ))}
+      </div>
+      
+      {/* 3. Input */}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="¿Qué quieres saber?"
+        />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  );
+}
+```
+
+**¿Cómo funciona mágicamente?**
+
+```
+Usuario escribe: "¿Stock del medicamento X?"
+Presiona "Enviar"
+
+handleSubmit() → POST /api/chat
+              → Backend abre stream
+              → Primeros tokens llegan
+              → useChat() actualiza messages
+              → React re-renderiza
+              → Más tokens llegan
+              → React re-renderiza de nuevo
+              → ...
+              → Stream termina
+              → Usuario ve respuesta completa
+```
+
+---
+
+### Ejemplo 3: Backend con LangGraph
+
+**Conectar streaming con tu agente:**
+
+```typescript
+// app/api/chat/route.ts
+import { streamText } from 'ai';
+import { Bedrock } from '@anthropic-ai/sdk';
+
+export async function POST(req: Request) {
+  const { message } = await req.json();
+  
+  // 1. Obtener el user_token (Identity Forwarding)
+  const userToken = req.headers.get('x-user-token');
+  
+  // 2. Preparar variables para AWS AgentCore
+  const agentState = {
+    user_token: userToken,
+    messages: [{ role: 'user', content: message }],
+  };
+  
+  // 3. Stream desde tu agente
+  const result = await streamText({
+    model: bedrock,
+    messages: agentState.messages,
+    tools: {
+      // Las herramientas de tu agente LangGraph
+      checkStock: {
+        description: 'Verifica stock en la base de datos',
+        parameters: z.object({
+          drugId: z.string(),
+        }),
+        execute: async ({ drugId }) => {
+          // Llama a tu BD con user_token
+          return await checkInventory(drugId, userToken);
+        },
+      },
+      cancelOrder: {
+        description: 'Cancela una orden existente',
+        parameters: z.object({
+          orderId: z.string(),
+        }),
+        execute: async ({ orderId }) => {
+          // Llama a tu BD con user_token
+          return await cancelOrderInDB(orderId, userToken);
+        },
+      },
+    },
+  });
+  
+  return result.toDataStream();
+}
+```
+
+---
+
+### Ejemplo 4: Mostrar Indicador de Carga
+
+**Mejor UX:**
+
+```typescript
+import { useChat } from 'ai/react';
+
+export default function ChatComponent() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+  });
+  
+  return (
+    <div>
+      <div className="messages">
+        {messages.map((msg) => (
+          <div key={msg.id} className={msg.role}>
+            {msg.content}
+          </div>
+        ))}
+        
+        {/* ✨ Mostrar que está generando */}
+        {isLoading && (
+          <div className="thinking">
+            <span className="pulse">Generando respuesta...</span>
+          </div>
+        )}
+      </div>
+      
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          disabled={isLoading}
+        />
+        <button disabled={isLoading}>
+          {isLoading ? 'Esperando...' : 'Enviar'}
+        </button>
+      </form>
+    </div>
+  );
+}
+```
+
+---
+
+## 5️⃣ EJERCICIOS
+
+### Ejercicio 1: Implementa el Hook useChat
+
+**Enunciado:**
+Usa Vercel AI SDK para crear un componente que:
+1. Envíe mensajes a `/api/chat`
+2. Muestre respuestas en streaming
+3. Tenga un input funcional
+4. Maneje estados de carga
+
+**Solución:**
+Ver Ejemplo 4 arriba (es la solución).
+
+---
+
+### Ejercicio 2: Agrega Tipos TypeScript
+
+**Enunciado:**
+Tipifica el componente correctamente.
+
+```typescript
+import { useChat } from 'ai/react';
+import type { Message } from 'ai';
+
+export default function ChatComponent() {
+  // ✅ Tipos explícitos
+  const { 
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+  }: {
+    messages: Message[];
+    input: string;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    isLoading: boolean;
+  } = useChat({
+    api: '/api/chat',
+  });
+  
+  return (
+    // Tu JSX aquí
+  );
+}
+```
+
+---
+
+## 🎯 Conceptos Clave
+
+| Término | Significado | En Streaming |
+|---------|-----------|----------|
+| **SSE** | Server-Sent Events | Protocolo de streaming |
+| **Token** | Pedazo de texto | Backend envía de a uno |
+| **useChat** | Hook de Vercel AI | Maneja stream automáticamente |
+| **streamText** | Función de stream | Backend → Frontend |
+| **.toDataStream()** | Convierte a SSE | Serializa el stream |
+| **isLoading** | Estado del stream | `true` mientras genera |
+
+---
+
+## 📚 Próximo Módulo
+
+👉 **Módulo 10: Generative UI (La Magia)**
+
+Aquí aprendes a:
+- Enviar componentes React desde el backend
+- Gráficos dinámicos en el chat
+- Interfaz generada por IA
+
+---
+
+## 💡 Tips
+
+1. **Streaming NO es opcional**
+   - Sin streaming = experiencia mala
+   - Usuarios esperan feedback inmediato
+
+2. **useChat es tu amigo**
+   - Maneja todo: estado, stream, actualización
+   - Solo preocúpate por la UI
+
+3. **Identity Forwarding aquí también**
+   - Envía `x-user-token` en headers
+   - El backend lo inyecta en Azure/Okta
+
+---
+
+## 🚀 Próximos Pasos
+
+1. Copia el Ejemplo 4
+2. Crea tu backend en `/api/chat`
+3. Conecta con tu agente LangGraph
+4. Prueba localmente con `npm run dev`
+
+---
+
+**Versión:** 1.0  
+**Duración estimada:** 75 minutos  
+**Dificultad:** 🟡 Intermedia  
+**Requisitos:** Node.js, React, Next.js
+
+
+---
+
+## Código Fuente
+
+El código para este módulo está disponible en:
+
+\`\`\`
+python/modulos/00_vercel_intro/
+\`\`\`
+
+Incluye:
+- 📖 README.md (este contenido)
+- 💻 Ejemplos prácticos en `examples/`
+- 🏋️ Ejercicios en `exercises/`
+
+## Próximos Pasos
+
+Completa los ejercicios y procede al siguiente módulo.
+
+---
+
+**Última actualización:** 2026-05-31
