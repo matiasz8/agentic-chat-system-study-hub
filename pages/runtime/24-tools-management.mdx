@@ -52,9 +52,11 @@ python examples/01_basico.py
 
 ### Conceptos Clave
 
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
+1. **Tools Management (Herramientas Dinámicas)** - Sistema que permite a los agentes llamar funciones externas: APIs, bases de datos, búsqueda web, etc. El LLM decide qué herramienta usar basándose en la tarea. Similar a function calling en OpenAI pero completamente controlado por el agente.
+
+2. **Tool Registry (Registro de Herramientas)** - Catálogo centralizado que define qué tools están disponibles, sus parámetros y qué hace cada una. El agente tiene acceso a esta descripción para decidir qué llamar. Fundamental para que el LLM entienda sus capacidades.
+
+3. **Error Handling & Retries** - Estrategia cuando una tool falla (timeout, excepción, respuesta inválida). El agente puede reintentar, cambiar de tool, o reportar el error. Hace que los sistemas sean resilientes ante fallos externos.
 
 ### Ejemplos Incluidos
 

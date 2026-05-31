@@ -52,9 +52,11 @@ python examples/01_basico.py
 
 ### Conceptos Clave
 
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
+1. **Aristas Condicionales** - Las aristas condicionales permiten que el grafo decida dinámicamente cuál nodo ejecutar next basándose en el estado actual. Esencial para crear lógica branch/if-then-else en workflows de IA. Ejemplo: después de clasificar una pregunta, ir a "responder_simple" o "responder_compleja" según la complejidad.
+
+2. **Routing Dinámico** - Sistema de rutas basado en el resultado del nodo anterior. Permite que un mismo nodo bifurque a múltiples destinos. Implementado con funciones que retornan el nombre del próximo nodo como string. Crítico para orquestaciones complejas.
+
+3. **Fallback y Default Routes** - Estrategia para manejar casos inesperados. Cuando ninguna condición coincide, existe una ruta por defecto. Mejora la robustez del agente evitando estados "atrapados".
 
 ### Ejemplos Incluidos
 

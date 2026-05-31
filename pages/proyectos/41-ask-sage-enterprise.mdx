@@ -52,9 +52,11 @@ python examples/01_basico.py
 
 ### Conceptos Clave
 
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
+1. **Ask Sage MVP (Minimum Viable Product)** - Prototipo inicial que demuestra el concepto: un agente que responde preguntas sobre documentación. Incluye ingesta básica de documentos, búsqueda simple y generación de respuestas. Base sobre la que escalar a soluciones enterprise.
+
+2. **Document Ingestion Pipeline** - Proceso automatizado que consume documentos (PDFs, Markdown, etc.), los transforma en embeddings y los indexa en una base vectorial. Permite al agente acceder a información de una compañía sin entrenar modelos. Escalable a miles de documentos.
+
+3. **Query-Response Loop** - Ciclo donde usuario hace pregunta → sistema busca documentos relevantes → LLM genera respuesta contextualizada → usuario recibe respuesta. Implementación simple pero efectiva de RAG que forma la base de aplicaciones Ask más complejas.
 
 ### Ejemplos Incluidos
 
