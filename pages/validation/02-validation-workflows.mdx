@@ -1,0 +1,162 @@
+# Validación de Workflows
+
+Cómo testear LangGraph workflows completos de forma confiable.
+
+---
+
+## 🎯 Objetivo
+
+Escribir tests que:
+- ✅ Validen que los nodos se ejecutan en orden
+- ✅ Comprueben que el state se actualiza correctamente
+- ✅ Muestren que las aristas condicionales enrutan bien
+- ✅ No dependan de API real (use mocks)
+
+---
+
+## 🧪 5 Tests Esenciales
+
+### Test 1: Nodo Se Ejecuta
+```python
+def test_node_executes():
+    node = MockNode("test", output={"result": "ok"})
+    state = MockState()
+    
+    output = node.execute(state)
+    
+    assert node.call_count == 1
+    assert output["result"] == "ok"
+```
+
+**Por qué:** Si el nodo no se ejecuta, el workflow no funciona.
+
+---
+
+### Test 2: State Se Muta
+```python
+def test_state_mutations():
+    state = MockState()
+    state.set("user", "john")
+    state.set("action", "query")
+    
+    assert state.get("user") == "john"
+    assert state.get("action") == "query"
+```
+
+**Por qué:** El state es el corazón de LangGraph.
+
+---
+
+### Test 3: Cadena de Nodos
+```python
+def test_node_chain():
+    node1 = MockNode("n1", output={"step": 1})
+    node2 = MockNode("n2", output={"step": 2})
+    
+    state = MockState()
+    node1.execute(state)
+    state.update(node1.output)
+    node2.execute(state)
+    state.update(node2.output)
+    
+    assert state.get("step") == 2
+```
+
+**Por qué:** Los workflows son cadenas de nodos.
+
+---
+
+### Test 4: Arista Condicional
+```python
+def test_conditional_edge():
+    def router(state):
+        action = state.get("action")
+        return "query_node" if action == "query" else "default"
+    
+    state = MockState()
+    state.set("action", "query")
+    
+    next_node = router(state)
+    assert next_node == "query_node"
+```
+
+**Por qué:** Las decisiones en el flujo deben ser determinísticas.
+
+---
+
+### Test 5: Manejo de Errores
+```python
+def test_error_handling():
+    class ErrorNode:
+        def execute(self, state):
+            raise ValueError("Simulated error")
+    
+    node = ErrorNode()
+    state = MockState()
+    
+    with pytest.raises(ValueError):
+        node.execute(state)
+```
+
+**Por qué:** Los workflows deben fallar gracefully.
+
+---
+
+## 🏗️ Estructura de Workflow Mock
+
+```python
+class MockState:
+    """Simula state de LangGraph"""
+    def set(self, key, value):
+        self.data[key] = value
+    
+    def get(self, key, default=None):
+        return self.data.get(key, default)
+    
+    def update(self, updates):
+        self.data.update(updates)
+
+class MockNode:
+    """Simula nodo de LangGraph"""
+    def __init__(self, name, output=None):
+        self.name = name
+        self.output = output or {}
+        self.call_count = 0
+    
+    def execute(self, state):
+        self.call_count += 1
+        return self.output
+```
+
+---
+
+## 📖 Código de Ejemplo
+
+```bash
+# Ver test suite
+pytest python/validation/test_workflows.py -v
+
+# Ejecutar solo tests de nodos
+pytest python/validation/test_workflows.py -v -k "node"
+
+# Ejecutar ejemplo
+python python/validation/examples/03_validate_workflow.py
+```
+
+---
+
+## ✅ Checklist: Tests de Workflows
+
+- [ ] ¿Cada nodo se ejecuta?
+- [ ] ¿El state se actualiza?
+- [ ] ¿Las aristas enrutan correctamente?
+- [ ] ¿Los errores se manejan?
+- [ ] ¿Uso mocks para no llamar APIs?
+- [ ] ¿Los tests corren en < 1 segundo?
+- [ ] ¿Cubro happy path + error cases?
+
+---
+
+## 🎓 Próximo Paso
+
+Ve a: **[E2E Testing](/validation/03-e2e-testing)** para testear flujos completos de principio a fin.
