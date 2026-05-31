@@ -1,55 +1,35 @@
-# ✅ Validation & Testing
+# Validación: Testing & QA
 
-**NUEVA SECCIÓN** - Por feedback de tu jefe: "Agregaria la parte de validacion"
+## 🎯 Objetivo
 
-Cómo testear prompts, workflows y despliegues de forma confiable.
+Aprende a validar que tus prompts, workflows y sistemas funcionan correctamente.
 
----
+## 📚 Módulos
 
-## 📚 Módulos en esta Sección
+### Nivel Principiante
+- **00. Testing Básico** - Assertions y casos de prueba simples
+- **01. Testing de Prompts** - Validar salidas de LLM
 
-| # | Módulo | Duración | Nivel |
-|---|--------|----------|-------|
-| **00** | [Testing Básico en IA](/validation/00-testing-basico) | 45 min | 🟢 Básico |
-| **01** | [Testing Prompts](/validation/01-testing-prompts) | 90 min | 🟡 Intermedio |
-| **02** | [Validación de Workflows](/validation/02-validation-workflows) | 90 min | 🟡 Intermedio |
-| **03** | [E2E Testing](/validation/03-e2e-testing) | 75 min | 🟡 Intermedio |
-| **04** | [CI/CD Automatizado](/validation/04-ci-cd) | 60 min | 🟡 Intermedio |
+### Nivel Intermedio
+- **02. Validación de Workflows** - Testing de LangGraph
+- **03. E2E Testing** - Pruebas end-to-end
 
----
+### Nivel Avanzado
+- **04. CI/CD Validation** - Automatizar validaciones
 
-## 🎯 Qué Aprenderás
+## 🚀 Quick Start
 
-- ✅ Por qué testear prompts es diferente
-- ✅ Mocking de LLMs (no gastar dinero en tests)
-- ✅ Validar outputs del modelo
-- ✅ Testing de grafos LangGraph
-- ✅ E2E: tests de flujo completo
-- ✅ GitHub Actions + CI/CD
+```bash
+# Ejecutar tests básicos
+pytest python/modulos/50_testing_basico/
 
----
+# Validar workflows
+python examples/workflow_validation.py
 
-## 💡 ¿Por Qué Validar?
-
-Los agentes IA pueden fallar silenciosamente:
-- Prompt que no da el formato esperado
-- Workflow que se queda en bucle infinito
-- Usuario que intenta hacer algo no permitido
-
-Con testing, detectas estos problemas **antes** de producción.
+# CI/CD checks
+./scripts/validate-all.sh
+```
 
 ---
 
-## 🚀 Recomendación
-
-Esta sección es orthogonal - puedes aprender Testing en paralelo con cualquier otra sección.
-
-Recomendamos: después de Orchestration, agrega Testing a tu toolkit.
-
-👉 Primer paso: [Testing Básico en IA](/validation/00-testing-basico)
-
----
-
-## 💻 Código Ejecutable
-
-Todos los ejemplos tienen código en `python/validation/` que puedes ejecutar ahora mismo.
+**Duración estimada:** 360 minutos | **Dificultad:** ⭐⭐⭐

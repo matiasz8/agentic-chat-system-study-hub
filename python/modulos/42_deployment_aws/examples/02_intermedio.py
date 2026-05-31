@@ -38,8 +38,7 @@ def main() -> None:
     manifest = build_ecs_manifest()
     print("=== Deployment AWS · Intermedio ===")
     print(json.dumps(manifest, indent=2, ensure_ascii=False))
-    print("
-Resumen:")
+    print("\nResumen:")
     print(f"- Servicio: {manifest['service']}")
     print(f"- Health check: {manifest['task_definition']['health_check']['path']}")
     print(f"- Escalado máximo: {manifest['autoscaling']['max_tasks']} tareas")

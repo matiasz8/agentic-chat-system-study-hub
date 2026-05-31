@@ -1,0 +1,8 @@
+python/
+.git/
+.gitignore
+README.md
+*.md
+node_modules/
+.env.local
+.env.*.local

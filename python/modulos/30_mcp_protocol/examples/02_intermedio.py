@@ -131,8 +131,7 @@ class RichMCPServer:
 
 def run_simulation() -> str:
     server = RichMCPServer()
-    incoming = io.StringIO('
-'.join([
+    incoming = io.StringIO("\n".join([
         json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': 'initialize', 'params': {'protocolVersion': '2024-11-05'}}),
         json.dumps({'jsonrpc': '2.0', 'id': 2, 'method': 'resources/list'}),
         json.dumps({'jsonrpc': '2.0', 'id': 3, 'method': 'resources/read', 'params': {'uri': 'doc://mcp/intro'}}),
@@ -145,8 +144,7 @@ def run_simulation() -> str:
     for line in incoming:
         message = json.loads(line)
         response = server.dispatch(message)
-        outgoing.write(json.dumps({'request': message, 'response': response}, ensure_ascii=False) + '
-')
+        outgoing.write(json.dumps({'request': message, 'response': response}, ensure_ascii=False) + "\n")
 
     return outgoing.getvalue()
 

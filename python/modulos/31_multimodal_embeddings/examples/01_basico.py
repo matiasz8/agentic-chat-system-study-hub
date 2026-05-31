@@ -60,8 +60,7 @@ def main() -> None:
         score = cosine_similarity(query_vector, embedder.embed(document))
         print(f'- Score={score:.3f} :: {document}')
 
-    print('
-Interpretación: documentos con términos y contexto cercanos obtienen mejor score.')
+    print("\nInterpretación: documentos con términos y contexto cercanos obtienen mejor score.")
 
 
 if __name__ == '__main__':

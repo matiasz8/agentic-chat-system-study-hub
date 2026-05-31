@@ -1,27 +1,52 @@
-# Ask Sage Enterprise - Nivel Intermedio
-# Autenticacion multi-tenant
+#!/usr/bin/env python3
+"""Ejemplo intermedio de RBAC para Ask Sage Enterprise."""
 
-class MultiTenantServer:
-    def __init__(self):
-        self.tenants = {
-            "sk-key-1": "Hospital A",
-            "sk-key-2": "Clinica B"
-        }
-        self.responses = {"aspirina": "AINE"}
-    
-    def validate_key(self, api_key):
-        return api_key in self.tenants
-    
-    def ask(self, api_key, question):
-        if not self.validate_key(api_key):
-            return {"error": "Invalid API key", "status": 401}
-        
-        tenant = self.tenants[api_key]
-        for key, value in self.responses.items():
-            if key in question.lower():
-                return {"answer": value, "tenant": tenant, "confidence": 0.9}
-        return {"answer": "No encontre", "tenant": tenant, "confidence": 0.0}
+from dataclasses import dataclass
+
+
+ROLE_PERMISSIONS = {
+    "admin": {"read_public", "read_restricted", "audit"},
+    "editor": {"read_public", "read_restricted"},
+    "viewer": {"read_public"},
+}
+
+
+@dataclass
+class User:
+    user_id: str
+    tenant_id: str
+    role: str
+
+
+@dataclass
+class Document:
+    tenant_id: str
+    title: str
+    content: str
+    permission: str
+
+
+def can_access(user: User, document: Document) -> bool:
+    if user.tenant_id != document.tenant_id:
+        return False
+    return document.permission in ROLE_PERMISSIONS.get(user.role, set())
+
+
+def main() -> None:
+    viewer = User("ana", "acme", "viewer")
+    admin = User("leo", "acme", "admin")
+    documents = [
+        Document("acme", "FAQ interna", "Horarios y feriados del tenant.", "read_public"),
+        Document("acme", "Informe M&A", "Documento sensible sobre adquisiciones futuras.", "read_restricted"),
+    ]
+
+    print("=== Ask Sage Enterprise · Intermedio ===")
+    for user in [viewer, admin]:
+        print(f"\nAccesos para {user.user_id} ({user.role}):")
+        for document in documents:
+            decision = "permitido" if can_access(user, document) else "denegado"
+            print(f"- {document.title}: {decision}")
+
 
 if __name__ == "__main__":
-    server = MultiTenantServer()
-    print(server.ask("sk-key-1", "Que es aspirina?"))
+    main()
