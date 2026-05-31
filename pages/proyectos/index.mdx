@@ -1,65 +1,110 @@
-# 🎯 Proyectos Integrados
+import { ModuleNav } from '../../components/ModuleNav';
 
-Proyectos reales que integran todo lo aprendido.
+# 🎯 Proyectos: Construye Aplicaciones Reales
 
----
-
-## 📚 Proyectos en esta Sección
-
-| # | Proyecto | Duración | Nivel |
-|---|----------|----------|-------|
-| **40** | [Ask Sage MVP](/proyectos/40-ask-sage-mvp) | 180 min | 🟡 Intermedio |
-| **41** | [Ask Sage Enterprise](/proyectos/41-ask-sage-enterprise) | 240 min | 🔴 Avanzado |
-| **42** | [Deployment en AWS](/proyectos/42-deployment-aws) | 120 min | 🔴 Avanzado |
+Aquí es donde **todo converge**. Toma TODO lo que aprendiste (Frontend, Orquestación, Runtime, Data) y **construye sistemas reales**.
 
 ---
 
-## 🎯 Qué Construirás
+## 📋 Los 3 Proyectos
 
-### Ask Sage MVP
-Un agente farmacéutico que puede:
-- ✅ Consultar stock de medicamentos
-- ✅ Responder preguntas sobre fármacos
-- ✅ Generar reportes
-- ✅ Integración con base de datos simple
-
-**Stack:** LangGraph + Streamlit + SQLite
-
-### Ask Sage Enterprise
-Versión production-ready con:
-- ✅ Streaming de UI en tiempo real
-- ✅ Identity forwarding (credenciales de usuario)
-- ✅ Cedar policies (control de acceso)
-- ✅ Multimodal (procesa videos y PDFs)
-- ✅ Validación integrada
-
-**Stack:** LangGraph + Next.js + Vercel AI SDK + AWS Bedrock
-
-### Deployment en AWS
-Cómo llevar tu agente a producción:
-- ✅ Containerización
-- ✅ AWS Lambda
-- ✅ RDS + S3
-- ✅ Monitoreo y logging
+| Proyecto | Tipo | Duración | Objetivo |
+|----------|------|----------|----------|
+| **40** - Ask Sage MVP | RAG Q&A | 240 min | Sistema simple de preguntas-respuestas |
+| **41** - Ask Sage Enterprise | Multi-tenant | 180 min | Versión escalable para empresas |
+| **42** - Deployment AWS | DevOps | 150 min | Cómo desplegar en producción |
 
 ---
 
-## 🚀 Recomendación
+## 🎓 Qué Aprenderás
 
-**Antes de empezar:** completa al menos Orchestration (módulos 10-14).
+### Módulo 40: Ask Sage MVP
+- ✅ Cómo construir un RAG system
+- ✅ Integración de múltiples módulos
+- ✅ Vector search en acción
+- ✅ Validación de respuestas
 
-Para Ask Sage MVP: necesitas LangGraph + Frontend básico.
-Para Ask Sage Enterprise: necesitas TODO (Orchestration + Runtime + Frontend + Data + Validation).
+### Módulo 41: Enterprise
+- ✅ Multi-tenant architecture
+- ✅ API design (REST)
+- ✅ Autenticación/autorización
+- ✅ Escalabilidad
+
+### Módulo 42: Deployment
+- ✅ Infraestructura en AWS
+- ✅ CI/CD pipelines
+- ✅ Monitoreo y alertas
+- ✅ Cost optimization
 
 ---
 
-## 💻 Código Incluido
+## 🏗️ Ask Sage: Arquitectura Completa
 
-Cada proyecto tiene:
-- 📖 README con instrucciones
-- 🐍 Código Python en `python/proyectos/`
-- 🎨 Frontend (Streamlit o Next.js)
-- ✅ Tests integrados
-- 📋 Checklist de pasos
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      USUARIO                                │
+│              (Web o Mobile App)                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+        ┌──────────────▼──────────────┐
+        │   FRONTEND (Next.js)         │
+        │   ├─ Chat UI                │
+        │   ├─ Streaming Responses    │
+        │   └─ Citations Display      │
+        └──────────────┬──────────────┘
+                       │ HTTP/WebSocket
+        ┌──────────────▼──────────────┐
+        │   BACKEND (LangGraph)        │
+        │   ├─ State Management       │
+        │   ├─ Orchestration          │
+        │   ├─ RAG Pipeline           │
+        │   └─ Validation             │
+        └──────────────┬──────────────┘
+                       │
+    ┌──────────────────┼──────────────────┐
+    │                  │                  │
+┌───▼────┐      ┌──────▼──────┐    ┌──────▼──────┐
+│Vector  │      │   LLM API   │    │  Monitoring│
+│Database│      │ (OpenAI)    │    │  (CloudWatch)
+└────────┘      └─────────────┘    └─────────────┘
+```
 
-👉 Comienza con: [Ask Sage MVP](/proyectos/40-ask-sage-mvp)
+---
+
+## 💡 Learning Path
+
+**Si has completado:**
+- ✅ Frontend (Módulos 0-3)
+- ✅ Orquestación (Módulos 10-14)
+- ✅ Runtime (Módulos 20-24)
+- ✅ Data (Módulos 30-31)
+
+**Entonces estás listo para Proyectos** 🚀
+
+---
+
+## 🎯 Recomendación
+
+Sigue **en orden**:
+1. 📖 Lee Ask Sage MVP (aprenderás el flujo)
+2. 💻 Ejecuta los ejemplos
+3. 🏋️ Completa los ejercicios
+4. 🚀 Construye tu propia versión
+5. 📦 Escalá a Enterprise
+6. ☁️ Despliega en AWS
+
+---
+
+<ModuleNav
+  current="/proyectos"
+  section="Proyectos"
+  modules={[
+    { title: "40. Ask Sage MVP", href: "/proyectos/40-ask-sage-mvp", level: "avanzado" },
+    { title: "41. Ask Sage Enterprise", href: "/proyectos/41-ask-sage-enterprise", level: "avanzado" },
+    { title: "42. Deployment AWS", href: "/proyectos/42-deployment-aws", level: "avanzado" },
+  ]}
+/>
+
+**Última actualización:** 2026-05-31  
+**Sección:** 3 proyectos integradores  
+**Duración total:** ~600 minutos

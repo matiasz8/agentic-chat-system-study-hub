@@ -1,112 +1,189 @@
-# Cedar Policies
+import { CodeBlock, BasicExample, AdvancedExample } from '../../components/CodeBlock';
+import { ModuleNav } from '../../components/ModuleNav';
 
-# Cedar Policies: Motor de Políticas de Acceso
+# Cedar: Lenguaje de Políticas para Agentes
 
-## Descripción
+**Cedar** es un lenguaje de políticas creado por AWS. Define QUIÉN puede hacer QUÉ en tu agente.
 
-Implementa políticas de acceso granulares usando Cedar para control fino de permisos.
-
-## Estructura del Módulo
-
-```
-23_cedar_policies/
-├── README.md                 ← Estás aquí
-├── examples/                 ← Código funcional, paso a paso
-│   ├── 01_basico.py
-│   ├── 02_intermedio.py
-│   └── 03_avanzado.py
-├── exercises/                ← Desafíos para practicar
-│   ├── 01_ejercicio_basico.md
-│   ├── 02_ejercicio_intermedio.md
-│   └── 03_ejercicio_avanzado.md
-└── utils.py (opcional)       ← Funciones auxiliares
-```
-
-## Objetivos de Aprendizaje
-
-Al completar este módulo, serás capaz de:
-
-- ✅ Entender los conceptos fundamentales
-- ✅ Implementar ejemplos funcionales
-- ✅ Resolver problemas prácticos
-- ✅ Integrar en proyectos reales
-
-## Prerequisitos
-
-- Módulos anteriores completados (ver QUICKSTART.md)
-- Python 3.8+
-- Entorno configurado (ver CONTRIBUTING.md)
-
-## Quick Start
-
-```bash
-# 1. Lee este README
-# 2. Ejecuta los ejemplos
-python examples/01_basico.py
-
-# 3. Resuelve los ejercicios
-# 4. Comparte tu solución
-```
-
-## Contenido
-
-### Conceptos Clave
-
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
-
-### Ejemplos Incluidos
-
-- `01_basico.py` - Introducción simple
-- `02_intermedio.py` - Caso de uso común
-- `03_avanzado.py` - Patrón production-ready
-
-### Ejercicios
-
-- Ejercicio 1: Implementa...
-- Ejercicio 2: Extiende...
-- Ejercicio 3: Integra...
-
-## Recursos Adicionales
-
-- 📚 [Documentación oficial](https://example.com)
-- 🎓 [Tutorial interactivo](https://example.com)
-- 💬 [Comunidad de Discord](https://example.com)
-
-## Próximos Pasos
-
-1. Completa todos los ejemplos
-2. Resuelve los ejercicios
-3. Procede al siguiente módulo
-4. Contribuye mejoras a este módulo
+Piénsalo como un "contrato de seguridad" escrito en código. 📜
 
 ---
+
+## 🔐 Cedar vs Otros Lenguajes
+
+```
+❌ Código tradicional:
+if user.role == "admin" and action == "delete" and resource.type == "critical":
+    # Permitir...
+
+✅ Cedar:
+permit(
+  principal == User::"admin",
+  action == Action::"delete",
+  resource == Database::"critical"
+);
+```
+
+**Ventajas de Cedar**:
+- Fácil de leer y verificar
+- Diseñado para seguridad (no como side-effect)
+- Auditable formalmente
+- Integrado en AWS AgentCore
+
+---
+
+## 💻 Nivel 1: Política Básica
+
+<BasicExample
+  code={`// Cedar Policy: Agente puede leer datos públicos
+
+permit(
+  principal == Agent::"my-agent",
+  action == Action::"read",
+  resource.is_public == true
+);
+
+// Esto PERMITE:
+// - Agente "my-agent" leyendo tabla "public_users"
+
+// Esto RECHAZA:
+// - Usuario "user_123" leyendo tabla "public_users" (no es agente)
+// - Agente "my-agent" escribiendo tabla "public_users" (acción es write, no read)
+`}
+  title="01_basic_cedar.cedar"
+/>
+
+---
+
+## 💻 Nivel 2: Políticas Complejas
+
+<BasicExample
+  code={`// Cedar Policy: Agente puede modificar solo sus propios recursos
+
+permit(
+  principal == Agent::"customer-service",
+  action == Action::"update",
+  resource == CustomerTicket::"*" // Cualquier ticket
+)
+when {
+  resource.assignedTo == principal  // Si está asignado al agente
+  && context.date <= resource.dueDate  // Y antes de fecha límite
+};
+
+// O: Denegar actualización si es crítica
+deny(
+  principal == Agent::"*",  // Cualquier agente
+  action == Action::"delete",
+  resource == Order::"*"  // Cualquier orden
+)
+when {
+  resource.totalAmount > 1000  // Cantidad mayor a \$1000
+};
+`}
+  title="02_complex_cedar.cedar"
+/>
+
+**Lógica**:
+- `permit`: Explícitamente permitir
+- `when`: Condición adicional
+- `deny`: Explícitamente rechazar
+
+---
+
+## 💻 Nivel 3: Cedar en AWS
+
+<AdvancedExample
+  code={`import boto3
+import json
+
+class CedarPolicyManager:
+    def __init__(self):
+        self.authz = boto3.client('verifiedpermissions')
+    
+    def define_schema(self) -> dict:
+        """Define entidades y acciones disponibles"""
+        return {
+            "entities": {
+                "Agent": {"members": []},
+                "User": {"members": []},
+                "Database": {
+                    "members": [],
+                    "attributes": {
+                        "is_public": {"type": "Boolean"},
+                        "sensitivity": {"type": "String"}
+                    }
+                }
+            },
+            "actions": {
+                "read": {"applies_to": {"principal_types": ["Agent", "User"],
+                                       "resource_types": ["Database"]}},
+                "write": {"applies_to": {"principal_types": ["Agent"],
+                                        "resource_types": ["Database"]}},
+            }
+        }
+    
+    def create_policy(self, cedar_statement: str) -> dict:
+        """Registra una política Cedar en AWS"""
+        response = self.authz.create_policy(
+            policyStoreId='my-store',
+            statement=cedar_statement,
+            definition={
+                'static': {
+                    'description': f'Policy created at {datetime.now()}'
+                }
+            }
+        )
+        return response
+    
+    def check_access(self, principal: str, action: str, resource: str) -> bool:
+        """Verifica si acceso está permitido"""
+        response = self.authz.is_authorized(
+            policyStoreId='my-store',
+            principal={'entityType': 'Agent', 'entityId': principal},
+            action={'actionType': action},
+            resource={'entityType': 'Database', 'entityId': resource},
+            context={'contextMap': {}}
+        )
+        return response['decision'] == 'ALLOW'
+
+# Uso
+manager = CedarPolicyManager()
+
+# Crear política
+policy = '''
+permit(
+  principal == Agent::"data-processor",
+  action == Action::"read",
+  resource == Database::"analytics"
+);
+'''
+manager.create_policy(policy)
+
+# Verificar acceso
+is_allowed = manager.check_access(
+    principal="data-processor",
+    action="read",
+    resource="analytics"
+)
+print(f"Access: {'✅ Allowed' if is_allowed else '❌ Denied'}")
+`}
+  title="03_cedar_aws.py"
+/>
+
+---
+
+<ModuleNav
+  current="/runtime/23-cedar-policies"
+  section="Runtime"
+  modules={[
+    { title: "20. Serverless Basics", href: "/runtime/20-serverless-basics", level: "básico", completed: true },
+    { title: "21. Identity Forwarding", href: "/runtime/21-identity-forwarding", level: "intermedio", completed: true },
+    { title: "22. Governance", href: "/runtime/22-agentcore-governance", level: "intermedio", completed: true },
+    { title: "23. Cedar Policies", href: "/runtime/23-cedar-policies", level: "intermedio", completed: true },
+    { title: "24. Tools Management", href: "/runtime/24-tools-management", level: "intermedio" },
+  ]}
+/>
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 60-90 minutos
-
-
----
-
-## Código Fuente
-
-El código para este módulo está disponible en:
-
-\`\`\`
-python/modulos/23_cedar_policies/
-\`\`\`
-
-Incluye:
-- 📖 README.md (este contenido)
-- 💻 Ejemplos prácticos en `examples/`
-- 🏋️ Ejercicios en `exercises/`
-
-## Próximos Pasos
-
-Completa los ejercicios y procede al siguiente módulo.
-
----
-
-**Última actualización:** 2026-05-31
+**Duración:** 60 minutos

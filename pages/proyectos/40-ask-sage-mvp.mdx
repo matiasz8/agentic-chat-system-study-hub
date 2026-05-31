@@ -1,112 +1,302 @@
-# Ask Sage MVP
+import { CodeBlock, BasicExample, AdvancedExample } from '../../components/CodeBlock';
+import { ModuleNav } from '../../components/ModuleNav';
 
-# Ask Sage: MVP (Minimum Viable Product)
+# Ask Sage: MVP (Q&A Agent Médico)
 
-## Descripción
+**Ask Sage** es un agente IA que responde preguntas sobre medicamentos y salud usando RAG (Retrieval-Augmented Generation).
 
-Proyecto integrado: construye la versión MVP de Ask Sage con todas las tecnologías aprendidas.
-
-## Estructura del Módulo
-
-```
-40_ask_sage_mvp/
-├── README.md                 ← Estás aquí
-├── examples/                 ← Código funcional, paso a paso
-│   ├── 01_basico.py
-│   ├── 02_intermedio.py
-│   └── 03_avanzado.py
-├── exercises/                ← Desafíos para practicar
-│   ├── 01_ejercicio_basico.md
-│   ├── 02_ejercicio_intermedio.md
-│   └── 03_ejercicio_avanzado.md
-└── utils.py (opcional)       ← Funciones auxiliares
-```
-
-## Objetivos de Aprendizaje
-
-Al completar este módulo, serás capaz de:
-
-- ✅ Entender los conceptos fundamentales
-- ✅ Implementar ejemplos funcionales
-- ✅ Resolver problemas prácticos
-- ✅ Integrar en proyectos reales
-
-## Prerequisitos
-
-- Módulos anteriores completados (ver QUICKSTART.md)
-- Python 3.8+
-- Entorno configurado (ver CONTRIBUTING.md)
-
-## Quick Start
-
-```bash
-# 1. Lee este README
-# 2. Ejecuta los ejemplos
-python examples/01_basico.py
-
-# 3. Resuelve los ejercicios
-# 4. Comparte tu solución
-```
-
-## Contenido
-
-### Conceptos Clave
-
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
-
-### Ejemplos Incluidos
-
-- `01_basico.py` - Introducción simple
-- `02_intermedio.py` - Caso de uso común
-- `03_avanzado.py` - Patrón production-ready
-
-### Ejercicios
-
-- Ejercicio 1: Implementa...
-- Ejercicio 2: Extiende...
-- Ejercicio 3: Integra...
-
-## Recursos Adicionales
-
-- 📚 [Documentación oficial](https://example.com)
-- 🎓 [Tutorial interactivo](https://example.com)
-- 💬 [Comunidad de Discord](https://example.com)
-
-## Próximos Pasos
-
-1. Completa todos los ejemplos
-2. Resuelve los ejercicios
-3. Procede al siguiente módulo
-4. Contribuye mejoras a este módulo
+Este es tu **proyecto final**: Un sistema completo de A a Z que integra TODO lo aprendido.
 
 ---
+
+## 🎯 Qué es Ask Sage?
+
+```
+Usuario:  "¿Qué es la Aspirina?"
+    │
+    ▼
+[Agente Ask Sage]
+├─ Busca en base de datos médica
+├─ Ordena resultados por relevancia
+├─ Genera respuesta con citas
+└─ Valida información
+
+Respuesta: "La Aspirina es un antiinflamatorio...
+           Fuente: American Medical Association"
+```
+
+**Tecnologías usadas**:
+- 🧠 LangGraph (orquestación)
+- 📚 RAG (búsqueda semántica)
+- 💾 Vector DB (almacenamiento)
+- ☁️ AWS (deployment)
+- 🎨 Next.js (frontend)
+
+---
+
+## 📊 Arquitectura
+
+```
+Frontend (Next.js)
+    │
+    ├─> Streaming UI (useChat)
+    └─> "¿Qué es la Aspirina?"
+         │
+         ▼
+Backend (LangGraph)
+    ├─ State: {question, retrieved_docs, answer}
+    ├─ Node 1: Embeddings (convertir pregunta a vector)
+    ├─ Node 2: Search (buscar en vector DB)
+    ├─ Node 3: Rank (ordenar por relevancia)
+    ├─ Node 4: Generate (crear respuesta con LLM)
+    └─ Node 5: Validate (validar con fuentes)
+         │
+         ▼
+Vector Database (Chroma/Pinecone)
+    └─ 10,000+ documentos médicos
+         │
+         ▼
+Response: "La Aspirina es..."
+```
+
+---
+
+## 💻 Nivel 1: MVP Simple (RAG Básico)
+
+<BasicExample
+  code={`from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+from langchain.chains import RetrievalQA
+from langchain.llms import OpenAI
+
+# 1. Crear base de datos vectorial
+embeddings = OpenAIEmbeddings()
+vectordb = Chroma(
+    collection_name="medical_docs",
+    embedding_function=embeddings,
+    persist_directory="./chroma_db"
+)
+
+# 2. Crear retriever
+retriever = vectordb.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 3}  # Top 3 resultados
+)
+
+# 3. Crear cadena QA
+llm = OpenAI(temperature=0)
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",
+    retriever=retriever
+)
+
+# 4. Usar
+answer = qa_chain.run("¿Qué es la Aspirina?")
+print(answer)
+`}
+  title="01_ask_sage_simple.py"
+/>
+
+---
+
+## 💻 Nivel 2: MVP Completo (con Ranking)
+
+<BasicExample
+  code={`from langgraph.graph import StateGraph, START, END
+from typing import TypedDict, Annotated
+from operator import add
+
+class AskSageState(TypedDict):
+    question: str
+    retrieved_docs: Annotated[list, add]
+    ranked_docs: list
+    answer: str
+    confidence: float
+
+def retrieval_node(state: AskSageState):
+    """Busca documentos relevantes"""
+    # Simular búsqueda semántica
+    results = [
+        {"title": "Aspirin Overview", "score": 0.95},
+        {"title": "Dosage Guidelines", "score": 0.87},
+        {"title": "Side Effects", "score": 0.72}
+    ]
+    return {"retrieved_docs": results}
+
+def ranking_node(state: AskSageState):
+    """Ordena por relevancia"""
+    ranked = sorted(
+        state['retrieved_docs'],
+        key=lambda x: x['score'],
+        reverse=True
+    )
+    return {"ranked_docs": ranked}
+
+def generation_node(state: AskSageState):
+    """Genera respuesta con LLM"""
+    context = "\\n".join([
+        f"- {doc['title']}" 
+        for doc in state['ranked_docs'][:3]
+    ])
+    
+    prompt = f"""Based on:
+{context}
+
+Answer: {state['question']}"""
+    
+    # Simular LLM call
+    answer = f"La Aspirina es un antiinflamatorio usado para..."
+    confidence = 0.92
+    
+    return {"answer": answer, "confidence": confidence}
+
+# Construir grafo
+graph = StateGraph(AskSageState)
+graph.add_node("retrieve", retrieval_node)
+graph.add_node("rank", ranking_node)
+graph.add_node("generate", generation_node)
+
+graph.add_edge(START, "retrieve")
+graph.add_edge("retrieve", "rank")
+graph.add_edge("rank", "generate")
+graph.add_edge("generate", END)
+
+# Ejecutar
+compiled = graph.compile()
+result = compiled.invoke({
+    "question": "¿Qué es la Aspirina?",
+    "retrieved_docs": [],
+    "ranked_docs": [],
+    "answer": "",
+    "confidence": 0.0
+})
+print(f"Answer: {result['answer']}")
+print(f"Confidence: {result['confidence']}")
+`}
+  title="02_ask_sage_complete.py"
+/>
+
+---
+
+## 💻 Nivel 3: Production (con Validación)
+
+<AdvancedExample
+  code={`class ProductionAskSage:
+    def __init__(self, vector_db_path: str, api_key: str):
+        self.vectordb = self._init_db(vector_db_path)
+        self.validator = ResponseValidator()
+        self.monitor = MonitoringClient()
+    
+    def answer_question(self, question: str) -> Dict:
+        """Responde pregunta con validación"""
+        
+        # 1. Retrieve
+        relevant_docs = self.vectordb.search(question, top_k=5)
+        
+        # 2. Rank
+        ranked = self._rerank_docs(relevant_docs)
+        
+        # 3. Generate
+        context = self._build_context(ranked)
+        answer = self._generate_with_llm(question, context)
+        
+        # 4. Validate
+        is_valid = self.validator.check(
+            question=question,
+            answer=answer,
+            sources=ranked
+        )
+        
+        if not is_valid:
+            answer = "I cannot provide a confident answer to this question."
+            confidence = 0.0
+        else:
+            confidence = self._calculate_confidence(ranked)
+        
+        # 5. Log
+        self.monitor.log_query(
+            question=question,
+            answer=answer,
+            confidence=confidence,
+            sources=ranked
+        )
+        
+        return {
+            "answer": answer,
+            "confidence": confidence,
+            "sources": ranked,
+            "valid": is_valid
+        }
+
+# Uso
+sage = ProductionAskSage(
+    vector_db_path="./medical_db",
+    api_key="sk-..."
+)
+
+result = sage.answer_question("¿Es segura la Aspirina en embarazo?")
+print(result)
+`}
+  title="03_ask_sage_production.py"
+/>
+
+---
+
+## 🎯 Cómo Usar Ask Sage
+
+### 1. Setup
+```bash
+git clone https://github.com/yourname/ask-sage
+cd ask-sage
+pip install -r requirements.txt
+```
+
+### 2. Llenar Vector DB
+```bash
+python scripts/load_medical_data.py
+```
+
+### 3. Ejecutar Backend
+```bash
+python -m uvicorn main:app --reload
+```
+
+### 4. Ejecutar Frontend
+```bash
+npm run dev
+```
+
+### 5. Usar
+```
+http://localhost:3000
+→ Pregunta: "¿Qué es la Aspirina?"
+→ Respuesta: "La Aspirina es..."
+```
+
+---
+
+## 📚 Recursos Incluidos
+
+- ✅ 10,000+ documentos médicos
+- ✅ Vector embeddings precomputados
+- ✅ Modelos pre-entrenados
+- ✅ Scripts de deployment
+- ✅ Monitoreo y logging
+
+---
+
+<ModuleNav
+  current="/proyectos/40-ask-sage-mvp"
+  section="Proyectos"
+  modules={[
+    { title: "40. Ask Sage MVP", href: "/proyectos/40-ask-sage-mvp", level: "avanzado", completed: true },
+    { title: "41. Ask Sage Enterprise", href: "/proyectos/41-ask-sage-enterprise", level: "avanzado" },
+    { title: "42. Deployment AWS", href: "/proyectos/42-deployment-aws", level: "avanzado" },
+  ]}
+/>
 
 **Última actualización:** 2026-05-31  
-**Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 60-90 minutos
-
-
----
-
-## Código Fuente
-
-El código para este módulo está disponible en:
-
-\`\`\`
-python/modulos/40_ask_sage_mvp/
-\`\`\`
-
-Incluye:
-- 📖 README.md (este contenido)
-- 💻 Ejemplos prácticos en `examples/`
-- 🏋️ Ejercicios en `exercises/`
-
-## Próximos Pasos
-
-Completa los ejercicios y procede al siguiente módulo.
-
----
-
-**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐⭐ Avanzado  
+**Duración:** 240 minutos  
+**Código:** 500+ líneas de ejemplo

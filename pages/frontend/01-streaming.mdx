@@ -1,112 +1,211 @@
-# Streaming de Tokens
+import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
+import { ModuleNav } from '../../components/ModuleNav';
 
-# Streaming de Tokens con Vercel AI SDK
+# Streaming: Respuestas en Tiempo Real
 
-## Descripción
+El **streaming** hace que tu chat IA se sienta **instantáneo**. En lugar de esperar a que el LLM termine toda la respuesta, recibes tokens uno por uno, mostrando progreso en tiempo real.
 
-Aprende cómo implementar streaming de tokens en tiempo real para mejorar la experiencia del usuario.
-
-## Estructura del Módulo
-
-```
-01_streaming/
-├── README.md                 ← Estás aquí
-├── examples/                 ← Código funcional, paso a paso
-│   ├── 01_basico.py
-│   ├── 02_intermedio.py
-│   └── 03_avanzado.py
-├── exercises/                ← Desafíos para practicar
-│   ├── 01_ejercicio_basico.md
-│   ├── 02_ejercicio_intermedio.md
-│   └── 03_ejercicio_avanzado.md
-└── utils.py (opcional)       ← Funciones auxiliares
-```
-
-## Objetivos de Aprendizaje
-
-Al completar este módulo, serás capaz de:
-
-- ✅ Entender los conceptos fundamentales
-- ✅ Implementar ejemplos funcionales
-- ✅ Resolver problemas prácticos
-- ✅ Integrar en proyectos reales
-
-## Prerequisitos
-
-- Módulos anteriores completados (ver QUICKSTART.md)
-- Python 3.8+
-- Entorno configurado (ver CONTRIBUTING.md)
-
-## Quick Start
-
-```bash
-# 1. Lee este README
-# 2. Ejecuta los ejemplos
-python examples/01_basico.py
-
-# 3. Resuelve los ejercicios
-# 4. Comparte tu solución
-```
-
-## Contenido
-
-### Conceptos Clave
-
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
-
-### Ejemplos Incluidos
-
-- `01_basico.py` - Introducción simple
-- `02_intermedio.py` - Caso de uso común
-- `03_avanzado.py` - Patrón production-ready
-
-### Ejercicios
-
-- Ejercicio 1: Implementa...
-- Ejercicio 2: Extiende...
-- Ejercicio 3: Integra...
-
-## Recursos Adicionales
-
-- 📚 [Documentación oficial](https://example.com)
-- 🎓 [Tutorial interactivo](https://example.com)
-- 💬 [Comunidad de Discord](https://example.com)
-
-## Próximos Pasos
-
-1. Completa todos los ejemplos
-2. Resuelve los ejercicios
-3. Procede al siguiente módulo
-4. Contribuye mejoras a este módulo
+Sin streaming = ⏳ Espera 5 segundos, luego aparece todo  
+Con streaming = ⚡ Aparecen caracteres mientras se generan
 
 ---
+
+## 🔄 ¿Qué es el Streaming?
+
+```
+SIN STREAMING:
+┌──────────────────────────────┐
+│ Usuario espera...             │
+│ (5 segundos...)               │
+└──────────────────────────────┘
+            │
+            ▼
+┌──────────────────────────────┐
+│ "Hola, soy Claude. Estoy     │
+│  aquí para ayudarte..."      │
+│ (todo aparece de una)        │
+└──────────────────────────────┘
+
+CON STREAMING:
+┌──────────────────────────────┐
+│ Usuario ve progreso:          │
+│ "Hola"                       │
+│ "Hola, soy"                  │
+│ "Hola, soy Claude"           │
+│ (aparece carácter por carácter)
+└──────────────────────────────┘
+```
+
+**Beneficios**:
+✅ Mejor UX (parece más rápido)
+✅ Feedback inmediato
+✅ Menos percepción de latencia
+✅ Profesional (como ChatGPT)
+
+---
+
+## 💻 Nivel 1: Streaming Básico
+
+<BasicExample
+  code={`import { useChat } from 'ai/react';
+
+export function ChatUI() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    streamProtocol: 'text',  // Streaming habilitado
+  });
+
+  return (
+    <div>
+      {/* Mensajes se actualizan en tiempo real */}
+      {messages.map(msg => (
+        <div key={msg.id}>
+          {msg.role}: {msg.content}  {/* Aparece carácter por carácter */}
+        </div>
+      ))}
+      
+      {/* Input */}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Escribe aquí..."
+        />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  );
+}
+`}
+  title="01_streaming_basico.tsx"
+/>
+
+**¿Qué sucede?**
+1. Usuario envía mensaje
+2. Servidor comienza a generar respuesta
+3. Cada token se envía inmediatamente
+4. React actualiza la UI en tiempo real
+5. Usuario ve progreso ⚡
+
+---
+
+## 💻 Nivel 2: Streaming Avanzado
+
+<BasicExample
+  code={`import { useChat } from 'ai/react';
+import { useEffect, useRef } from 'react';
+
+export function AdvancedChat() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = 
+    useChat({
+      streamProtocol: 'text',
+      onFinish: (message) => {
+        console.log('Respuesta completa:', message.content);
+      },
+    });
+
+  const messagesEndRef = useRef(null);
+
+  // Auto-scroll a los nuevos mensajes
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <div className="chat-container">
+      {/* Indicador de carga */}
+      {isLoading && <div className="spinner">Escribiendo...</div>}
+      
+      {/* Mensajes con streaming */}
+      {messages.map(msg => (
+        <div key={msg.id} className={msg.role}>
+          <p className="message-content">
+            {msg.content}
+            {/* Cursor intermitente mientras se escribe */}
+            {isLoading && msg.role === 'assistant' && <span className="cursor">▌</span>}
+          </p>
+        </div>
+      ))}
+      
+      <div ref={messagesEndRef} />
+      
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          disabled={isLoading}
+          placeholder="Escribe aquí..."
+        />
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Streaming...' : 'Enviar'}
+        </button>
+      </form>
+    </div>
+  );
+}
+`}
+  title="02_streaming_avanzado.tsx"
+/>
+
+**Mejoras**:
+- ✅ Auto-scroll automático
+- ✅ Cursor intermitente visual
+- ✅ Indicador de carga
+- ✅ Callback cuando termina
+
+---
+
+## 🏗️ Alternativas
+
+| Framework | Enfoque | Mejor para |
+|-----------|---------|-----------|
+| **Vercel AI** ⭐ | useChat hook | Chat UI + streaming |
+| LangChain | Chains + streaming | Backend processing |
+| OpenAI SDK | streaming param | Control total |
+| Socket.IO | WebSockets | Real-time apps |
+| tRPC | Subscriptions | Full-stack TypeScript |
+
+---
+
+## 🏋️ Ejercicios
+
+<Exercise
+  title="Ejercicio 1: Token Counter"
+  problem="Crea un componente que muestre:
+- Tokens generados en tiempo real
+- Tokens por segundo (TPS)
+- Estimación de tiempo total
+
+Pista: Cuenta caracteres en lugar de tokens para simplificar."
+  hints={[
+    "Usa useEffect para detectar cambios en el mensaje",
+    "Calcula TPS dividiendo tokens por tiempo transcurrido",
+    "Usa useRef para tracking de timestamps"
+  ]}
+/>
+
+<Exercise
+  title="Ejercicio 2: Pausa/Resume"
+  problem="Implementa un botón que:
+1. Pause la generación (detiene streaming)
+2. Resume desde donde se pausó
+3. Muestre estado (paused/generating/done)
+
+Nota: Requiere backend con soporte para pausar."
+/>
+
+---
+
+<ModuleNav
+  current="/frontend/01-streaming"
+  section="Frontend"
+  modules={[
+    { title: "00. Vercel Intro", href: "/frontend/00-vercel-intro", level: "básico", completed: true },
+    { title: "01. Streaming", href: "/frontend/01-streaming", level: "básico", completed: true },
+    { title: "02. Generative UI", href: "/frontend/02-generative-ui", level: "intermedio" },
+    { title: "03. Frontend Completo", href: "/frontend/03-frontend-completo", level: "intermedio" },
+  ]}
+/>
 
 **Última actualización:** 2026-05-31  
-**Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 60-90 minutos
-
-
----
-
-## Código Fuente
-
-El código para este módulo está disponible en:
-
-\`\`\`
-python/modulos/01_streaming/
-\`\`\`
-
-Incluye:
-- 📖 README.md (este contenido)
-- 💻 Ejemplos prácticos en `examples/`
-- 🏋️ Ejercicios en `exercises/`
-
-## Próximos Pasos
-
-Completa los ejercicios y procede al siguiente módulo.
-
----
-
-**Última actualización:** 2026-05-31
+**Dificultad:** ⭐ Básico  
+**Duración:** 45 minutos
