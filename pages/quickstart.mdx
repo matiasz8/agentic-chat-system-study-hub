@@ -1,0 +1,131 @@
+# 🚀 Quick Start
+
+Cómo empezar en 15 minutos.
+
+---
+
+## ✅ Requisitos Previos
+
+- Python 3.9+
+- Node.js 16+
+- Git
+- Editor de código (VS Code recomendado)
+
+---
+
+## 📦 Setup Inicial
+
+### Paso 1: Clonar el Repositorio
+
+```bash
+git clone https://github.com/matiasz8/agentic-chat-system-study-hub.git
+cd agentic-chat-system-study-hub
+```
+
+### Paso 2: Instalar Node.js (para Documentación)
+
+```bash
+npm install
+```
+
+### Paso 3: Instalar Python (para Código)
+
+```bash
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+pip install -r python/requirements.txt
+```
+
+---
+
+## 🌐 Correr Documentación Localmente
+
+```bash
+npm run dev
+```
+
+Abre: **http://localhost:3000**
+
+Verás el hub completo con sidebar, búsqueda y dark mode.
+
+---
+
+## 🐍 Ejecutar Primer Ejemplo Python
+
+```bash
+python python/modulos/00_fundamentos/examples/01_basico.py
+```
+
+Deberías ver: "✅ Grafo simple ejecutado correctamente"
+
+---
+
+## ✅ Verificar Instalación
+
+```bash
+python python/test_setup.py
+```
+
+Si ves ✅ en todo, estás listo para empezar.
+
+---
+
+## 📚 Rutas de Aprendizaje
+
+### 🟢 Ruta Rápida (8 horas)
+Solo lo esencial:
+1. Orchestration: Fundamentos + State (3h)
+2. Frontend: Streaming + Generative UI (2h)
+3. Validation: Testing básico (1.5h)
+4. Proyecto simple (1.5h)
+
+### 🟡 Ruta Completa (20 horas)
+Todo de principio a fin:
+1. Orchestration: Módulos 10-14 (5h)
+2. Runtime: AWS AgentCore (3h)
+3. Frontend: Vercel AI SDK (3h)
+4. Data: MCP + Embeddings (3h)
+5. Validation: Testing completo (2h)
+6. Proyectos integrados (4h)
+
+---
+
+## 🎯 Tu Primer Módulo
+
+Empieza aquí: **[Orchestration → Fundamentos de Grafos](/orchestration/10-fundamentos-grafos)**
+
+Toma 45 minutos. Aprenderás qué es un grafo ejecutable.
+
+---
+
+## 🐛 Solucionar Problemas
+
+### Python: "ModuleNotFoundError: No module named 'langgraph'"
+```bash
+pip install --upgrade -r python/requirements.txt
+```
+
+### Node: "npm: command not found"
+Instala Node.js desde https://nodejs.org/
+
+### Nextra no arranca
+```bash
+rm -rf .next node_modules
+npm install
+npm run dev
+```
+
+---
+
+## 🔗 Recursos Útiles
+
+- [LangGraph Docs](https://langchain-ai.github.io/langgraph/)
+- [Vercel AI SDK](https://vercel.com/ai/sdk)
+- [AWS Bedrock](https://aws.amazon.com/es/bedrock/)
+- [Repo GitHub](https://github.com/matiasz8/agentic-chat-system-study-hub)
+
+---
+
+## 💡 Próximo Paso
+
+Abre http://localhost:3000 y navega por el hub. Luego ve a **Orchestration** para aprender sobre LangGraph.

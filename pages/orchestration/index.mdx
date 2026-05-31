@@ -1,0 +1,56 @@
+# 🧠 Orchestration con LangGraph
+
+El corazón de tu agente. Grafos ejecutables que piensan.
+
+---
+
+## 📚 Módulos en esta Sección
+
+| # | Módulo | Duración | Nivel | Requisitos |
+|---|--------|----------|-------|-----------|
+| **10** | [Fundamentos de Grafos](/orchestration/10-fundamentos-grafos) | 45 min | 🟢 Básico | Python |
+| **11** | [El State](/orchestration/11-state) | 60 min | 🟢 Básico | Módulo 10 |
+| **12** | [Nodos](/orchestration/12-nodos) | 75 min | 🟡 Intermedio | Módulo 11 |
+| **13** | [Aristas Condicionales](/orchestration/13-aristas) | 90 min | 🟡 Intermedio | Módulo 12 |
+| **14** | [Checkpoints](/orchestration/14-checkpoints) | 75 min | 🟡 Intermedio | Módulo 13 |
+
+---
+
+## 🎯 Qué Aprenderás
+
+- ✅ Qué es un grafo ejecutable
+- ✅ State centralizado (el corazón del sistema)
+- ✅ Nodos como funciones Python
+- ✅ Aristas condicionales (enrutamiento inteligente)
+- ✅ Checkpoints (pausas y reanudas automáticas)
+- ✅ Ciclos y loops en agentes
+
+---
+
+## 💡 Por Qué LangGraph
+
+Antes: `if/else` anidados. Ahora: grafos que piensan por sí solos.
+
+```python
+# Antes (complicado)
+if usuario_pregunta_stock:
+    stock = query_database()
+    if stock < 10:
+        alerta = generar_alerta()
+        # ... más lógica
+
+# Ahora (LangGraph)
+grafo = StateGraph(AgentState)
+grafo.add_node("agent", agent_node)
+grafo.add_node("query_db", query_db_node)
+grafo.add_conditional_edges("agent", router)
+# Listo. El grafo lo maneja.
+```
+
+---
+
+## 🚀 Recomendación
+
+Comienza aquí. Este es el fundamento de todo.
+
+👉 Primer paso: [Fundamentos de Grafos](/orchestration/10-fundamentos-grafos)

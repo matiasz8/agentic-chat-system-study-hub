@@ -1,0 +1,150 @@
+# 🤖 Agentic Chat System: Full Stack Study Hub
+
+> **Arquitectura de 3 Capas Integradas para Construir Chat IA Empresarial**
+
+Este es un **hub de estudio universitario** completo sobre cómo construir un **sistema de chat IA con Generative UI** siguiendo la arquitectura moderna recomendada: 
+- **Frontend** (Vercel AI SDK)
+- **Orchestration** (LangGraph) 
+- **Runtime** (AWS AgentCore)
+- **Validation** (Testing & CI/CD)
+
+---
+
+## 🎯 ¿Por Qué Este Hub Existe?
+
+Hace 5 años, construir un agente de IA significaba escribir `if/else` anidados. **LangGraph cambió todo**: te permite escribir grafos donde la IA "piensa en círculos" hasta encontrar la respuesta correcta.
+
+Este hub te prepara para construir sistemas como **Ask Sage** (del caso de uso farmacéutico), donde el agente puede:
+- 🗄️ Consultar bases de datos
+- 🤖 Tomar decisiones automáticas
+- ⏸️ Pausarse para aprobación humana
+- 💾 Recordar contexto entre preguntas
+- ✅ Todo sin reescribir lógica cada vez
+
+---
+
+## 📚 Las 4 Capas
+
+### 🧠 **CAPA 1: Orchestration (LangGraph)**
+El cerebro del agente. Grafos ejecutables que piensan.
+- State centralizado
+- Nodos y Aristas condicionales
+- Checkpoints para persistencia
+
+### 🎨 **CAPA 2: Frontend (Vercel AI SDK)**
+La cara del agente. Streaming + Generative UI.
+- Streaming de tokens en tiempo real
+- Componentes React desde el servidor
+- UX moderna y responsiva
+
+### ☁️ **CAPA 3: Runtime (AWS Bedrock AgentCore)**
+La infraestructura del agente. Serverless + Seguridad.
+- Deployment sin servidor
+- Identity forwarding (credenciales delegadas)
+- Cedar policies (control de acceso)
+
+### ✅ **CAPA 4: Validation (Testing)**
+**NEW** - La calidad del agente. Prompts testeados.
+- Testing de prompts
+- Validación de workflows
+- CI/CD automatizado
+
+---
+
+## 🚀 Cómo Usar Este Hub
+
+### Opción A: Aprendizaje Lineal (Recomendado)
+```
+1. Ve a "Quick Start" → obtén configuración
+2. Lee una sección (Ej: Orchestration)
+3. Ejecuta ejemplos en python/modulos/
+4. Resuelve ejercicios
+5. Valida con tests
+```
+
+### Opción B: Saltar a Conceptos
+Si ya sabes un tema, puedes ir directo. Pero recomendamos comenzar por lo básico.
+
+### Opción C: Solo Ejemplos
+Si prefieres aprender viendo código:
+```bash
+cd python/modulos/00_fundamentos/examples/
+python 01_basico.py
+```
+
+---
+
+## 📊 Estructura de Este Hub
+
+Cada **módulo** sigue el mismo patrón:
+
+```
+1️⃣ CONCEPTO       → ¿Qué es?
+2️⃣ PARA QUÉ SIRVE → ¿Cuándo lo uso?
+3️⃣ HISTORIA       → ¿Por qué se creó así?
+4️⃣ EJEMPLOS       → Código funcional, paso a paso
+5️⃣ EJERCICIOS     → Practica lo aprendido
+6️⃣ TESTS          → Valida tu solución
+```
+
+---
+
+## 💾 Requisitos Técnicos
+
+### Python (para Orchestration + Backend)
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r python/requirements.txt
+```
+
+### Node.js (para Frontend + Documentación)
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## 📖 Filosofía de Este Hub
+
+### ✅ Lo Que SÍ Hacemos
+- Enseñar **LangGraph moderno** (v0.1.0+)
+- Usar **Anthropic Claude** como LLM
+- Ejemplo real: **bot farmacéutico**
+- Código **ejecutable** que funciona ahora
+- **Testing desde el día 1**
+- Explicaciones en **español puro**
+
+### ❌ Lo Que NO Hacemos
+- No cubrimos LangChain básico
+- No explicamos cómo funciona internamente Claude
+- No enseñamos "mejores prácticas generales"
+- **Somos opinionados**: esta es la forma correcta
+
+---
+
+## 🎓 Próximo Paso
+
+👉 **Ve a [Quick Start →](/quickstart)**
+
+Toma 15 minutos. No esperes a "estar listo". La mejor forma de aprender es empezar.
+
+---
+
+## 📞 Preguntas Frecuentes
+
+### P: ¿Necesito saber qué es un LLM?
+**R:** Sí. Mínimo: "Es una red neuronal que predice la siguiente palabra". No necesitas matemática detrás.
+
+### P: ¿Puedo saltarme módulos?
+**R:** Depende. Algunos son independientes, otros tienen dependencias. Ve el README de cada uno.
+
+### P: ¿Cuánto tiempo toma todo?
+**R:** ~20 horas si sigues todo. ~8 horas si solo quieres lo esencial (Orchestration + Frontend).
+
+---
+
+**Versión:** 1.0  
+**Última actualización:** Mayo 2026  
+**Repo:** https://github.com/matiasz8/agentic-chat-system-study-hub (Privado)

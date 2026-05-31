@@ -1,0 +1,23 @@
+{
+  "name": "agentic-chat-system-study-hub",
+  "version": "1.0.0",
+  "description": "Hub de estudio completo: LangGraph + AWS Bedrock + Vercel AI + Validación",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "nextra": "^2.13.4",
+    "nextra-theme-docs": "^2.13.4",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-next": "^14.0.0"
+  }
+}

@@ -27,7 +27,7 @@
 ## 🗺️ Dónde Está Todo
 
 ```
-/home/nquiroga/langgraph-study-hub/
+~/Documents/projects/NanLabs/agentic-chat-system-study-hub/
 ├── README.md           ← Empieza aquí
 ├── PLAN.md             ← Visión general
 ├── ROADMAP.md          ← Timeline visual
@@ -347,7 +347,7 @@ Si necesitas:
 Para empezar todo:
 
 ```bash
-cd /home/nquiroga/langgraph-study-hub && cat README.md
+cd ~/Documents/projects/NanLabs/agentic-chat-system-study-hub && cat README.md
 ```
 
 ---

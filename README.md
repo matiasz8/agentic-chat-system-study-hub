@@ -115,7 +115,7 @@ python 01_state_basico.py
 ```bash
 # Clonar este repositorio
 git clone <este-repo>
-cd langgraph-study-hub
+cd ~/Documents/projects/NanLabs/agentic-chat-system-study-hub
 
 # Crear entorno virtual
 python -m venv venv
@@ -260,7 +260,7 @@ cd modulos/00_fundamentos_grafos/
 ## 📄 Estructura del Repositorio
 
 ```
-langgraph-study-hub/
+agentic-chat-system-study-hub/
 ├── README.md                           # Este archivo
 ├── requirements.txt                    # Dependencias
 ├── test_setup.py                       # Verificar instalación
