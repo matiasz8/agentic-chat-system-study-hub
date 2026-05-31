@@ -1,0 +1,152 @@
+# Testing Prompts
+
+Cómo escribir tests que validen que tus prompts funcionan correctamente.
+
+---
+
+## 🎯 Objetivo
+
+Escribir tests que:
+- ✅ Validen que el output tiene el formato esperado
+- ✅ No rompan con inputs inesperados
+- ✅ Muestren errores amigables
+- ✅ No gasten dinero en API calls (usa mocks)
+
+---
+
+## 🧪 5 Tests Esenciales
+
+### Test 1: Output es JSON válido
+```python
+def test_response_is_valid_json():
+    response = llm.ask("¿Stock?")
+    # Validar que es JSON
+    data = json.loads(response)
+    assert isinstance(data, dict)
+```
+
+**Por qué:** Si tu prompt dice "responde en JSON", debes validarlo.
+
+---
+
+### Test 2: Contiene campos requeridos
+```python
+def test_response_has_required_fields():
+    response = llm.ask("¿Stock?")
+    data = json.loads(response)
+    
+    required = ["medication", "stock"]
+    for field in required:
+        assert field in data, f"Missing {field}"
+```
+
+**Por qué:** Un JSON `{}` es válido pero inútil.
+
+---
+
+### Test 3: Tipos de datos correctos
+```python
+def test_response_types():
+    response = llm.ask("¿Stock?")
+    data = json.loads(response)
+    
+    assert isinstance(data["medication"], str)
+    assert isinstance(data["stock"], int)
+```
+
+**Por qué:** Si `stock` es string "150", no puedes hacer comparaciones numéricos.
+
+---
+
+### Test 4: Sin SQL injection
+```python
+def test_prompt_injection_safe():
+    malicious = "'; DROP TABLE medications; --"
+    response = llm.ask(f"¿Stock de {malicious}?")
+    
+    # Debería devolver error o string seguro
+    assert "DROP" not in response or response.startswith("Error")
+```
+
+**Por qué:** Usuarios malintencionados intentarán romper tu agente.
+
+---
+
+### Test 5: Manejo de errores
+```python
+def test_error_handling():
+    response = llm.ask("Medicamento que no existe: XYZ123")
+    
+    # Debería fallar gracefully
+    assert "error" in response.lower() or "no encontrado" in response.lower()
+```
+
+**Por qué:** Tu app no debería crashear.
+
+---
+
+## 🚀 Usar Mock LLM en Tests
+
+```python
+import pytest
+from validation.mock_llm import MockAnthropic
+
+@pytest.fixture
+def mock_llm():
+    return MockAnthropic()
+
+def test_with_mock(mock_llm):
+    # Llamada sin costo
+    response = mock_llm.create_message(...)
+    # Test lógica
+    assert response is not None
+```
+
+**Ventaja:** 100 tests = $0 (en lugar de $10+)
+
+---
+
+## 📂 Estructura de Test Suite
+
+```
+python/validation/
+├── test_prompts.py          # Tests para prompts
+├── test_workflows.py        # Tests para workflows
+├── mock_llm.py             # Mock LLM
+└── examples/
+    ├── 01_test_basico.py   # Ejemplo simple
+    └── 02_mock_response.py # Usando mock
+```
+
+---
+
+## 📖 Código de Ejemplo
+
+```bash
+# Ver test suite
+pytest python/validation/test_prompts.py -v
+
+# Ejecutar solo tests de JSON
+pytest python/validation/test_prompts.py -v -k "json"
+
+# Ver coverage
+pytest python/validation/test_prompts.py --cov=validation
+```
+
+---
+
+## ✅ Checklist: Tests de Prompts
+
+- [ ] ¿Validé el formato? (JSON, HTML, etc)
+- [ ] ¿Validé los campos requeridos?
+- [ ] ¿Validé tipos de datos?
+- [ ] ¿Testé con inputs especiales? (SQL, inyección, etc)
+- [ ] ¿Testé errores gracefully?
+- [ ] ¿Uso Mock LLM para no gastar dinero?
+- [ ] ¿Mis tests corren en < 1 segundo?
+
+---
+
+## 🎓 Próximo Paso
+
+Ve a: **[Validación de Workflows](/validation/02-validation-workflows)** para testear LangGraph.

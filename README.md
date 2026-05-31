@@ -1,8 +1,14 @@
 # 🤖 Agentic Chat System: Full Stack Study Hub
 
-> **Arquitectura de 3 Capas Integradas para Construir Chat IA Empresarial**
+> **Arquitectura de 4 Capas Integradas: Frontend → Orchestration → Runtime → Validation**
 
-Este es un **hub de estudio universitario** completo sobre cómo construir un **sistema de chat IA con Generative UI** siguiendo la arquitectura moderna recomendada: Frontend (Vercel) → Orchestration (LangGraph) → Runtime (AWS AgentCore).
+Este es un **hub de estudio universitario** completo sobre cómo construir un **sistema de chat IA con Generative UI** siguiendo la arquitectura moderna recomendada:
+- 🎨 **Frontend:** Vercel AI SDK + Next.js
+- 🧠 **Orchestration:** LangGraph (grafos ejecutables)
+- ☁️ **Runtime:** AWS Bedrock AgentCore
+- ✅ **Validation:** Testing de prompts + workflows + CI/CD
+
+**New:** Ahora con documentación interactiva en Nextra + código Python ejecutable + suite de testing.
 
 ---
 
@@ -108,29 +114,72 @@ python 01_state_basico.py
 
 ---
 
-## 💾 Requisitos Técnicos
+## 🚀 Cómo Usar Este Hub
 
-### Instalación Inicial
+### Opción A: Ver Documentación Web (Recomendado)
 
 ```bash
-# Clonar este repositorio
-git clone <este-repo>
-cd ~/Documents/projects/NanLabs/agentic-chat-system-study-hub
+npm install      # Una sola vez
+npm run dev      # Abre http://localhost:3000
 
-# Crear entorno virtual
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
-
-# Instalar dependencias
-pip install -r requirements.txt
+# Verás sidebar interactivo con todos los módulos
+# Búsqueda integrada, dark mode, responsive
 ```
 
-### Qué hay en `requirements.txt`
+### Opción B: Ejecutar Código Python
 
-- **langgraph**: El framework principal
-- **anthropic**: Para llamar a Claude (LLM que usamos)
-- **pydantic**: Para modelos de datos tipados
-- **python-dotenv**: Para variables de entorno
+```bash
+cd python
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Ejecutar ejemplos
+python modulos/10_fundamentos_grafos/examples/01_basico.py
+
+# Correr tests
+pytest validation/test_prompts.py -v
+```
+
+### Opción C: Ambos (Lo Mejor)
+
+Terminal 1:
+```bash
+npm run dev    # Documentación en http://localhost:3000
+```
+
+Terminal 2:
+```bash
+cd python
+source venv/bin/activate
+pytest validation/ -v    # Tests ejecutando
+```
+
+---
+
+## 📚 Estructura
+
+```
+agentic-chat-system-study-hub/
+├── pages/                    # 🎨 Documentación Nextra
+│   ├── frontend/
+│   ├── orchestration/        # 🧠 LangGraph
+│   ├── runtime/              # ☁️ AWS
+│   ├── data/
+│   └── validation/           # ✅ NEW: Testing
+│
+├── python/                   # 🐍 Código ejecutable
+│   ├── modulos/              # 21 módulos de aprendizaje
+│   ├── validation/           # NEW: Testing suite
+│   │   ├── mock_llm.py
+│   │   ├── test_prompts.py
+│   │   ├── test_workflows.py
+│   │   └── examples/
+│   └── requirements.txt
+│
+├── package.json              # Next.js + Nextra
+└── README.md (este archivo)
+```
 
 ---
 

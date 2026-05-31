@@ -1,0 +1,93 @@
+# 📖 Testing Básico en IA
+
+¿Por qué testear agentes es diferente al testing tradicional?
+
+---
+
+## 🎯 Concepto
+
+Testing en IA = Testing tradicional + Validación de outputs no determinísticos
+
+```
+Testing Tradicional          Testing de IA
+├─ Input determinístico     ├─ Input determinístico
+├─ Output determinístico    ├─ Output NO determinístico (LLM)
+└─ ✅ Pass/Fail             ├─ Validar que output es "razonable"
+                            └─ ✅ Pass/Fail/Maybe
+```
+
+---
+
+## 💡 Ejemplo Real
+
+### Caso 1: Testing Función Normal
+```python
+def sumar(a, b):
+    return a + b
+
+# Test: Input 2+3 siempre = 5
+assert sumar(2, 3) == 5  # Determinístico ✅
+```
+
+### Caso 2: Testing Prompt de LLM
+```python
+def respuesta_stock(medicamento):
+    return llm.ask(f"¿Stock de {medicamento}?")
+
+# Test: Input "Paracetamol" devuelve...?
+# Posibles respuestas:
+# - JSON: {"stock": 150}
+# - Plain text: "Tenemos 150 unidades"
+# - Error: "No tengo esa información"
+
+# NO TESTEAR: respuesta == "150"
+# SÍ TESTEAR: respuesta es JSON válido
+# SÍ TESTEAR: respuesta contiene "150" o número
+# SÍ TESTEAR: formato es coherente
+```
+
+---
+
+## 🔍 ¿Qué Validar?
+
+### ✅ SÍ - Validaciones Útiles
+- **Formato:** ¿Respuesta es JSON?
+- **Campos:** ¿Tiene los campos requeridos?
+- **Tipos:** ¿stock es número, no string?
+- **Rango:** ¿stock está entre 0 y 10000?
+- **Lógica:** ¿Si stock=0, status="out_of_stock"?
+- **Seguridad:** ¿No contiene SQL injection?
+
+### ❌ NO - Validaciones Malas
+- `assert response == "exactamente esta frase"`
+- `assert número_exacto == 150` (cuando viene de LLM)
+- `assert idioma es perfecto` (LLMs a veces usan spanglish)
+
+---
+
+## 🛠️ Herramientas para Testing en IA
+
+| Herramienta | Uso | Costo |
+|------------|-----|-------|
+| **pytest** | Framework de tests | Gratis |
+| **Mock LLM** | Simular respuestas | Gratis |
+| **Pydantic** | Validar esquemas JSON | Gratis |
+| **unittest.mock** | Mockear cualquier función | Gratis |
+| **LLM Validators** | Validar outputs reales | Pago (API) |
+
+---
+
+## 📋 Próximos Pasos
+
+Ve a: **Testing Prompts** para aprender a escribir tests reales.
+
+---
+
+## 💻 Código de Ejemplo
+
+```python
+# python/validation/examples/01_test_basico.py
+python 01_test_basico.py
+```
+
+Verás cómo validar que una respuesta es JSON válido.
