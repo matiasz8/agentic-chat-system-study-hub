@@ -42,34 +42,34 @@ Cada **módulo** sigue el mismo patrón de aprendizaje:
 #### 🧠 **BLOQUE 1: LangGraph (El Backend)**
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
-| **0** | [Fundamentos de Grafos](./modulos/00_fundamentos_grafos/) | 45 min | 🟢 Básica | Python |
-| **1** | [El State (Estado Centralizado)](./modulos/01_state/) | 60 min | 🟢 Básica | Módulo 0 |
-| **2** | [Nodos: Las Funciones del Grafo](./modulos/02_nodos/) | 75 min | 🟡 Intermedia | Módulo 1 |
-| **3** | [Aristas: El Enrutamiento Inteligente](./modulos/03_aristas/) | 90 min | 🟡 Intermedia | Módulo 2 |
-| **4** | [Checkpoints: Memoria y Persistencia](./modulos/04_checkpoints/) | 75 min | 🟡 Intermedia | Módulo 3 |
+| **0** | [Fundamentos de Grafos](/orchestration/10-fundamentos-grafos) | 45 min | 🟢 Básica | Python |
+| **1** | [El State (Estado Centralizado)](/orchestration/11-state) | 60 min | 🟢 Básica | Módulo 0 |
+| **2** | [Nodos: Las Funciones del Grafo](/orchestration/12-nodos) | 75 min | 🟡 Intermedia | Módulo 1 |
+| **3** | [Aristas: El Enrutamiento Inteligente](/orchestration/13-aristas) | 90 min | 🟡 Intermedia | Módulo 2 |
+| **4** | [Checkpoints: Memoria y Persistencia](/orchestration/14-checkpoints) | 75 min | 🟡 Intermedia | Módulo 3 |
 
 #### ☁️ **BLOQUE 2: AWS Bedrock AgentCore (La Infraestructura)** ⭐ *Tu jefe te pidió esto*
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
-| **5** | [Serverless y Runtime en AWS](./modulos/05_aws_bedrock/) | 60 min | 🟡 Intermedia | Módulos 0-4 |
-| **6** | [AgentCore: Deployment y Seguridad](./modulos/06_aws_agentcore/) | 75 min | 🟡 Intermedia | Módulo 5 |
+| **5** | [Serverless y Runtime en AWS](/runtime/20-serverless-basics) | 60 min | 🟡 Intermedia | Módulos 0-4 |
+| **6** | [AgentCore: Deployment y Seguridad](/runtime/22-agentcore-governance) | 75 min | 🟡 Intermedia | Módulo 5 |
 
 #### 🔌 **BLOQUE 3: Conexión de Datos (MCP y Multimodalidad)**
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
-| **7** | [Model Context Protocol (MCP)](./modulos/07_mcp/) | 75 min | 🟡 Intermedia | Módulos 1-4 |
-| **8** | [Embeddings Multimodales](./modulos/08_multimodal/) | 90 min | 🔴 Avanzada | Módulo 7 |
+| **7** | [Model Context Protocol (MCP)](/data/30-mcp-protocol) | 75 min | 🟡 Intermedia | Módulos 1-4 |
+| **8** | [Embeddings Multimodales](/data/31-multimodal-embeddings) | 90 min | 🔴 Avanzada | Módulo 7 |
 
 #### 🎨 **BLOQUE 4: Frontend y UX con Vercel AI SDK** ⭐ *Tu jefe te pidió esto*
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
-| **9** | [Vercel AI SDK: Streaming Básico](./modulos/09_vercel_ai_sdk/) | 75 min | 🟡 Intermedia | Node.js, React |
-| **10** | [Generative UI: La Magia](./modulos/10_frontend_streaming/) | 90 min | 🔴 Avanzada | Módulo 9 |
+| **9** | [Vercel AI SDK: Streaming Básico](/frontend/00-vercel-intro) | 75 min | 🟡 Intermedia | Node.js, React |
+| **10** | [Generative UI: La Magia](/frontend/02-generative-ui) | 90 min | 🔴 Avanzada | Módulo 9 |
 
 #### 🎯 **PROYECTO INTEGRADO**
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
-| **11** | [Proyecto Final: Ask Sage Completo](./modulos/11_proyecto_integrado/) | 180 min | 🔴 Avanzada | Todos los módulos |
+| **11** | [Proyecto Final: Ask Sage Completo](/proyectos/40-ask-sage-mvp) | 180 min | 🔴 Avanzada | Todos los módulos |
 
 ---
 

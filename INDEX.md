@@ -64,12 +64,12 @@ Total: ~25 horas (sin ejercicios: ~23.5h)
 
 | # | Módulo | Tiempo | Estado | Link |
 |---|--------|--------|--------|------|
-| 00 | Intro a Vercel AI SDK | 45 min | ✅ Hecho | [ir →](./modulos/00_vercel_intro/) |
-| 01 | Streaming de Tokens | 60 min | 📝 Estructura | [ir →](./modulos/01_streaming/) |
-| 02 | Generative UI (Componentes) | 75 min | ✅ Hecho | [ir →](./modulos/02_generative_ui/) |
-| 03 | Frontend Completo | 60 min | 📝 Estructura | [ir →](./modulos/03_frontend_completo/) |
+| 00 | Intro a Vercel AI SDK | 45 min | ✅ Hecho | [ir →](/frontend/00-vercel-intro/) |
+| 01 | Streaming de Tokens | 60 min | 📝 Estructura | [ir →](/frontend/01-streaming/) |
+| 02 | Generative UI (Componentes) | 75 min | ✅ Hecho | [ir →](/frontend/02-generative-ui/) |
+| 03 | Frontend Completo | 60 min | 📝 Estructura | [ir →](/frontend/03-frontend-completo/) |
 
-**Tu próximo paso**: Abre [modulos/00_vercel_intro/](./modulos/00_vercel_intro/)
+**Tu próximo paso**: Abre [modulos/00_vercel_intro/](/frontend/00-vercel-intro/)
 
 ---
 
@@ -78,13 +78,13 @@ Total: ~25 horas (sin ejercicios: ~23.5h)
 
 | # | Módulo | Tiempo | Estado | Link |
 |---|--------|--------|--------|------|
-| 10 | Fundamentos de Grafos | 45 min | ✅ Hecho | [ir →](./modulos/10_fundamentos_grafos/) |
-| 11 | State (Estado Centralizado) | 60 min | 📝 Estructura | [ir →](./modulos/11_state/) |
-| 12 | Nodos (Funciones del Grafo) | 75 min | 📝 Estructura | [ir →](./modulos/12_nodos/) |
-| 13 | Aristas (Enrutamiento) | 90 min | 📝 Estructura | [ir →](./modulos/13_aristas/) |
-| 14 | Checkpoints (Persistencia) | 75 min | 📝 Estructura | [ir →](./modulos/14_checkpoints/) |
+| 10 | Fundamentos de Grafos | 45 min | ✅ Hecho | [ir →](/orchestration/10-fundamentos-grafos/) |
+| 11 | State (Estado Centralizado) | 60 min | 📝 Estructura | [ir →](/orchestration/11-state/) |
+| 12 | Nodos (Funciones del Grafo) | 75 min | 📝 Estructura | [ir →](/orchestration/12-nodos/) |
+| 13 | Aristas (Enrutamiento) | 90 min | 📝 Estructura | [ir →](/orchestration/13-aristas/) |
+| 14 | Checkpoints (Persistencia) | 75 min | 📝 Estructura | [ir →](/orchestration/14-checkpoints/) |
 
-**Tu próximo paso**: Lee [modulos/10_fundamentos_grafos/](./modulos/10_fundamentos_grafos/)
+**Tu próximo paso**: Lee [modulos/10_fundamentos_grafos/](/orchestration/10-fundamentos-grafos/)
 
 ---
 
@@ -93,13 +93,13 @@ Total: ~25 horas (sin ejercicios: ~23.5h)
 
 | # | Módulo | Tiempo | Estado | Link | Prioridad |
 |---|--------|--------|--------|------|-----------|
-| 20 | Serverless Basics | 60 min | ✅ Hecho | [ir →](./modulos/20_serverless_basics/) | Media |
-| 21 | Identity Forwarding | 75 min | ✅ Hecho | [ir →](./modulos/21_identity_forwarding/) | ⭐⭐⭐ |
-| 22 | Governance con Cedar | 90 min | ✅ Hecho | [ir →](./modulos/22_agentcore_governance/) | ⭐⭐⭐ |
-| 23 | Cedar Policies Avanzadas | 60 min | 📝 Estructura | [ir →](./modulos/23_cedar_policies/) | Media |
-| 24 | Tools & Memory Management | 75 min | 📝 Estructura | [ir →](./modulos/24_tools_management/) | Media |
+| 20 | Serverless Basics | 60 min | ✅ Hecho | [ir →](/runtime/20-serverless-basics/) | Media |
+| 21 | Identity Forwarding | 75 min | ✅ Hecho | [ir →](/runtime/21-identity-forwarding/) | ⭐⭐⭐ |
+| 22 | Governance con Cedar | 90 min | ✅ Hecho | [ir →](/runtime/22-agentcore-governance/) | ⭐⭐⭐ |
+| 23 | Cedar Policies Avanzadas | 60 min | 📝 Estructura | [ir →](/runtime/23-cedar-policies/) | Media |
+| 24 | Tools & Memory Management | 75 min | 📝 Estructura | [ir →](/runtime/24-tools-management/) | Media |
 
-**⭐ EMPIEZA AQUÍ**: Lee [modulos/21_identity_forwarding/](./modulos/21_identity_forwarding/)
+**⭐ EMPIEZA AQUÍ**: Lee [modulos/21_identity_forwarding/](/runtime/21-identity-forwarding/)
 
 ---
 
@@ -108,8 +108,8 @@ Total: ~25 horas (sin ejercicios: ~23.5h)
 
 | # | Módulo | Tiempo | Estado | Link |
 |---|--------|--------|--------|------|
-| 30 | Model Context Protocol (MCP) | 75 min | 📝 Estructura | [ir →](./modulos/30_mcp_protocol/) |
-| 31 | Embeddings Multimodales | 90 min | 📝 Estructura | [ir →](./modulos/31_multimodal_embeddings/) |
+| 30 | Model Context Protocol (MCP) | 75 min | 📝 Estructura | [ir →](/data/30-mcp-protocol/) |
+| 31 | Embeddings Multimodales | 90 min | 📝 Estructura | [ir →](/data/31-multimodal-embeddings/) |
 
 ---
 
@@ -118,9 +118,9 @@ Total: ~25 horas (sin ejercicios: ~23.5h)
 
 | # | Proyecto | Tiempo | Estado | Link | Stack |
 |---|----------|--------|--------|------|-------|
-| 40 | Ask Sage MVP | 2h | 📝 Estructura | [ir →](./modulos/40_ask_sage_mvp/) | Vercel + LangGraph |
-| 41 | Ask Sage Enterprise | 2h | 📝 Estructura | [ir →](./modulos/41_ask_sage_enterprise/) | Vercel + LangGraph + AgentCore |
-| 42 | Deployment en AWS | 30 min | 📝 Estructura | [ir →](./modulos/42_deployment_aws/) | CI/CD + Bedrock |
+| 40 | Ask Sage MVP | 2h | 📝 Estructura | [ir →](/proyectos/40-ask-sage-mvp/) | Vercel + LangGraph |
+| 41 | Ask Sage Enterprise | 2h | 📝 Estructura | [ir →](/proyectos/41-ask-sage-enterprise/) | Vercel + LangGraph + AgentCore |
+| 42 | Deployment en AWS | 30 min | 📝 Estructura | [ir →](/proyectos/42-deployment-aws/) | CI/CD + Bedrock |
 
 ---
 
@@ -204,8 +204,8 @@ cat README.md
 **Tiempo recomendado**: 2.5 horas
 
 **Módulos clave**: 
-- [modulos/00_vercel_intro/](./modulos/00_vercel_intro/) ← Comienza aquí
-- [modulos/02_generative_ui/](./modulos/02_generative_ui/)
+- [modulos/00_vercel_intro/](/frontend/00-vercel-intro/) ← Comienza aquí
+- [modulos/02_generative_ui/](/frontend/02-generative-ui/)
 
 ---
 
@@ -217,8 +217,8 @@ cat README.md
 **Tiempo recomendado**: 3.5 horas (es lo más importante)
 
 **Módulos clave**:
-- [modulos/21_identity_forwarding/](./modulos/21_identity_forwarding/) ← ⭐ PRIORITARIO
-- [modulos/22_agentcore_governance/](./modulos/22_agentcore_governance/) ← ⭐ PRIORITARIO
+- [modulos/21_identity_forwarding/](/runtime/21-identity-forwarding/) ← ⭐ PRIORITARIO
+- [modulos/22_agentcore_governance/](/runtime/22-agentcore-governance/) ← ⭐ PRIORITARIO
 
 ---
 
@@ -300,14 +300,14 @@ Esta semana:
 - [ARQUITECTURA.md](./ARQUITECTURA.md) - 15 minutos
 
 **Tu prioridad (tu jefe te pidió):**
-- [modulos/21_identity_forwarding/](./modulos/21_identity_forwarding/) - Identity
-- [modulos/22_agentcore_governance/](./modulos/22_agentcore_governance/) - Governance
+- [modulos/21_identity_forwarding/](/runtime/21-identity-forwarding/) - Identity
+- [modulos/22_agentcore_governance/](/runtime/22-agentcore-governance/) - Governance
 
 **Módulo 1 (Vercel Frontend):**
-- [modulos/00_vercel_intro/](./modulos/00_vercel_intro/)
+- [modulos/00_vercel_intro/](/frontend/00-vercel-intro/)
 
 **Módulo de Grafos (LangGraph):**
-- [modulos/10_fundamentos_grafos/](./modulos/10_fundamentos_grafos/)
+- [modulos/10_fundamentos_grafos/](/orchestration/10-fundamentos-grafos/)
 
 ---
 
