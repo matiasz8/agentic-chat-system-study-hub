@@ -1,112 +1,345 @@
-# El State
+import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
+import { ModuleNav } from '../../components/ModuleNav';
+
+export const metadata = {
+  title: 'El State en LangGraph',
+  description: 'Aprende cómo manejar estado centralizado en tus agentes IA',
+};
 
 # El State (Estado Centralizado) en LangGraph
 
-## Descripción
+El **State** es la memoria compartida de tu agente. Todo viaja por aquí: mensajes, contexto, resultados, errores.
 
-Entiende cómo manejar el estado centralizado en un grafo para coordinar múltiples nodos.
+Piénsalo así: Si tu agente es un cerebro, el State es la sangre. 🧠💉
 
-## Estructura del Módulo
+---
+
+## 🔄 ¿Qué es el State?
 
 ```
-11_state/
-├── README.md                 ← Estás aquí
-├── examples/                 ← Código funcional, paso a paso
-│   ├── 01_basico.py
-│   ├── 02_intermedio.py
-│   └── 03_avanzado.py
-├── exercises/                ← Desafíos para practicar
-│   ├── 01_ejercicio_basico.md
-│   ├── 02_ejercicio_intermedio.md
-│   └── 03_ejercicio_avanzado.md
-└── utils.py (opcional)       ← Funciones auxiliares
+┌──────────────────────────────────────────┐
+│        STATE (Diccionario Python)        │
+├──────────────────────────────────────────┤
+│ {                                        │
+│   "messages": ["Hola", "Mundo"],         │
+│   "current_step": "processing",          │
+│   "user_id": "user_123",                 │
+│   "results": [],                         │
+│   "errors": []                           │
+│ }                                        │
+└──────────┬────────────────────┬──────────┘
+           │                    │
+      ┌────▼───┐           ┌────▼──┐
+      │ Node 1 │           │ Node 2│
+      │ (LEER) │           │ (LEER)│
+      └────┬───┘           └────┬──┘
+           │ (actualiza)      │ (actualiza)
+           └────────┬─────────┘
+                    │
+           ┌────────▼─────────┐
+           │ State Actualizado│
+           │ (persistencia)   │
+           └──────────────────┘
 ```
 
-## Objetivos de Aprendizaje
+### 3 Principios
 
-Al completar este módulo, serás capaz de:
+✅ **Centralizado**: Un único punto de verdad  
+✅ **Inmutable**: Cada cambio crea nuevo estado  
+✅ **Tipado**: Defines explícitamente qué contiene
 
-- ✅ Entender los conceptos fundamentales
-- ✅ Implementar ejemplos funcionales
-- ✅ Resolver problemas prácticos
-- ✅ Integrar en proyectos reales
+---
 
-## Prerequisitos
+## 💻 Nivel 1: State Básico
 
-- Módulos anteriores completados (ver QUICKSTART.md)
-- Python 3.8+
-- Entorno configurado (ver CONTRIBUTING.md)
+El form más simple es un **TypedDict**:
 
-## Quick Start
+<BasicExample 
+  code={`from typing import TypedDict
 
-```bash
-# 1. Lee este README
-# 2. Ejecuta los ejemplos
-python examples/01_basico.py
+class SimpleState(TypedDict):
+    """Estado mínimo para un agente"""
+    messages: list[str]      # Historial de mensajes
+    current_step: str        # Paso actual ("validation", "processing", etc)
 
-# 3. Resuelve los ejercicios
-# 4. Comparte tu solución
-```
+# Uso:
+state = {"messages": ["Hola"], "current_step": "inicio"}
+`}
+  title="01_state_basico.py"
+/>
 
-## Contenido
+**Cuándo usar**: Prototipos rápidos, demos, desarrollo local
 
-### Conceptos Clave
+---
 
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
+## 💻 Nivel 2: State Intermedio (Con Reducers)
 
-### Ejemplos Incluidos
+Cuando necesitas **control granular** sobre cómo se actualiza cada campo:
 
-- `01_basico.py` - Introducción simple
-- `02_intermedio.py` - Caso de uso común
-- `03_avanzado.py` - Patrón production-ready
+<AdvancedExample
+  code={`from typing import TypedDict, Annotated
+from operator import add
 
-### Ejercicios
+class AgentState(TypedDict):
+    """State con múltiples campos y reducers"""
+    messages: Annotated[list, add]        # ✅ Acumula (concatena)
+    current_step: str                     # Reemplaza valor
+    context: dict                         # Reemplaza diccionario
+    results: Annotated[list, add]         # ✅ Acumula
+    conversation_id: str                  # ID único
 
-- Ejercicio 1: Implementa...
-- Ejercicio 2: Extiende...
-- Ejercicio 3: Integra...
+# El reducer 'add' = concatena/acumula
+# Sin reducer = reemplaza valor
 
-## Recursos Adicionales
+# Ejemplo de uso:
+from langgraph.graph import StateGraph, START, END
 
-- 📚 [Documentación oficial](https://example.com)
-- 🎓 [Tutorial interactivo](https://example.com)
-- 💬 [Comunidad de Discord](https://example.com)
+def node_1(state: AgentState):
+    # Retorna qué campos actualizar
+    return {
+        "messages": ["Node 1 ejecutado"],  # Se suma a la lista existente
+        "current_step": "processing"       # Se reemplaza
+    }
 
-## Próximos Pasos
+graph = StateGraph(AgentState)
+graph.add_node("node1", node_1)
+graph.add_edge(START, "node1")
+`}
+  title="02_state_con_reducers.py"
+/>
 
-1. Completa todos los ejemplos
-2. Resuelve los ejercicios
-3. Procede al siguiente módulo
-4. Contribuye mejoras a este módulo
+**Ventaja**: Control preciso de cómo se actualizan datos  
+**Cuándo usar**: Agentes con múltiples nodos, conversaciones, históricos
+
+---
+
+## 💻 Nivel 3: State Avanzado (Custom Reducers)
+
+Para casos complejos, define **reducers personalizados**:
+
+<AdvancedExample
+  code={`from typing import TypedDict, Annotated
+
+def merge_context(existing: dict, update: dict) -> dict:
+    """Merge inteligente de contextos"""
+    merged = existing.copy() if existing else {}
+    merged.update(update)
+    return merged
+
+def deduplicate_errors(existing: list, new_errors: list) -> list:
+    """Acumula errores pero elimina duplicados"""
+    seen = set()
+    result = []
+    for error in (existing or []) + new_errors:
+        error_str = str(error)
+        if error_str not in seen:
+            seen.add(error_str)
+            result.append(error)
+    return result
+
+class AdvancedState(TypedDict):
+    messages: Annotated[list, add]
+    context: Annotated[dict, merge_context]
+    errors: Annotated[list, deduplicate_errors]
+    metadata: Annotated[dict, merge_context]
+
+# Ahora cuando actualizas:
+# - context se hace merge (no reemplaza)
+# - errors se acumula pero sin duplicados
+# - metadata se combina inteligentemente
+`}
+  title="03_state_advanced_reducers.py"
+/>
+
+**Cuándo usar**: Producción, agentes con requisitos de seguridad/compliance
+
+---
+
+## 🏗️ Alternativas en la Industria
+
+| Framework | Enfoque | Mejor para |
+|-----------|---------|-----------|
+| **LangGraph** ⭐ | Graph + State explícito | Agentes IA, control total |
+| LangChain | Chain de componentes | Pipelines simples, RAG |
+| Prefect | Task + State implícito | Workflows de datos, ETL |
+| Airflow | DAG + metadata | Orquestación a escala |
+| Custom | Manual con DB | Requisitos muy específicos |
+
+---
+
+## 🚀 Quick Start: Tu Primer State
+
+### 1. Define el State
+
+<BasicExample
+  code={`from typing import TypedDict, Annotated
+from operator import add
+
+class MyState(TypedDict):
+    user_input: str
+    messages: Annotated[list, add]
+    result: str
+`}
+  title="step_1_define_state.py"
+/>
+
+### 2. Crea un nodo que lo use
+
+<BasicExample
+  code={`def process_node(state: MyState):
+    # Lee del state
+    user_msg = state['user_input']
+    
+    # Procesa
+    result = f"Procesando: {user_msg}"
+    
+    # Actualiza state
+    return {
+        "messages": [f"[process_node]: {result}"],
+        "result": result
+    }
+`}
+  title="step_2_crear_nodo.py"
+/>
+
+### 3. Construye el grafo
+
+<BasicExample
+  code={`from langgraph.graph import StateGraph, START, END
+
+graph = StateGraph(MyState)
+graph.add_node("process", process_node)
+graph.add_edge(START, "process")
+graph.add_edge("process", END)
+
+# Compila y ejecuta
+compiled = graph.compile()
+result = compiled.invoke({
+    "user_input": "Hola agente",
+    "messages": [],
+    "result": ""
+})
+
+print(result["messages"])  # ["[process_node]: Procesando: Hola agente"]
+`}
+  title="step_3_compilar.py"
+/>
+
+---
+
+## 📖 Ejemplos Reales
+
+### Ejemplo 1: Chatbot con Histórico
+
+<BasicExample
+  code={`class ChatState(TypedDict):
+    user_message: str
+    messages: Annotated[list, add]      # Acumula conversación
+    mode: Literal["chat", "search"]     # Modo actual
+    confidence_score: float             # Confianza en respuesta
+
+# Cuando el usuario envía "Hola", messages puede ser:
+# ["Usuario: Hola", "Asistente: ¡Hola! ¿Cómo te llamas?", "Usuario: Soy Juan"]
+# Y cada nodo agrega su parte automáticamente
+`}
+  title="ejemplo_1_chatbot.py"
+/>
+
+### Ejemplo 2: Workflow de Validación
+
+<BasicExample
+  code={`class ValidationState(TypedDict):
+    input_data: dict
+    validation_errors: Annotated[list, deduplicate_errors]
+    step: str  # "receive" → "validate" → "process" → "done"
+    attempts: Annotated[int, add]  # Cuenta intentos
+    
+# Flujo:
+# Paso 1 (receive): 0 errores
+# Paso 2 (validate): encontramos 3 errores → validation_errors = [e1, e2, e3]
+# Paso 3 (validate retry): encontramos 2 errores más → 5 total
+# Reducer evita duplicados, así no tenemos [e1, e2, e3, e1, e2, e3, e4, e5]
+`}
+  title="ejemplo_2_validacion.py"
+/>
+
+---
+
+## 🏋️ Ejercicios
+
+<Exercise
+  title="Ejercicio 1: Define tu StateSchema"
+  problem="Crea un State para un agente Q&A que mantenga:
+- La pregunta del usuario
+- Un histórico de Q&A (lista de tuplas)
+- El score de confianza de cada respuesta
+- El paso actual (searching, formulating, done)
+
+Usa TypedDict y asegúrate de que messages se acumule."
+  hints={[
+    "TypedDict es similar a typing.Dict pero con estructura fija",
+    "Usa Annotated[list, add] para campos que se acumulan",
+    "El score puede ser float entre 0 y 1"
+  ]}
+/>
+
+<Exercise
+  title="Ejercicio 2: Implementa un Reducer Custom"
+  problem="Crea un reducer que:
+1. Acumule errores de validación
+2. Elimine duplicados
+3. Mantenga el orden de aparición
+4. No permita más de 10 errores (trunca el resto)
+
+Llámalo 'limited_errors'."
+  hints={[
+    "Necesitas comparar strings para detectar duplicados",
+    "Usa un set() para tracking",
+    "Puedes usar slicing para limitar: lista[:10]"
+  ]}
+/>
+
+<Exercise
+  title="Ejercicio 3: State con Logging Automático"
+  problem="Crea un State que automáticamente registre:
+- Timestamp de cada actualización
+- Quién hizo el cambio (nombre del nodo)
+- El valor anterior y nuevo
+
+Pista: Crea un reducer personalizado que reciba esta metadata."
+  hints={[
+    "Importa datetime para timestamps",
+    "Estructura los logs como: {timestamp, node, field, old_value, new_value}",
+    "El reducer recibe (existing, update) y retorna el nuevo estado"
+  ]}
+/>
+
+---
+
+## 📚 Recursos
+
+- 📖 [LangGraph Official Docs](https://python.langchain.com/docs/langgraph/)
+- 🎓 [TypedDict Guide](https://docs.python.org/3/library/typing.html#typing.TypedDict)
+- 💬 [LangChain Discord](https://discord.gg/6adMJt9J5X)
+
+---
+
+<ModuleNav
+  current="/orchestration/11-state"
+  section="Orquestación"
+  modules={[
+    { title: "10. Fundamentos", href: "/orchestration/10-fundamentos-grafos", level: "básico" },
+    { title: "11. El State", href: "/orchestration/11-state", level: "básico", completed: true },
+    { title: "12. Nodos", href: "/orchestration/12-nodos", level: "intermedio", duration: "90 min" },
+    { title: "13. Aristas", href: "/orchestration/13-aristas", level: "intermedio", duration: "75 min" },
+    { title: "14. Checkpoints", href: "/orchestration/14-checkpoints", level: "intermedio", duration: "75 min" },
+  ]}
+  showProgressBar={true}
+/>
 
 ---
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 60-90 minutos
-
-
----
-
-## Código Fuente
-
-El código para este módulo está disponible en:
-
-\`\`\`
-python/modulos/11_state/
-\`\`\`
-
-Incluye:
-- 📖 README.md (este contenido)
-- 💻 Ejemplos prácticos en `examples/`
-- 🏋️ Ejercicios en `exercises/`
-
-## Próximos Pasos
-
-Completa los ejercicios y procede al siguiente módulo.
-
----
-
-**Última actualización:** 2026-05-31
+**Duración:** 90 minutos (lectura + ejercicios)  
+**Prerequisitos:** Módulos 00-02, conocimiento básico de Python

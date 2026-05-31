@@ -1,332 +1,151 @@
-# 🧠 Módulo 0: Fundamentos de Grafos
+# 🧠 Módulo 10: Fundamentos de Grafos
 
-> **¿Qué es un grafo? ¿Por qué LangGraph se llama "Lang**GRAPH**"?**
-
----
-
-## 1️⃣ CONCEPTO: ¿Qué es un Grafo?
-
-Un **grafo** es una estructura matemática que tiene:
-- **Nodos** (vértices): Puntos o cajas que representan estados o acciones
-- **Aristas** (edges): Líneas que conectan nodos, mostrando cómo fluye la información
-
-### Ejemplo Visual Simple
-
-```
-    ┌─────────────┐
-    │  Inicio     │
-    └──────┬──────┘
-           │
-           ▼
-    ┌─────────────┐
-    │ Preguntar   │
-    │ al Usuario  │
-    └──────┬──────┘
-           │
-           ▼
-    ┌─────────────┐
-    │ Procesar    │
-    │ Respuesta   │
-    └──────┬──────┘
-           │
-           ▼
-    ┌─────────────┐
-    │   Fin       │
-    └─────────────┘
-```
-
-### Diferencia: Programación Lineal vs Grafos
-
-**Programación Lineal (Tradicional)**
-```
-paso1() → paso2() → paso3() → fin()
-```
-Siempre va en orden. Si necesitas bifurcación, usas `if/else`.
-
-**Programación con Grafos (LangGraph)**
-```
-       ┌─→ nodo_A ─→ nodo_C ─┐
-inicio ┤                      ├─ fin
-       └─→ nodo_B ─→ nodo_D ─┘
-```
-El flujo decide dónde ir según lógica (condicionales inteligentes).
+> Índice y mapa mental de la sección de orquestación con LangGraph.
 
 ---
 
-## 2️⃣ PARA QUÉ SIRVE
+## 🎯 Objetivo
 
-### Caso 1: Chatbot Farmacéutico (Ask Sage)
-
-```
-Usuario pregunta: "¿Cuál es el stock del medicamento X?"
-
-           ┌──────────────────┐
-           │  Usuario pregunta │
-           └────────┬─────────┘
-                    ▼
-           ┌──────────────────┐
-           │  LLM interpreta  │
-           │  (¿Qué quiere?)  │
-           └────────┬─────────┘
-                    ▼
-    ┌───────────────┴───────────────┐
-    ▼                               ▼
-┌─────────┐                   ┌──────────┐
-│ Consulta│                   │ Cancela  │
-│ Stock   │                   │  Orden   │
-└────┬────┘                   └────┬─────┘
-     ▼                             ▼
-┌─────────┐                   ┌──────────┐
-│ Devuelve│                   │ Devuelve │
-│ Datos BD│                   │ Confirmación
-└────┬────┘                   └────┬─────┘
-     └─────────────┬────────────────┘
-                   ▼
-            ┌──────────────┐
-            │ LLM formatea │
-            │ respuesta    │
-            └────────┬─────┘
-                     ▼
-            ┌──────────────┐
-            │ Usuario ve   │
-            │ respuesta    │
-            └──────────────┘
-```
-
-Sin grafos, esto sería un `if/elif/else` gigante. Con LangGraph, cada rama es un **nodo independiente**.
-
-### Caso 2: Procesamiento de Videos
-
-```
-Usuario: "Busca en los videos de capacitación"
-
-    ┌────────────────┐
-    │ Usuario uploads│
-    │ video          │
-    └────────┬───────┘
-             ▼
-    ┌────────────────┐
-    │ Extraer frames │
-    │ (cada 5 seg)   │
-    └────────┬───────┘
-             ▼
-    ┌────────────────┐
-    │ Transcribir    │
-    │ audio          │
-    └────────┬───────┘
-             ▼
-    ┌────────────────┐
-    │ Generar        │
-    │ embeddings     │
-    └────────┬───────┘
-             ▼
-    ┌────────────────┐
-    │ Guardar en BD  │
-    └────────┬───────┘
-             ▼
-    ┌────────────────┐
-    │ Usuario        │
-    │ busca dentro   │
-    └─────────────────┘
-```
-
-Cada paso puede ejecutarse en paralelo, reintentarse si falla, o pausarse si necesita aprobación.
+Entender cómo **State**, **Nodes**, **Edges** y **Checkpoints** trabajan juntos para construir agentes confiables, observables y reanudables.
 
 ---
 
-## 3️⃣ HISTORIA: ¿Por Qué Se Creó LangGraph?
+## 🧩 Cómo encajan las piezas
 
-### Antes de LangGraph (2022-2023)
+```mermaid
+flowchart LR
+    A[Input del usuario] --> B[State]
+    B --> C[Node]
+    C --> D[Edge / Router]
+    D --> E[Próximo Node]
+    E --> F[Checkpoint]
+    F --> G[Resume / Human-in-the-loop]
+```
+
+### Resumen conceptual
+
+- **State**: memoria estructurada compartida entre pasos.
+- **Nodes**: funciones ejecutables que leen el state y devuelven cambios.
+- **Edges**: decisiones lógicas que determinan cuál es el próximo nodo.
+- **Checkpoints**: snapshots persistidos para pausar, recuperar o auditar el flujo.
+
+Cuando estas cuatro piezas están bien diseñadas, el grafo puede:
+
+1. Mantener contexto entre pasos.
+2. Ejecutar lógica especializada por nodo.
+3. Cambiar de ruta según condiciones reales.
+4. Recuperarse de fallos o interrupciones humanas.
+
+---
+
+## 🛤️ Ruta de aprendizaje recomendada
+
+```mermaid
+flowchart TD
+    A[Módulo 10<br/>Fundamentos] --> B[Módulo 11<br/>State]
+    B --> C[Módulo 12<br/>Nodos]
+    C --> D[Módulo 13<br/>Aristas]
+    D --> E[Módulo 14<br/>Checkpoints]
+    E --> F[Patrones de producción]
+```
+
+### Orden sugerido
+
+| Paso | Módulo | Qué aprendes | Resultado esperado |
+|------|--------|--------------|--------------------|
+| 1 | [`11_state`](../11_state/README.md) | Diseñar memoria tipada | State legible y acumulable |
+| 2 | [`12_nodos`](../12_nodos/README.md) | Crear funciones ejecutables | Nodos simples, async y con callbacks |
+| 3 | [`13_aristas`](../13_aristas/README.md) | Conectar nodos con decisiones | Routing fijo, condicional y dinámico |
+| 4 | [`14_checkpoints`](../14_checkpoints/README.md) | Persistir y reanudar | Workflows tolerantes a fallos |
+
+---
+
+## 🔗 Índice de la sección de orquestación
+
+### 1. State
+- 📄 [`11_state/README.md`](../11_state/README.md)
+- 🧪 `11_state/examples/01_basico.py`
+- 🧩 `11_state/exercises/01_basico.md`
+
+### 2. Nodos
+- 📄 [`12_nodos/README.md`](../12_nodos/README.md)
+- 🧪 `12_nodos/examples/01_basico.py`
+- 🧩 `12_nodos/exercises/01_basico.md`
+
+### 3. Aristas
+- 📄 [`13_aristas/README.md`](../13_aristas/README.md)
+- 🧪 `13_aristas/examples/01_basico.py`
+- 🧩 `13_aristas/exercises/01_basico.md`
+
+### 4. Checkpoints
+- 📄 [`14_checkpoints/README.md`](../14_checkpoints/README.md)
+- 🧪 `14_checkpoints/examples/01_basico.py`
+- 🧩 `14_checkpoints/exercises/01_basico.md`
+
+---
+
+## ✅ Flujo mínimo de un agente orquestado
 
 ```python
-# Así era construir agentes (horrible)
-def agent():
-    msg = input("¿Qué quieres?")
-    if "stock" in msg:
-        result = query_database()
-    elif "cancelar" in msg:
-        result = cancel_order()
-    elif "grafico" in msg:
-        result = generate_chart()
-    else:
-        result = "No entiendo"
-    print(result)
-
-# Problemas:
-# 1. ¿Qué si el LLM decide que necesita hacer DOS cosas? (stock + gráfico)
-# 2. ¿Qué si falla la BD? ¿Reintentas? ¿Cómo?
-# 3. ¿Dónde guardas el contexto entre preguntas?
-# 4. ¿Cómo pausa para aprobación humana?
+state = load_state()
+update = intake_node(state)
+state = merge(state, update)
+next_step = router(state)
+checkpoint_store.save(thread_id="demo", state=state)
+execute(next_step, state)
 ```
 
-### La Solución: LangGraph (2024+)
-
-```python
-# Con LangGraph: Defines el flujo una sola vez
-graph_builder = StateGraph(AgentState)
-graph_builder.add_node("agent", agent_fn)
-graph_builder.add_node("query_inventory", inventory_fn)
-graph_builder.add_conditional_edges("agent", route_decision)
-
-# LangGraph maneja automáticamente:
-# ✅ Ciclos (el agente pregunta múltiples veces)
-# ✅ Persistencia (checkpoints automáticos)
-# ✅ Recuperación ante errores
-# ✅ Integración con aprobación humana
-```
-
-### Por Qué los Grafos Importan
-
-**La IA NO piensa linealmente:**
-- Necesita múltiples intentos
-- A veces necesita datos adicionales
-- Puede cambiar de opinión
-- Requiere validación humana a veces
-
-LangGraph captura este comportamiento de forma natural.
+Esa secuencia resume el patrón central de LangGraph: **leer estado, ejecutar nodo, decidir ruta, persistir**.
 
 ---
 
-## 4️⃣ EJEMPLOS BÁSICOS
+## 🤖 ¿Por qué LangGraph?
 
-### Ejemplo 1: Grafo Lineal Más Simple
+LangGraph es una buena base para esta sección porque combina:
 
-**Un grafo que va siempre en línea recta:**
+- **State tipado** con `TypedDict` y reducers.
+- **Routing explícito** en lugar de cadenas ocultas.
+- **Persistencia nativa** para pausar y reanudar ejecuciones.
+- **Soporte para human-in-the-loop**, retries y tracing.
+- **Compatibilidad con LangChain**, modelos, tools y streaming.
 
-```python
-# No necesitas LangGraph para esto, pero mira cómo se vería
-
-from langgraph.graph import StateGraph, START, END
-from typing import TypedDict
-
-class SimpleState(TypedDict):
-    resultado: str
-
-def nodo_1(state):
-    return {"resultado": "Paso 1 completado"}
-
-def nodo_2(state):
-    return {"resultado": state["resultado"] + " → Paso 2 completado"}
-
-# Construir el grafo
-grafo_builder = StateGraph(SimpleState)
-grafo_builder.add_node("paso1", nodo_1)
-grafo_builder.add_node("paso2", nodo_2)
-grafo_builder.add_edge(START, "paso1")
-grafo_builder.add_edge("paso1", "paso2")
-grafo_builder.add_edge("paso2", END)
-
-# Compilar y ejecutar
-grafo = grafo_builder.compile()
-resultado = grafo.invoke({"resultado": ""})
-print(resultado)
-# Output: {'resultado': 'Paso 1 completado → Paso 2 completado'}
-```
-
-### Ejemplo 2: Grafo con Decisión
-
-**Un grafo que decide a dónde ir según una condición:**
-
-```python
-def router(state):
-    """Decide: ¿Vamos al nodo A o al nodo B?"""
-    if len(state["mensaje"]) > 5:
-        return "nodo_largo"
-    else:
-        return "nodo_corto"
-
-class RouterState(TypedDict):
-    mensaje: str
-    respuesta: str
-
-grafo_builder = StateGraph(RouterState)
-
-def procesar_corto(state):
-    return {"respuesta": "Mensaje corto"}
-
-def procesar_largo(state):
-    return {"respuesta": "Mensaje largo"}
-
-grafo_builder.add_node("procesar", procesar_corto)  # Renombrado para claridad
-grafo_builder.add_node("procesar_largo", procesar_largo)
-grafo_builder.add_edge(START, "procesar")
-grafo_builder.add_conditional_edges("procesar", router)
-grafo_builder.add_edge("procesar_largo", END)
-
-grafo = grafo_builder.compile()
-print(grafo.invoke({"mensaje": "Hola", "respuesta": ""}))
-```
+En otras palabras: permite construir agentes más parecidos a sistemas distribuidos confiables que a demos lineales.
 
 ---
 
-## 5️⃣ EJERCICIOS
+## 🏭 Alternativas de industria
 
-### Ejercicio 1: Dibuja un Grafo
-
-**Enunciado:** Imagina un chatbot que ayuda a comprar medicinas. Dibuja un grafo ASCII que muestre:
-1. El usuario pregunta algo
-2. El LLM decide si es una pregunta sobre stock, precio o efectos secundarios
-3. Cada rama hace algo diferente
-4. Todo converge en una respuesta final
-
-**Solución esperada:**
-
-```
-        ┌──────────────┐
-        │ Usuario      │
-        │ pregunta     │
-        └──────┬───────┘
-               ▼
-        ┌──────────────┐
-        │ LLM          │
-        │ interpreta   │
-        └─┬─────────┬──┴──┬───────┐
-          ▼         ▼     ▼       ▼
-    ┌────────┐ ┌──────┐ ┌──────┐ ┌─────────┐
-    │ Stock  │ │Precio│ │Efectos│ │Desconoce│
-    └────┬───┘ └───┬──┘ └───┬──┘ └────┬────┘
-         └────┬────┴────┬───┴────┬────┘
-              ▼         ▼        ▼
-         ┌────────────────────────┐
-         │ Formatear respuesta    │
-         └────────┬───────────────┘
-                  ▼
-         ┌────────────────────────┐
-         │ Mostrar al usuario     │
-         └────────────────────────┘
-```
+| Herramienta | Fortalezas | Cuándo elegirla |
+|-------------|------------|-----------------|
+| **LangGraph** | State + routing + checkpoints en un mismo modelo | Agentes complejos y workflows largos |
+| **Prefect** | Orquestación robusta de data workflows | Pipelines batch y ETL |
+| **Temporal** | Durabilidad extrema y replay | Procesos críticos multi-servicio |
+| **Airflow** | Scheduling y DAGs clásicos | Jobs programados con fuerte enfoque en datos |
+| **Haystack Pipelines** | Buen ecosistema RAG | Flujos centrados en búsqueda y documentos |
+| **Custom Python orchestration** | Máxima flexibilidad | Prototipos pequeños o casos muy específicos |
 
 ---
 
-## 🎯 Conceptos Clave
+## �� Qué debería pasar después de este bloque
 
-| Término | Significado | Ejemplo |
-|---------|-----------|---------|
-| **Nodo** | Una acción o estado | "Consultar BD", "Preguntar al LLM" |
-| **Arista** | Conexión entre nodos | "Si el resultado es X, va al nodo Y" |
-| **Grafo** | La red completa de nodos + aristas | Todo el flujo del chatbot |
-| **Estado** | La información compartida | Historial de chat, variables globales |
-| **Enrutamiento** | Decidir a qué nodo ir | Una función `if/else` inteligente |
+Al terminar los módulos 10-14 deberías poder:
 
----
-
-## 📚 Próximo Paso
-
-Ve al **Módulo 1: El State (Estado Centralizado)**
-
-```bash
-cd ../01_state/
-# Lee README.md
-# Ejecuta los ejemplos
-```
+- Diseñar un **State** claro y evolutivo.
+- Escribir **Nodes** reutilizables y testeables.
+- Modelar **Edges** que expresen reglas de negocio reales.
+- Persistir **Checkpoints** para recuperación y revisión humana.
 
 ---
 
-## 💡 Tips de Estudio
+## 📚 Recursos
 
-1. **No memorices**, entiende la lógica
-2. **Dibuja grafos** en papel antes de código
-3. **Piensa en nodos** como funciones independientes
-4. **LangGraph es solo** una forma de conectar funciones
+- LangGraph Intro: <https://docs.langchain.com/docs/langgraph/intro>
+- LangGraph State: <https://docs.langchain.com/docs/langgraph/working-with-state>
+- LangGraph Persistence: <https://docs.langchain.com/docs/langgraph/persistence>
+- TypedDict: <https://docs.python.org/3/library/typing.html#typing.TypedDict>
 
-Si esto tiene sentido, ya está 90% del camino hecho. 🎉
+---
+
+## 🔜 Próximo paso
+
+Empieza por [`11_state`](../11_state/README.md) y avanza en orden. Cada módulo añade una pieza nueva al mismo modelo mental.

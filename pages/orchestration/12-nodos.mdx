@@ -1,112 +1,270 @@
-# Nodos
+import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
+import { ModuleNav } from '../../components/ModuleNav';
 
-# Nodos: Las Funciones del Grafo
+# Nodos: Las Funciones Ejecutables del Grafo
 
-## Descripción
+Los **nodos** son funciones Python que reciben el State, lo procesan, y lo devuelven actualizado.
 
-Aprende a crear y configurar nodos como funciones ejecutables en un grafo de LangGraph.
-
-## Estructura del Módulo
-
-```
-12_nodos/
-├── README.md                 ← Estás aquí
-├── examples/                 ← Código funcional, paso a paso
-│   ├── 01_basico.py
-│   ├── 02_intermedio.py
-│   └── 03_avanzado.py
-├── exercises/                ← Desafíos para practicar
-│   ├── 01_ejercicio_basico.md
-│   ├── 02_ejercicio_intermedio.md
-│   └── 03_ejercicio_avanzado.md
-└── utils.py (opcional)       ← Funciones auxiliares
-```
-
-## Objetivos de Aprendizaje
-
-Al completar este módulo, serás capaz de:
-
-- ✅ Entender los conceptos fundamentales
-- ✅ Implementar ejemplos funcionales
-- ✅ Resolver problemas prácticos
-- ✅ Integrar en proyectos reales
-
-## Prerequisitos
-
-- Módulos anteriores completados (ver QUICKSTART.md)
-- Python 3.8+
-- Entorno configurado (ver CONTRIBUTING.md)
-
-## Quick Start
-
-```bash
-# 1. Lee este README
-# 2. Ejecuta los ejemplos
-python examples/01_basico.py
-
-# 3. Resuelve los ejercicios
-# 4. Comparte tu solución
-```
-
-## Contenido
-
-### Conceptos Clave
-
-1. **Concepto A** - Explicación breve
-2. **Concepto B** - Explicación breve
-3. **Concepto C** - Explicación breve
-
-### Ejemplos Incluidos
-
-- `01_basico.py` - Introducción simple
-- `02_intermedio.py` - Caso de uso común
-- `03_avanzado.py` - Patrón production-ready
-
-### Ejercicios
-
-- Ejercicio 1: Implementa...
-- Ejercicio 2: Extiende...
-- Ejercicio 3: Integra...
-
-## Recursos Adicionales
-
-- 📚 [Documentación oficial](https://example.com)
-- 🎓 [Tutorial interactivo](https://example.com)
-- 💬 [Comunidad de Discord](https://example.com)
-
-## Próximos Pasos
-
-1. Completa todos los ejemplos
-2. Resuelve los ejercicios
-3. Procede al siguiente módulo
-4. Contribuye mejoras a este módulo
+Piénsalo así: Si el State es la data, los nodos son el procesamiento. ⚙️
 
 ---
+
+## 🔄 ¿Qué es un Nodo?
+
+```
+Estado Inicial      Nodo Ejecuta      Estado Final
+┌──────────┐       ┌─────────┐       ┌──────────┐
+│ messages │──────▶│ Process │──────▶│ messages │
+│ step     │       │ Logic   │       │ step     │
+│ result   │       └─────────┘       │ result   │
+└──────────┘                         └──────────┘
+```
+
+Un nodo es:
+- ✅ Una función Python normal
+- ✅ Recibe state: MyState
+- ✅ Retorna diccionario con cambios
+- ✅ Ejecutada por el grafo en orden
+
+---
+
+## 💻 Nivel 1: Nodo Básico
+
+<BasicExample
+  code={`from typing import TypedDict
+
+class SimpleState(TypedDict):
+    input_text: str
+    output: str
+
+def simple_node(state: SimpleState) -> dict:
+    """Nodo más simple posible"""
+    # 1. Lee del state
+    text = state['input_text']
+    
+    # 2. Procesa
+    result = text.upper()
+    
+    # 3. Retorna cambios
+    return {"output": result}
+
+# Uso:
+state = {"input_text": "hola", "output": ""}
+result = simple_node(state)
+print(result)  # {"output": "HOLA"}
+`}
+  title="01_nodo_basico.py"
+/>
+
+**Cuándo usar**: Operaciones simples, transformaciones
+
+---
+
+## 💻 Nivel 2: Nodo con Manejo de Errores
+
+<BasicExample
+  code={`def robust_node(state: SimpleState) -> dict:
+    """Nodo que maneja errores gracefully"""
+    try:
+        text = state.get('input_text', '')
+        if not text:
+            raise ValueError("input_text vacío")
+        
+        result = text.upper()
+        return {
+            "output": result,
+            "error": None
+        }
+    except Exception as e:
+        return {
+            "output": "",
+            "error": str(e)
+        }
+
+# El nodo nunca falla - siempre retorna algo
+`}
+  title="02_nodo_con_errores.py"
+/>
+
+**Ventaja**: Tu grafo no se rompe por excepciones  
+**Cuándo usar**: Nodos que hacen I/O, llamadas a APIs
+
+---
+
+## 💻 Nivel 3: Nodo Asincronico
+
+<AdvancedExample
+  code={`import asyncio
+from typing import TypedDict, Annotated
+from operator import add
+
+class AsyncState(TypedDict):
+    queries: list[str]
+    results: Annotated[list, add]
+    processing_log: Annotated[list, add]
+
+async def async_api_node(state: AsyncState) -> dict:
+    """Nodo que hace I/O asincronico"""
+    results = []
+    logs = []
+    
+    # Ejecuta múltiples queries en paralelo
+    for query in state['queries']:
+        try:
+            # Simula llamada a API
+            await asyncio.sleep(0.1)  # En real: llamada HTTP
+            result = f"Resultado de: {query}"
+            results.append(result)
+            logs.append(f"✓ Query: {query}")
+        except Exception as e:
+            logs.append(f"✗ Error en {query}: {e}")
+    
+    return {
+        "results": results,
+        "processing_log": logs
+    }
+
+# Usa el nodo en grafo:
+# graph.add_node("api_call", async_api_node)  # Grafo lo ejecuta automáticamente
+`}
+  title="03_nodo_asincronico.py"
+/>
+
+**Ventaja**: Ejecuta múltiples operaciones en paralelo  
+**Cuándo usar**: Llamadas a APIs, queries a DB, operaciones de red
+
+---
+
+## 🏗️ Patrones Comunes
+
+### Patrón 1: Nodo de Validación
+
+<BasicExample
+  code={`class ValidationState(TypedDict):
+    user_data: dict
+    validation_errors: Annotated[list, add]
+    is_valid: bool
+
+def validation_node(state: ValidationState) -> dict:
+    errors = []
+    data = state['user_data']
+    
+    if not data.get('email'):
+        errors.append("Email requerido")
+    if not data.get('age') or data['age'] < 18:
+        errors.append("Debe ser mayor de 18")
+    
+    return {
+        "validation_errors": errors,
+        "is_valid": len(errors) == 0
+    }
+`}
+  title="patron_1_validacion.py"
+/>
+
+### Patrón 2: Nodo de Transformación
+
+<BasicExample
+  code={`def transform_node(state: SimpleState) -> dict:
+    """Convierte datos de un formato a otro"""
+    raw_data = state.get('raw_input', '')
+    
+    # CSV → JSON
+    lines = raw_data.split('\\n')
+    headers = lines[0].split(',')
+    rows = [dict(zip(headers, line.split(','))) 
+            for line in lines[1:]]
+    
+    return {
+        "structured_data": rows,
+        "row_count": len(rows)
+    }
+`}
+  title="patron_2_transformacion.py"
+/>
+
+### Patrón 3: Nodo que Registra Logs
+
+<BasicExample
+  code={`import json
+from datetime import datetime
+
+def logging_node(state: SimpleState) -> dict:
+    """Nodo que registra todo lo que sucede"""
+    timestamp = datetime.now().isoformat()
+    
+    log_entry = {
+        "timestamp": timestamp,
+        "step": state.get('current_step', 'unknown'),
+        "input_size": len(str(state.get('input_text', ''))),
+        "status": "ok"
+    }
+    
+    return {
+        "logs": [json.dumps(log_entry)],
+        "last_log_time": timestamp
+    }
+`}
+  title="patron_3_logging.py"
+/>
+
+---
+
+## 🏋️ Ejercicios
+
+<Exercise
+  title="Ejercicio 1: Nodo de Conteo"
+  problem="Crea un nodo que:
+1. Reciba una lista de palabras
+2. Cuente la frecuencia de cada palabra
+3. Retorne un diccionario con el conteo
+4. Maneje el caso de lista vacía
+
+Nombre de la función: counting_node"
+  hints={[
+    "Usa collections.Counter para contar",
+    "Verifica si la lista está vacía",
+    "Retorna {'word_count': {...}}"
+  ]}
+/>
+
+<Exercise
+  title="Ejercicio 2: Nodo Asincronico Simple"
+  problem="Crea un nodo asincronico que:
+1. Reciba una lista de números
+2. Para cada número, 'espere' 0.1 segundos
+3. Calcule el cuadrado de cada número
+4. Retorne los resultados
+
+Nombre: async_square_node"
+  hints={[
+    "Usa async def",
+    "Usa await asyncio.sleep(0.1)",
+    "Retorna {'squared_results': [...]}"
+  ]}
+/>
+
+---
+
+## 📚 Recursos
+
+- 📖 [LangGraph Nodes Docs](https://python.langchain.com/docs/langgraph/)
+- 🎓 [Async Python](https://docs.python.org/3/library/asyncio.html)
+
+---
+
+<ModuleNav
+  current="/orchestration/12-nodos"
+  section="Orquestación"
+  modules={[
+    { title: "10. Fundamentos", href: "/orchestration/10-fundamentos-grafos", level: "básico" },
+    { title: "11. El State", href: "/orchestration/11-state", level: "básico", completed: true },
+    { title: "12. Nodos", href: "/orchestration/12-nodos", level: "intermedio", completed: true },
+    { title: "13. Aristas", href: "/orchestration/13-aristas", level: "intermedio", duration: "75 min" },
+    { title: "14. Checkpoints", href: "/orchestration/14-checkpoints", level: "intermedio", duration: "75 min" },
+  ]}
+/>
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 60-90 minutos
-
-
----
-
-## Código Fuente
-
-El código para este módulo está disponible en:
-
-\`\`\`
-python/modulos/12_nodos/
-\`\`\`
-
-Incluye:
-- 📖 README.md (este contenido)
-- 💻 Ejemplos prácticos en `examples/`
-- 🏋️ Ejercicios en `exercises/`
-
-## Próximos Pasos
-
-Completa los ejercicios y procede al siguiente módulo.
-
----
-
-**Última actualización:** 2026-05-31
+**Duración:** 90 minutos
