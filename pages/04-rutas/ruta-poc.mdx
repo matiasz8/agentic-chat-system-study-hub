@@ -1,4 +1,49 @@
+---
+route: 'poc'
+routeName: 'Ruta POC'
+modules:
+  - title: '01. Setup Ambiente'
+    path: '/04-rutas/ruta-poc#paso-1-setup-ambiente'
+    done: false
+  - title: '02. Aprender LangGraph'
+    path: '/02-arquitectura/orchestration'
+    done: false
+  - title: '03. Implementar Grafo'
+    path: '/02-arquitectura/orchestration/fundamentos-grafos'
+    done: false
+  - title: '04. Frontend Streaming'
+    path: '/02-arquitectura/frontend'
+    done: false
+  - title: '05. Testing Local'
+    path: '/03-validacion'
+    done: false
+  - title: '06. Deploy Local'
+    path: '/04-rutas/ruta-poc#paso-6-deploy-local'
+    done: false
+  - title: '07. Validación Final'
+    path: '/04-rutas/ruta-poc#paso-7-validación-final'
+    done: false
+---
+
+import RouteProgress from '@/components/RouteProgress'
+
 # Ruta POC: Aprender Haciendo
+
+<RouteProgress 
+  route="poc"
+  routeName="Ruta POC"
+  modules={[
+    { title: '01. Setup Ambiente', path: '/quickstart', done: false },
+    { title: '02. Aprender LangGraph', path: '/02-arquitectura/orchestration', done: false },
+    { title: '03. Implementar Grafo', path: '/02-arquitectura/orchestration/fundamentos-grafos', done: false },
+    { title: '04. Frontend Streaming', path: '/02-arquitectura/frontend', done: false },
+    { title: '05. Testing Local', path: '/03-validacion', done: false },
+    { title: '06. Deploy Local', path: '/ask-sage/deployment-prod', done: false },
+    { title: '07. Validación Final', path: '/ask-sage', done: false },
+  ]}
+/>
+
+**Duración:** 16 horas | **Requisitos:** Node.js, básico de React | **Formato:** Tutorial paso-a-paso
 
 **Duración:** 16 horas | **Requisitos:** Node.js, básico de React | **Formato:** Tutorial paso-a-paso
 

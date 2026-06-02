@@ -1,4 +1,49 @@
+---
+route: 'produccion'
+routeName: 'Ruta Producción'
+modules:
+  - title: '01. Pre-requisitos AWS'
+    path: '/ask-sage/deployment-prod'
+    done: false
+  - title: '02. Migrar a AWS'
+    path: '/02-arquitectura/runtime'
+    done: false
+  - title: '03. Identity Forwarding'
+    path: '/ask-sage/identity'
+    done: false
+  - title: '04. Validación Producción'
+    path: '/03-validacion'
+    done: false
+  - title: '05. Observabilidad'
+    path: '/07-troubleshooting'
+    done: false
+  - title: '06. Auto-scaling'
+    path: '/02-arquitectura/runtime'
+    done: false
+  - title: '07. Disaster Recovery'
+    path: '/04-rutas/ruta-produccion#semana-3-escalabilidad'
+    done: false
+---
+
+import RouteProgress from '@/components/RouteProgress'
+
 # Ruta Producción: Enterprise Ready
+
+<RouteProgress 
+  route="produccion"
+  routeName="Ruta Producción"
+  modules={[
+    { title: '01. Pre-requisitos AWS', path: '/ask-sage/deployment-prod', done: false },
+    { title: '02. Migrar a AWS', path: '/02-arquitectura/runtime', done: false },
+    { title: '03. Identity Forwarding', path: '/ask-sage/identity', done: false },
+    { title: '04. Validación Producción', path: '/03-validacion', done: false },
+    { title: '05. Observabilidad', path: '/07-troubleshooting', done: false },
+    { title: '06. Auto-scaling', path: '/02-arquitectura/runtime', done: false },
+    { title: '07. Disaster Recovery', path: '/ask-sage/deployment-prod', done: false },
+  ]}
+/>
+
+**Duración:** 2-3 semanas | **Requisitos:** Ruta POC completada | **Formato:** Guía + AWS
 
 **Duración:** 2-3 semanas | **Requisitos:** Ruta POC completada | **Formato:** Guía + AWS
 

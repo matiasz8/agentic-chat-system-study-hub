@@ -1,0 +1,228 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+
+export default function RouteProgress({ 
+  route, 
+  routeName, 
+  modules = [],
+  currentPath
+}) {
+  const router = useRouter()
+  const [activeIndex, setActiveIndex] = useState(-1)
+
+  useEffect(() => {
+    // Detectar cuál módulo está activo basado en la URL
+    const path = currentPath || router.asPath
+    const active = modules.findIndex(m => path.includes(m.path?.replace(/^\//, '')))
+    setActiveIndex(active)
+  }, [router.asPath, currentPath, modules])
+
+  if (!route || modules.length === 0) {
+    return null
+  }
+
+  const completedCount = modules.filter(m => m.done).length
+  const progressPercent = Math.round((completedCount / modules.length) * 100)
+
+  return (
+    <div className="route-progress-widget">
+      <style jsx>{`
+        .route-progress-widget {
+          background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+          border: 1px solid #cbd5e0;
+          border-radius: 12px;
+          padding: 16px;
+          margin: 16px 0;
+          font-size: 14px;
+        }
+
+        .dark .route-progress-widget {
+          background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+          border-color: #4a5568;
+        }
+
+        .route-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+
+        .route-title {
+          font-weight: 600;
+          font-size: 13px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #2d3748;
+        }
+
+        .dark .route-title {
+          color: #e2e8f0;
+        }
+
+        .progress-badge {
+          background: #667eea;
+          color: white;
+          font-size: 12px;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-weight: 500;
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 4px;
+          background: #cbd5e0;
+          border-radius: 2px;
+          overflow: hidden;
+          margin-bottom: 12px;
+        }
+
+        .dark .progress-bar {
+          background: #4a5568;
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+          border-radius: 2px;
+          transition: width 0.3s ease;
+        }
+
+        .modules-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .module-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px;
+          border-radius: 6px;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: #4a5568;
+          text-decoration: none;
+        }
+
+        .dark .module-item {
+          color: #cbd5e0;
+        }
+
+        .module-item:hover {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+        }
+
+        .dark .module-item:hover {
+          background: rgba(102, 126, 234, 0.15);
+          color: #b0b7ff;
+        }
+
+        .module-item.active {
+          background: rgba(102, 126, 234, 0.2);
+          color: #667eea;
+          font-weight: 500;
+        }
+
+        .dark .module-item.active {
+          background: rgba(102, 126, 234, 0.25);
+          color: #b0b7ff;
+        }
+
+        .module-status {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .module-status.done {
+          background: #48bb78;
+          color: white;
+          font-size: 10px;
+          font-weight: bold;
+        }
+
+        .module-status.pending {
+          background: #cbd5e0;
+          color: #718096;
+          font-size: 11px;
+        }
+
+        .dark .module-status.pending {
+          background: #4a5568;
+          color: #a0aec0;
+        }
+
+        .module-status.active {
+          background: #667eea;
+          color: white;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+
+        .module-title {
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .route-footer {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #e2e8f0;
+          font-size: 11px;
+          color: #718096;
+          text-align: center;
+        }
+
+        .dark .route-footer {
+          border-top-color: #4a5568;
+          color: #a0aec0;
+        }
+      `}</style>
+
+      <div className="route-header">
+        <span className="route-title">📚 {routeName}</span>
+        <span className="progress-badge">{completedCount}/{modules.length}</span>
+      </div>
+
+      <div className="progress-bar">
+        <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+      </div>
+
+      <div className="modules-list">
+        {modules.map((module, idx) => (
+          <a
+            key={idx}
+            href={module.path}
+            className={`module-item ${idx === activeIndex ? 'active' : ''}`}
+          >
+            <div className={`module-status ${idx === activeIndex ? 'active' : module.done ? 'done' : 'pending'}`}>
+              {idx === activeIndex ? '▶' : module.done ? '✓' : idx + 1}
+            </div>
+            <div className="module-title">{module.title}</div>
+          </a>
+        ))}
+      </div>
+
+      <div className="route-footer">
+        Progreso: {progressPercent}% completado
+      </div>
+    </div>
+  )
+}

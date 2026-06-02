@@ -1,4 +1,49 @@
+---
+route: 'estudio'
+routeName: 'Ruta Estudio'
+modules:
+  - title: '01. Fundamentos Básicos'
+    path: '/01-fundamentos'
+    done: false
+  - title: '02. Frontend & Streaming'
+    path: '/02-arquitectura/frontend'
+    done: false
+  - title: '03. Orchestration & Grafos'
+    path: '/02-arquitectura/orchestration'
+    done: false
+  - title: '04. Runtime & AWS'
+    path: '/02-arquitectura/runtime'
+    done: false
+  - title: '05. Data Layer & MCP'
+    path: '/02-arquitectura/data'
+    done: false
+  - title: '06. Caso: Ask Sage'
+    path: '/ask-sage'
+    done: false
+  - title: '07. Testing & Validación'
+    path: '/03-validacion'
+    done: false
+---
+
+import RouteProgress from '@/components/RouteProgress'
+
 # Ruta Estudio: Aprender Teoría
+
+<RouteProgress 
+  route="estudio"
+  routeName="Ruta Estudio"
+  modules={[
+    { title: '01. Fundamentos Básicos', path: '/01-fundamentos', done: false },
+    { title: '02. Frontend & Streaming', path: '/02-arquitectura/frontend', done: false },
+    { title: '03. Orchestration & Grafos', path: '/02-arquitectura/orchestration', done: false },
+    { title: '04. Runtime & AWS', path: '/02-arquitectura/runtime', done: false },
+    { title: '05. Data Layer & MCP', path: '/02-arquitectura/data', done: false },
+    { title: '06. Caso: Ask Sage', path: '/ask-sage', done: false },
+    { title: '07. Testing & Validación', path: '/03-validacion', done: false },
+  ]}
+/>
+
+**Duración:** 8-20 horas | **Requisitos:** Ninguno | **Formato:** Lectura
 
 **Duración:** 8-20 horas | **Requisitos:** Ninguno | **Formato:** Lectura
 
