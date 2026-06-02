@@ -44,10 +44,10 @@ Ask Sage necesita **UX fluida**. Los vendedores esperan respuestas en tiempo rea
 
 | Orden | Módulo | Concepto Clave | Tiempo |
 |-------|--------|---|--------|
-| 1️⃣ | [00-vercel-intro](/frontend/00-vercel-intro) | Cómo funciona Vercel AI SDK | 30 min |
-| 2️⃣ | [01-streaming](/frontend/01-streaming) | **Streaming de tokens en vivo** (Vendedor ve respuesta en tiempo real) | 45 min |
-| 3️⃣ | [02-generative-ui](/frontend/02-generative-ui) | Componentes React dinámicos (Tablas de dosis, gráficos interactivos) | 45 min |
-| 4️⃣ | [03-frontend-completo](/frontend/03-frontend-completo) | Integración: todo junto | 60 min |
+| 1️⃣ | [00-vercel-intro](/02-arquitectura/frontend/00-vercel-intro) | Cómo funciona Vercel AI SDK | 30 min |
+| 2️⃣ | [01-streaming](/02-arquitectura/frontend/01-streaming) | **Streaming de tokens en vivo** (Vendedor ve respuesta en tiempo real) | 45 min |
+| 3️⃣ | [02-generative-ui](/02-arquitectura/frontend/02-generative-ui) | Componentes React dinámicos (Tablas de dosis, gráficos interactivos) | 45 min |
+| 4️⃣ | [03-frontend-completo](/02-arquitectura/frontend/03-frontend-completo) | Integración: todo junto | 60 min |
 
 ### 🎓 Ejemplo Ask Sage: Streaming
 
@@ -80,11 +80,11 @@ Ask Sage necesita **lógica de decisión**. El bot debe elegir: ¿buscar en DB, 
 
 | Orden | Módulo | Concepto Clave | Tiempo |
 |-------|--------|---|--------|
-| 1️⃣ | [10-fundamentos-grafos](/orchestration/10-fundamentos-grafos) | ¿Qué es un grafo de decisión? | 30 min |
-| 2️⃣ | [11-state](/orchestration/11-state) | **Estado centralizado** (conversación del vendedor) | 45 min |
-| 3️⃣ | [12-nodos](/orchestration/12-nodos) | **Funciones ejecutables** (búsqueda en DB, llamadas API) | 45 min |
-| 4️⃣ | [13-aristas](/orchestration/13-aristas) | **Rutas condicionales** (si respuesta < 0.8 confianza → pedir LLM) | 45 min |
-| 5️⃣ | [14-checkpoints](/orchestration/14-checkpoints) | **Pausas y persistencia** (si necesita aprobación humana) | 30 min |
+| 1️⃣ | [10-fundamentos-grafos](/02-arquitectura/orchestration/10-fundamentos-grafos) | ¿Qué es un grafo de decisión? | 30 min |
+| 2️⃣ | [11-state](/02-arquitectura/orchestration/11-state) | **Estado centralizado** (conversación del vendedor) | 45 min |
+| 3️⃣ | [12-nodos](/02-arquitectura/orchestration/12-nodos) | **Funciones ejecutables** (búsqueda en DB, llamadas API) | 45 min |
+| 4️⃣ | [13-aristas](/02-arquitectura/orchestration/13-aristas) | **Rutas condicionales** (si respuesta < 0.8 confianza → pedir LLM) | 45 min |
+| 5️⃣ | [14-checkpoints](/02-arquitectura/orchestration/14-checkpoints) | **Pausas y persistencia** (si necesita aprobación humana) | 30 min |
 
 ### 🎓 Ejemplo Ask Sage: State
 
@@ -112,11 +112,11 @@ Ask Sage necesita **lógica de decisión**. El bot debe elegir: ¿buscar en DB, 
 
 | Orden | Módulo | Concepto Clave | Tiempo |
 |-------|--------|---|--------|
-| 1️⃣ | [20-serverless-basics](/runtime/20-serverless-basics) | Cómo deplegar en AWS Lambda/ECS | 30 min |
-| 2️⃣ | [21-identity-forwarding](/runtime/21-identity-forwarding) | **⭐ CRÍTICO**: Pasar token Okta del vendedor de punta a punta | 90 min |
-| 3️⃣ | [22-agentcore-governance](/runtime/22-agentcore-governance) | Runtime seguro (qué puede hacer el bot) | 60 min |
-| 4️⃣ | [23-cedar-policies](/runtime/23-cedar-policies) | Políticas externas (bloquear acciones antes de ejecutarse) | 60 min |
-| 5️⃣ | [24-tools-management](/runtime/24-tools-management) | Registrar tools seguros que el bot puede llamar | 45 min |
+| 1️⃣ | [20-serverless-basics](/02-arquitectura/runtime/20-serverless-basics) | Cómo deplegar en AWS Lambda/ECS | 30 min |
+| 2️⃣ | [21-identity-forwarding](/02-arquitectura/runtime/21-identity-forwarding) | **⭐ CRÍTICO**: Pasar token Okta del vendedor de punta a punta | 90 min |
+| 3️⃣ | [22-agentcore-governance](/02-arquitectura/runtime/22-agentcore-governance) | Runtime seguro (qué puede hacer el bot) | 60 min |
+| 4️⃣ | [23-cedar-policies](/02-arquitectura/runtime/23-cedar-policies) | Políticas externas (bloquear acciones antes de ejecutarse) | 60 min |
+| 5️⃣ | [24-tools-management](/02-arquitectura/runtime/24-tools-management) | Registrar tools seguros que el bot puede llamar | 45 min |
 
 ### 🎓 Ejemplo Ask Sage: Identity Forwarding
 
@@ -150,8 +150,8 @@ Ask Sage necesita acceder a PDFs, screenshots, videos. MCP + Embeddings indexan 
 
 | Orden | Módulo | Concepto Clave | Tiempo |
 |-------|--------|---|--------|
-| 1️⃣ | [30-mcp-protocol](/data/30-mcp-protocol) | Conectar uniformemente a bases de datos | 60 min |
-| 2️⃣ | [31-multimodal-embeddings](/data/31-multimodal-embeddings) | Procesar PDFs, screenshots, videos | 90 min |
+| 1️⃣ | [30-mcp-protocol](/02-arquitectura/data/30-mcp-protocol) | Conectar uniformemente a bases de datos | 60 min |
+| 2️⃣ | [31-multimodal-embeddings](/02-arquitectura/data/31-multimodal-embeddings) | Procesar PDFs, screenshots, videos | 90 min |
 
 ### 🎓 Ejemplo Ask Sage: Embeddings Multimodales
 
@@ -282,4 +282,4 @@ R: No. Primero asegura el acceso (Runtime), luego trae datos (Data).
 
 ---
 
-**¡Listo para empezar? Dirígete a [Frontend: 00-Vercel Intro](/frontend/00-vercel-intro)**
+**¡Listo para empezar? Dirígete a [Frontend: 00-Vercel Intro](/02-arquitectura/frontend/00-vercel-intro)**
