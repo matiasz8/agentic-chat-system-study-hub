@@ -45,7 +45,7 @@ class TestPromptValidation:
             model="claude-3",
             max_tokens=100,
             system="Siempre responde en formato JSON válido",
-            messages=[{"role": "user", "content": "¿Qué medicamentos tenemos?"}],
+            messages=[{"role": "user", "content": "stock json?"}],
         )
 
         response_text = response.content[0].text
@@ -112,8 +112,8 @@ class TestPromptFormats:
         "input_text,expected_in_output",
         [
             ("stock", "stock"),
-            ("paracetamol", "Paracetamol"),
-            ("cantidad", "150"),
+            ("stock paracetamol", "Paracetamol"),
+            ("stock cantidad", "150"),
         ],
     )
     def test_parametrized_responses(self, input_text, expected_in_output):

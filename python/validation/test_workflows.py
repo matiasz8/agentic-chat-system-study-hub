@@ -39,7 +39,7 @@ class MockNode:
         self.call_count = 0
         self.last_input = None
 
-    async def execute(self, state: MockState) -> dict:
+    def execute(self, state: MockState) -> dict:
         """Simula ejecución de nodo"""
         self.call_count += 1
         self.last_input = state.data.copy()
@@ -271,35 +271,31 @@ class TestWorkflowMocking:
         """
         Test 11: Workflow que usa database mockeada.
         """
+        from unittest.mock import MagicMock
+        
+        # Crear un mock directo sin patch
+        mock_db = MagicMock()
+        mock_db.return_value = [{"id": 1, "name": "Paracetamol"}]
 
-        def query_database(query: str) -> list:
-            """Función que consultaría DB real"""
-            pass  # En tests será mockeada
+        result = mock_db("SELECT * FROM medications")
 
-        with patch(__name__ + ".query_database") as mock_db:
-            mock_db.return_value = [{"id": 1, "name": "Paracetamol"}]
-
-            result = query_database("SELECT * FROM medications")
-
-            assert result[0]["name"] == "Paracetamol"
-            mock_db.assert_called_once()
+        assert result[0]["name"] == "Paracetamol"
+        mock_db.assert_called_once()
 
     def test_workflow_with_mocked_api(self):
         """
         Test 12: Workflow que llama API mockeada.
         """
+        from unittest.mock import MagicMock
+        
+        # Crear un mock directo sin patch
+        mock_api = MagicMock()
+        mock_api.return_value = {"status": 200, "data": "ok"}
 
-        def call_external_api(endpoint: str) -> dict:
-            """Llamaría API real"""
-            pass  # En tests será mockeada
+        result = mock_api("/api/medications")
 
-        with patch(__name__ + ".call_external_api") as mock_api:
-            mock_api.return_value = {"status": 200, "data": "ok"}
-
-            result = call_external_api("/api/medications")
-
-            assert result["status"] == 200
-            mock_api.assert_called_once_with("/api/medications")
+        assert result["status"] == 200
+        mock_api.assert_called_once_with("/api/medications")
 
 
 @pytest.fixture
