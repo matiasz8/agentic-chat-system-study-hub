@@ -1,9 +1,7 @@
 'use client';
 
 import { CopyIcon, CheckIcon } from 'lucide-react';
-import { useState } from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { useState, lazy, Suspense } from 'react';
 
 interface CodeBlockProps {
   code: string;
@@ -12,6 +10,24 @@ interface CodeBlockProps {
   showLineNumbers?: boolean;
   highlight?: number[];
 }
+
+const SyntaxHighlighter = lazy(() =>
+  import('react-syntax-highlighter').then((mod) => ({
+    default: mod.Prism as any,
+  }))
+);
+
+const atomOneDark = lazy(() =>
+  import('react-syntax-highlighter/dist/esm/styles/hljs').then((mod) => ({
+    default: mod.atomOneDark,
+  }))
+);
+
+const CodeFallback = ({ code }: { code: string }) => (
+  <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+    <code>{code}</code>
+  </pre>
+);
 
 export function CodeBlock({
   code,
@@ -50,27 +66,11 @@ export function CodeBlock({
       )}
 
       <div className="overflow-x-auto">
-        <SyntaxHighlighter
-          language={language}
-          style={atomOneDark}
-          showLineNumbers={showLineNumbers}
-          wrapLines={true}
-          lineProps={(lineNumber) => {
-            let className = '';
-            if (highlight && highlight.includes(lineNumber)) {
-              className = 'bg-yellow-900 opacity-50';
-            }
-            return { className };
-          }}
-          customStyle={{
-            margin: 0,
-            padding: '1rem',
-            fontSize: '0.875rem',
-            lineHeight: '1.5',
-          }}
-        >
-          {code}
-        </SyntaxHighlighter>
+        <Suspense fallback={<CodeFallback code={code} />}>
+          <SyntaxHighlighter language={language} showLineNumbers={showLineNumbers}>
+            {code}
+          </SyntaxHighlighter>
+        </Suspense>
       </div>
     </div>
   );

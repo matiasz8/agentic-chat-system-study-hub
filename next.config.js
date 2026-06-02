@@ -7,4 +7,10 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.ignoreWarnings = [{ module: /refractor/ }]
+    }
+    return config
+  },
 })
