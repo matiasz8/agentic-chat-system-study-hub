@@ -67,7 +67,7 @@ export default function RouteProgress({
   const isCompleted = progressPercent === 100
 
   // Trigger confetti animation when 100% complete
-  React.useEffect(() => {
+  useEffect(() => {
     if (isCompleted && typeof window !== 'undefined') {
       // Simple confetti animation by adding class
       const widget = document.querySelector('.route-progress-widget')
