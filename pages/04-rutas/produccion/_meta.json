@@ -1,11 +1,13 @@
 {
-  "00-que-es": "¿Qué es Producción?",
-  "01-pre-requisitos": "01. Pre-requisitos (1d)",
-  "02-identity-avanzado": "02. Identity Forwarding (2d)",
-  "03-governance-cedar": "03. Cedar Policies (2d)",
-  "04-aws-agentcore": "04. AWS AgentCore (3d)",
-  "05-hardening": "05. Security (2d)",
-  "06-staging": "06. Staging Testing (2d)",
-  "07-go-live": "07. Go-Live (1d)",
-  "08-monitoring": "08. Monitoring (1d)"
+  "index": "Ruta Producción",
+  "00-que-es": "¿Qué es?",
+  "pre-requisitos": "Pre-requisitos",
+  "01-produccion-module": "Módulo 1",
+  "02-produccion-module": "Módulo 2",
+  "03-produccion-module": "Módulo 3",
+  "04-produccion-module": "Módulo 4",
+  "05-produccion-module": "Módulo 5",
+  "06-produccion-module": "Módulo 6",
+  "07-produccion-module": "Módulo 7",
+  "08-produccion-module": "Módulo 8"
 }

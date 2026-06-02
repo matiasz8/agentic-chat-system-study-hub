@@ -1,5 +1,5 @@
 {
-  "00-que-es": "¿Qué es Estudio?",
-  "01-rapida": "Rápida (8h)",
-  "02-completa": "Completa (20h)"
+  "index": "Ruta Estudio",
+  "rapida": "Rápida (7 días)",
+  "completa": "Completa (20h)"
 }

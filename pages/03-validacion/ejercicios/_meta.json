@@ -1,6 +1,5 @@
 {
-  "index": "Ejercicios Prácticos",
-  "basico": "Básico (3 ejercicios)",
-  "intermedio": "Intermedio (3 ejercicios)",
-  "avanzado": "Avanzado (3 ejercicios)"
+  "basico": "Básico",
+  "intermedio": "Intermedio",
+  "avanzado": "Avanzado"
 }

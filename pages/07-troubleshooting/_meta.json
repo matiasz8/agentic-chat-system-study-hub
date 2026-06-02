@@ -1,11 +1,10 @@
 {
   "index": "Troubleshooting",
-  "00-como-usar": "Cómo Usar",
-  "01-setup-errors": "Setup Errors",
-  "02-orchestration-errors": "Orchestration",
-  "03-runtime-errors": "Runtime",
-  "04-data-errors": "Data",
-  "05-deployment-errors": "Deployment",
-  "06-testing-errors": "Testing",
-  "07-faq": "FAQ"
+  "setup-errors": "Setup Errors",
+  "orchestration-errors": "Orchestration Errors",
+  "runtime-errors": "Runtime Errors",
+  "data-errors": "Data Errors",
+  "deployment-errors": "Deployment Errors",
+  "testing-errors": "Testing Errors",
+  "faq": "FAQ"
 }
