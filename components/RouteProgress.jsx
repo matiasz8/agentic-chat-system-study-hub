@@ -36,13 +36,9 @@ export default function RouteProgress({
     setActiveIndex(active)
   }, [router.asPath, currentPath, modules])
 
-  if (!route || modules.length === 0) {
-    return null
-  }
-
   // Contar módulos completados (combinar localStorage + props)
-  const completedCount = modules.filter((m, idx) => m.done || completedModules[idx]).length
-  const progressPercent = Math.round((completedCount / modules.length) * 100)
+  const completedCount = modules.length > 0 ? modules.filter((m, idx) => m.done || completedModules[idx]).length : 0
+  const progressPercent = modules.length > 0 ? Math.round((completedCount / modules.length) * 100) : 0
 
   // Toggle para marcar módulo como completado
   const toggleModule = (idx) => {
@@ -81,6 +77,10 @@ export default function RouteProgress({
       }
     }
   }, [isCompleted])
+
+  if (!route || modules.length === 0) {
+    return null
+  }
 
   return (
     <div className="route-progress-widget">
