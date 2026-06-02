@@ -64,6 +64,23 @@ export default function RouteProgress({
   }
 
   const isModuleCompleted = (idx) => completedModules[idx] || modules[idx]?.done
+  const isCompleted = progressPercent === 100
+
+  // Trigger confetti animation when 100% complete
+  React.useEffect(() => {
+    if (isCompleted && typeof window !== 'undefined') {
+      // Simple confetti animation by adding class
+      const widget = document.querySelector('.route-progress-widget')
+      if (widget && !widget.classList.contains('celebration-triggered')) {
+        widget.classList.add('celebrating')
+        widget.classList.add('celebration-triggered')
+        // Remove celebrating class after animation
+        setTimeout(() => {
+          widget.classList.remove('celebrating')
+        }, 3000)
+      }
+    }
+  }, [isCompleted])
 
   return (
     <div className="route-progress-widget">
@@ -75,6 +92,66 @@ export default function RouteProgress({
           padding: 16px;
           margin: 16px 0;
           font-size: 14px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .route-progress-widget.celebrating {
+          animation: celebrateShake 0.6s ease-in-out;
+          box-shadow: 0 0 30px rgba(102, 126, 234, 0.6), 
+                      0 0 60px rgba(118, 75, 162, 0.4);
+        }
+
+        @keyframes celebrateShake {
+          0%, 100% { transform: scale(1) rotate(0deg); }
+          25% { transform: scale(1.05) rotate(2deg); }
+          50% { transform: scale(1.1) rotate(-2deg); }
+          75% { transform: scale(1.05) rotate(1deg); }
+        }
+
+        /* Confetti particles */
+        .route-progress-widget.celebrating::before,
+        .route-progress-widget.celebrating::after {
+          content: '✨🎉🎊⭐🌟💫';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          font-size: 24px;
+          pointer-events: none;
+          z-index: 10;
+          animation: confettiFall 2.5s ease-out forwards;
+        }
+
+        .route-progress-widget.celebrating::before {
+          animation: confettiFallLeft 2.5s ease-out forwards;
+          content: '✨';
+        }
+
+        .route-progress-widget.celebrating::after {
+          animation: confettiFallRight 2.5s ease-out forwards;
+          content: '🎉';
+        }
+
+        @keyframes confettiFallLeft {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-100px, 150px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes confettiFallRight {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(100px, 150px) rotate(-360deg);
+            opacity: 0;
+          }
         }
 
         .dark .route-progress-widget {
@@ -287,6 +364,41 @@ export default function RouteProgress({
           border-top-color: #4a5568;
           color: #a0aec0;
         }
+
+        .progress-message {
+          color: #718096;
+        }
+
+        .dark .progress-message {
+          color: #a0aec0;
+        }
+
+        .completion-message {
+          font-size: 13px;
+          font-weight: 600;
+          color: #48bb78;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          animation: completionPulse 0.6s ease-out;
+        }
+
+        .dark .completion-message {
+          color: #68d391;
+        }
+
+        @keyframes completionPulse {
+          0% {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
       `}</style>
 
       <div className="route-header">
@@ -326,7 +438,15 @@ export default function RouteProgress({
       </div>
 
       <div className="route-footer">
-        Progreso: {progressPercent}% completado
+        {isCompleted ? (
+          <div className="completion-message">
+            🎉 ¡Felicidades! Completaste {routeName} 🎊
+          </div>
+        ) : (
+          <div className="progress-message">
+            Progreso: {progressPercent}% completado
+          </div>
+        )}
       </div>
     </div>
   )
