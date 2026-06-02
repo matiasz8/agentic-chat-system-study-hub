@@ -13,17 +13,17 @@
                         └──────────┬──────────┘
                                    │
                     ┌──────────────▼──────────────┐
-                    │  🎨 CAPA 1: FRONTEND       │
-                    │    Vercel AI SDK           │
-                    │    React + Next.js         │
-                    ├────────────────────────────┤
-                    │ • useChat hook             │
-                    │ • Streaming tokens         │
-                    │ • Generative UI (gráficos) │
-                    │ • Interactividad           │
-                    │                            │
-                    │ MÓDULOS: 00, 01, 02, 03   │
-                    └──────────────┬─────────────┘
+                    │  🎨 CAPA 1: FRONTEND        │
+                    │    Vercel AI SDK            │
+                    │    React + Next.js          │
+                    ├─────────────────────────────┤
+                    │ • useChat hook              │
+                    │ • Streaming tokens          │
+                    │ • Generative UI (gráficos)  │
+                    │ • Interactividad            │
+                    │                             │
+                    │ MÓDULOS: 00, 01, 02, 03     │
+                    └──────────────┬──────────────┘
                                    │
                          API REST   │  POST /api/chat
                          ┌─────────▼────────┐
@@ -33,43 +33,43 @@
                          └──────────────────┘
                                    │
                     ┌──────────────▼──────────────┐
-                    │  🧠 CAPA 2: ORCHESTRATION  │
-                    │    LangGraph               │
-                    │    (Agent Logic)           │
-                    ├────────────────────────────┤
-                    │ • State (Memoria)          │
-                    │ • Nodes (Funciones)        │
-                    │ • Edges (Decisiones)       │
-                    │ • Checkpoints (Persistencia)
-                    │                            │
-                    │ MÓDULOS: 10, 11, 12, 13, 14
-                    └──────────────┬─────────────┘
+                    │  🧠 CAPA 2: ORCHESTRATION   │
+                    │    LangGraph                │
+                    │    (Agent Logic)            │
+                    ├─────────────────────────────┤
+                    │ • State (Memoria)           │
+                    │ • Nodes (Funciones)         │
+                    │ • Edges (Decisiones)        │
+                    │ • Checkpoints (Persistencia)│
+                    │                             │
+                    │ MÓDULOS: 10, 11, 12, 13, 14 │
+                    └──────────────┬──────────────┘
                                    │
                     ┌──────────────▼──────────────┐
-                    │  ☁️  CAPA 3: RUNTIME       │
-                    │    AWS Bedrock AgentCore   │
-                    │    (Infrastructure)        │
-                    ├────────────────────────────┤
-                    │ • Serverless               │
-                    │ • Identity Forwarding ⭐   │
-                    │ • Governance (Cedar) ⭐    │
-                    │ • Tool Management          │
-                    │ • Memory/Persistence       │
-                    │                            │
-                    │ MÓDULOS: 20, 21, 22, 23, 24
-                    └──────────────┬─────────────┘
+                    │  ☁️  CAPA 3: RUNTIME        │
+                    │    AWS Bedrock AgentCore    │
+                    │    (Infrastructure)         │
+                    ├─────────────────────────────┤
+                    │ • Serverless                │
+                    │ • Identity Forwarding ⭐     │
+                    │ • Governance (Cedar) ⭐      │
+                    │ • Tool Management           │
+                    │ • Memory/Persistence        │
+                    │                             │
+                    │ MÓDULOS: 20, 21, 22, 23, 24 │
+                    └──────────────┬──────────────┘
                                    │
                     ┌──────────────▼──────────────┐
-                    │  🔌 CAPA 4: DATOS          │
-                    │    MCP + Embeddings        │
-                    │    (Data Connection)       │
-                    ├────────────────────────────┤
-                    │ • MCP Servers              │
-                    │ • Multimodal Embeddings    │
-                    │ • Vector Search            │
-                    │                            │
-                    │ MÓDULOS: 30, 31            │
-                    └────────────────────────────┘
+                    │  🔌 CAPA 4: DATOS           │
+                    │    MCP + Embeddings         │
+                    │    (Data Connection)        │
+                    ├─────────────────────────────┤
+                    │ • MCP Servers               │
+                    │ • Multimodal Embeddings     │
+                    │ • Vector Search             │
+                    │                             │
+                    │ MÓDULOS: 30, 31             │
+                    └─────────────────────────────┘
 ```
 
 ---
@@ -78,9 +78,9 @@
 
 ```
 1. USUARIO ESCRIBE
-   ┌─────────────────────┐
-   │ "¿Stock medicamento X?" 
-   └────────────┬────────┘
+   ┌────────────────────────┐
+   │ "¿Stock medicamento X?"│ 
+   └────────────┬───────────┘
                 │
 2. FRONTEND (Capa 1: Vercel)
    ┌──────────────────────────────┐
@@ -90,19 +90,19 @@
    └────────────┬─────────────────┘
                 │
 3. BACKEND RECIBE (En AWS AgentCore)
-   ┌──────────────────────────────┐
-   │ • Valida user-token          │
-   │ • Extrae identidad del usuario
-   │ • Inyecta en contexto        │
-   └────────────┬─────────────────┘
+   ┌────────────────────────────────┐
+   │ • Valida user-token            │
+   │ • Extrae identidad del usuario │
+   │ • Inyecta en contexto          │
+   └────────────┬───────────────────┘
                 │
 4. ORCHESTRATION (Capa 2: LangGraph)
-   ┌──────────────────────────────┐
-   │ • Carga State anterior       │
-   │ • LLM lee: "¿Qué hago?"      │
-   │ • Decide: "Consultar BD"     │
-   │ • Ejecuta nodo correspondiente
-   └────────────┬─────────────────┘
+   ┌────────────────────────────────┐
+   │ • Carga State anterior         │
+   │ • LLM lee: "¿Qué hago?"        │
+   │ • Decide: "Consultar BD"       │
+   │ • Ejecuta nodo correspondiente │
+   └────────────┬───────────────────┘
                 │
 5. TOOLING (Capa 3: AgentCore)
    ┌──────────────────────────────┐
@@ -112,11 +112,11 @@
    └────────────┬─────────────────┘
                 │
 6. DATOS (Capa 4: Acceso)
-   ┌──────────────────────────────┐
-   │ • MCP consulta BD privada    │
-   │ • Con user-token del usuario │
-   │ • Retorna solo datos visibles
-   └────────────┬─────────────────┘
+   ┌───────────────────────────────┐
+   │ • MCP consulta BD privada     │
+   │ • Con user-token del usuario  │
+   │ • Retorna solo datos visibles │
+   └────────────┬──────────────────┘
                 │
 7. RESPUESTA (Streaming)
    ┌──────────────────────────────┐
@@ -224,7 +224,7 @@
          │
 ┌────────▼────────────────────────┐
 │ Cedar Policy Engine             │
-│ • ¿Puede ejecutar esta tool? ⭐ │
+│ • ¿Puede ejecutar esta tool? ⭐  │
 └────────┬────────────────────────┘
          │
 ┌────────▼────────────────────────┐
@@ -232,11 +232,11 @@
 │ • Recibe token en context       │
 └────────┬────────────────────────┘
          │
-┌────────▼────────────────────────┐
-│ Database Layer                  │
-│ • Valida usuario en BD privada  │
-│ • Devuelve solo datos autorizados
-└─────────────────────────────────┘
+┌────────▼──────────────────────────┐
+│ Database Layer                    │
+│ • Valida usuario en BD privada    │
+│ • Devuelve solo datos autorizados │
+└───────────────────────────────────┘
 ```
 
 ---

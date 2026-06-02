@@ -1,0 +1,344 @@
+# 🧪 Ask Sage: Validation & Testing Suite
+
+> ✅ ASK SAGE: VALIDATION SUITE
+Tests completos para producción.
+
+> Tests específicos para garantizar que Ask Sage es seguro, preciso y cumple regulaciones farmacéuticas.
+
+---
+
+## 🎯 Tipos de Tests
+
+| Nivel | Tipo | Qué Valida | Responsable | Duración |
+|-------|------|-----------|-------------|----------|
+| **1** | Unit: Identity | Token válido/inválido | Backend | < 100ms |
+| **1** | Unit: Territory | Vendedor MX solo ve MX | Backend | < 100ms |
+| **1** | Unit: Prompts | Respuesta contiene keywords | Backend | < 500ms |
+| **1** | Unit: Embeddings | Búsqueda funciona | Backend | < 2s |
+| **1** | Unit: Performance | Respuesta < 5s | Backend | < 5s |
+| **2** | Integration: E2E | Pregunta → Respuesta | Backend | < 5s |
+| **2** | Integration: Multi-nodo | Orquestación completa | Backend | < 5s |
+| **2** | Integration: Security | Cedar policies activas | Backend | < 1s |
+| **2** | Integration: Checkpoints | Persistencia funciona | Backend | < 1s |
+| **2** | Integration: Audit | Todo loguiado | Backend | < 1s |
+| **3** | E2E: Flujo Real | Vendedor simulado | QA | < 5s |
+| **3** | E2E: Auditoría | Cada acceso loguiado | Security | < 1s |
+| **3** | E2E: GDPR | Datos no se exponen | Compliance | < 1s |
+| **3** | E2E: Farmacias | Respuestas farmacéuticamente válidas | Domain | < 5s |
+| **3** | E2E: SLA | Performance cumplido | DevOps | < 5s |
+
+---
+
+## 🧪 TESTS UNIT: Identity & Security
+
+### Test 1: Identity Forwarding - Token Válido
+
+```python
+# tests/test_identity_forwarding.py
+import pytest
+from backend.ask_sage import verify_vendedor, get_allowed_products
+
+def test_identity_valid_token():
+    """✅ Token válido → Vendedor verificado"""
+    
+    # Token válido (Okta)
+    token = generate_test_token(subject="V001", groups=["MX", "LATAM"])
+    
+    # Verificar identidad
+    result = verify_vendedor(token)
+    
+    # Assertions
+    assert result["vendedor_id"] == "V001"
+    assert "MX" in result["territorios"]
+    assert "LATAM" in result["territorios"]
+    assert result["status"] == "ok"
+
+def test_identity_invalid_token():
+    """❌ Token corrupto → Error"""
+    
+    token = "invalid_token_12345"
+    
+    with pytest.raises(IdentityException) as exc_info:
+        verify_vendedor(token)
+    
+    assert "Invalid token" in str(exc_info.value)
+
+def test_identity_expired_token():
+    """❌ Token expirado → Error"""
+    
+    token = generate_test_token(subject="V001", exp=datetime.now() - timedelta(hours=1))
+    
+    with pytest.raises(IdentityException) as exc_info:
+        verify_vendedor(token)
+    
+    assert "Expired" in str(exc_info.value)
+```
+
+---
+
+### Test 2: Territory Filtering
+
+```python
+def test_territorio_mx_solo_ve_mx():
+    """✅ Vendedor MX no puede ver productos de AR"""
+    
+    vendedor_mx = {
+        "vendedor_id": "V001",
+        "territorios": ["MX", "LATAM"]
+    }
+    
+    # Buscar en base de datos
+    resultados = get_allowed_products(vendedor_mx, pregunta="¿Dosis?")
+    
+    # Verificar que TODOS los productos son MX o LATAM
+    for producto in resultados:
+        assert producto["territorio"] in vendedor_mx["territorios"]
+        assert producto["territorio"] != "AR"  # Nunca AR
+        assert producto["territorio"] != "BR"  # Nunca BR
+
+def test_territorio_cedarpolicy_blocked():
+    """✅ Cedar Policy bloquea acceso no autorizado"""
+    
+    vendedor_ar = {"vendedor_id": "V002", "territorios": ["AR"]}
+    
+    # Intentar ver producto de MX (no autorizado)
+    with pytest.raises(PermissionError):
+        product = get_product_details(
+            product_id="P_MX_001",
+            requester=vendedor_ar
+        )
+```
+
+---
+
+## 🧪 TESTS INTEGRATION: Orchestration & Data
+
+### Test 3: End-to-End Flow
+
+```python
+def test_ask_sage_e2e_pregunta_dosificacion():
+    """✅ Flujo completo: pregunta → respuesta"""
+    
+    # Setup
+    vendedor = {
+        "id": "V001",
+        "territorio": "MX",
+        "token": generate_test_token(subject="V001", groups=["MX"])
+    }
+    
+    # Ejecutar
+    respuesta = ask_sage_handler({
+        "message": "¿Cuál es la dosis máxima para insuficiencia renal grado 3?"
+    }, context=vendedor)
+    
+    # Verificar respuesta
+    assert respuesta["status"] == "ok"
+    assert "dosis" in respuesta["respuesta_final"].lower()
+    assert "insuficiencia renal" in respuesta["respuesta_final"].lower()
+    assert respuesta["confianza"] >= 0.8
+    assert respuesta["fuentes"] > 0  # Encontró PDFs, videos, etc
+
+def test_ask_sage_e2e_no_aprobacion_si_confianza_alta():
+    """✅ Si confianza >= 0.8, no espera aprobación"""
+    
+    respuesta = ask_sage_handler({
+        "message": "¿Dosis estándar para fiebre?"
+    })
+    
+    assert respuesta["requiere_aprobacion_humana"] == False
+    assert respuesta["confianza"] >= 0.8
+
+def test_ask_sage_e2e_si_aprobacion_si_confianza_baja():
+    """✅ Si confianza < 0.8, espera aprobación humana"""
+    
+    respuesta = ask_sage_handler({
+        "message": "¿Dosis para condición rara no documentada?"
+    })
+    
+    # Confianza baja → requiere aprobación
+    assert respuesta["requiere_aprobacion_humana"] == True
+    assert respuesta["confianza"] < 0.8
+    assert "esperando aprobación" in respuesta.get("status", "").lower()
+```
+
+---
+
+### Test 4: Persistencia & Checkpoints
+
+```python
+def test_checkpoint_pause_resume():
+    """✅ Conversación puede pausarse y reanudarse"""
+    
+    thread_id = "vendedor_v001_session_123"
+    
+    # Paso 1: Pregunta
+    respuesta1 = ask_sage_handler(
+        {"message": "Primera pregunta?"},
+        config={"thread_id": thread_id}
+    )
+    
+    assert respuesta1["status"] == "ok"
+    
+    # Paso 2: Pausa (simular corte de conexión)
+    # ...
+    
+    # Paso 3: Reanudar
+    respuesta2 = ask_sage_handler(
+        {"message": "Segunda pregunta?"},
+        config={"thread_id": thread_id}  # Mismo thread
+    )
+    
+    # Verificar que el histórico se mantiene
+    assert len(respuesta2["messages"]) > 1  # Ambas preguntas están
+    assert respuesta2["messages"][0]["content"] == "Primera pregunta?"
+    assert respuesta2["messages"][-1]["content"] == "Segunda pregunta?"
+```
+
+---
+
+## 🧪 TESTS E2E: Compliance & Pharma
+
+### Test 5: Validación Farmacéutica
+
+```python
+def test_respuesta_contiene_informacion_critica():
+    """✅ Respuesta DEBE incluir: dosis, intervalo, contraindicaciones"""
+    
+    respuesta = ask_sage_handler({
+        "message": "¿Dosis de ibuprofeno?"
+    })
+    
+    contenido = respuesta["respuesta_final"].lower()
+    
+    assert "dosis" in contenido or "mg" in contenido  # Dosis en números
+    assert "cada" in contenido or "intervalo" in contenido  # Intervalo
+    # (Contraindicaciones son opcionales pero preferibles)
+
+def test_respuesta_no_inventa_informacion():
+    """❌ Si no hay información, no inventar (bajo confianza)"""
+    
+    respuesta = ask_sage_handler({
+        "message": "¿Dosis de droga ficticia que no existe?"
+    })
+    
+    # Debe ser honesto: "No encontré información"
+    assert respuesta["confianza"] < 0.3
+    assert "no encontr" in respuesta["respuesta_final"].lower() or \
+           "no disponible" in respuesta["respuesta_final"].lower()
+    assert respuesta["requiere_aprobacion_humana"] == True
+
+def test_respuesta_cita_fuentes():
+    """✅ Toda respuesta debe tener fuentes (PDF, video, DB)"""
+    
+    respuesta = ask_sage_handler({
+        "message": "¿Efectos secundarios del paracetamol?"
+    })
+    
+    assert "fuentes" in respuesta
+    assert len(respuesta["fuentes"]) > 0
+    
+    # Cada fuente debe tener: tipo (PDF/video/DB) y referencia
+    for fuente in respuesta["fuentes"]:
+        assert "tipo" in fuente  # PDF, video, database
+        assert "referencia" in fuente  # URL, timestamp, tabla
+```
+
+---
+
+### Test 6: Auditoría & Compliance
+
+```python
+def test_audit_trail_completo():
+    """✅ Cada acceso se loga con identidad, timestamp, resultado"""
+    
+    vendedor = {"id": "V001", "token": "token_mx"}
+    
+    respuesta = ask_sage_handler(
+        {"message": "¿Dosis?"},
+        requester=vendedor
+    )
+    
+    # Verificar que audit trail tiene todo
+    audit = respuesta["audit_trail"]
+    
+    assert len(audit) > 0
+    for entry in audit:
+        assert "timestamp" in entry  # Cuándo
+        assert "vendedor_id" in entry  # Quién
+        assert "accion" in entry  # Qué (búsqueda, generación, etc)
+        assert "resultado" in entry  # Status (ok/error)
+        assert "duracion_ms" in entry  # Cuánto tardó
+
+def test_no_exposicion_de_datos_otros_vendedores():
+    """🔐 GDPR: Datos de V001 nunca se exponen a V002"""
+    
+    # V001 hace pregunta
+    respuesta_v001 = ask_sage_handler(
+        {"message": "¿Mis territorios?"},
+        requester={"id": "V001", "territorios": ["MX"]}
+    )
+    
+    # V002 intenta acceder a datos de V001
+    with pytest.raises(PermissionError):
+        respuesta_v002 = ask_sage_handler(
+            {"message": "Dame datos de V001"},
+            requester={"id": "V002", "territorios": ["AR"]}
+        )
+
+def test_sla_response_time():
+    """⏱️ Respuesta en < 5 segundos"""
+    
+    start = time.time()
+    respuesta = ask_sage_handler({
+        "message": "¿Dosis estándar?"
+    })
+    elapsed = time.time() - start
+    
+    assert elapsed < 5.0  # SLA: 5 segundos
+    print(f"Respuesta en {elapsed:.2f}s")
+```
+
+---
+
+## 🚀 Ejecutar Todos los Tests
+
+```bash
+# Tests unitarios solamente
+pytest tests/ -m unit
+
+# Tests de integración
+pytest tests/ -m integration
+
+# Tests E2E
+pytest tests/ -m e2e
+
+# Todo (unit + integration + e2e)
+pytest tests/ -v --tb=short
+
+# Con coverage
+pytest tests/ --cov=backend --cov-report=html
+
+# Tests específicos
+pytest tests/test_identity_forwarding.py::test_territorio_mx_solo_ve_mx -v
+```
+
+---
+
+## 📊 Checklist: ¿Ask Sage está listo para producción?
+
+- [ ] ✅ Todos los unit tests PASSING
+- [ ] ✅ Todos los integration tests PASSING
+- [ ] ✅ Todos los E2E tests PASSING
+- [ ] ✅ Coverage >= 80%
+- [ ] ✅ Audit trail = 100% de accesos loguiados
+- [ ] ✅ SLA < 5 segundos en 99% de casos
+- [ ] ✅ GDPR: Sin data leaks
+- [ ] ✅ Pharma: Respuestas válidas
+- [ ] ✅ Security: Cedar policies activas
+- [ ] ✅ Monitoreo: Alertas configuradas
+
+---
+
+**¿Listo?** Ejecuta `pytest tests/ -v` y verifica que TODO es verde ✅
+
+Luego: Deploy a staging → Testing manual → Deploy a producción 🚀

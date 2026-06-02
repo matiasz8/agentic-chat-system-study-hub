@@ -1,0 +1,43 @@
+# 📚 Ruta Completa: Módulo 5
+
+> MÓDULO 5: ARISTAS
+Lógica condicional entre nodos.
+
+**Objetivo:** Aristas - El flujo condicional.
+
+## Lee
+
+- [Aristas Condicionales](/orchestration/13-aristas)
+- [Checkpoints](/orchestration/14-checkpoints)
+
+## Entiende
+
+Aristas conectan nodos con lógica condicional:
+
+```
+Nodo 1 (Verificar) 
+  → ¿Autorizado?
+    ✅ SÍ → Nodo 2 (Buscar)
+    ❌ NO → Error
+
+Nodo 2 (Buscar)
+  → Encontró resultados?
+    ✅ SÍ → Nodo 3 (Validar)
+    ❌ NO → Error
+```
+
+## Ejecuta
+
+`backend/ask_sage_graph.py` línea 60-72:
+- ¿Qué define las aristas?
+- ¿Cómo se llaman los nodos?
+- ¿Hay checkpoints?
+
+Cambia una arista. Prueba.
+
+## Próximo
+
+Módulo 6: Identity Forwarding (el corazón de la seguridad).
+
+---
+

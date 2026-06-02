@@ -1,5 +1,8 @@
 # Checkpoints
 
+> Checkpoints: Persistencia
+Guardar y reanudar ejecución.
+
 # Checkpoints: Memoria y Persistencia
 
 ## Descripción
@@ -52,11 +55,11 @@ python examples/01_basico.py
 
 ### Conceptos Clave
 
-1. **Checkpoints (Puntos de Control)** - Sistema de persistencia que guarda el estado completo del grafo en cada paso. Permite retomar un workflow desde donde se pausó, incluso después de un crash. Esencial para workflows largos que pueden fallar a mitad del camino.
-
-2. **State Persistence** - Los checkpoints almacenan el estado actual (mensajes, variables, contexto) en una base de datos o archivo. Posibilita resumción exacta sin perder progreso. Implementado típicamente con SQLite, PostgreSQL o memoria en caché.
-
-3. **Memory Management** - Estrategia para mantener histórico conversacional sin consumir memoria infinita. Checkpoints permiten limpiar memoria vieja mientras se preservan puntos críticos de restauración. Mejora la escalabilidad de agentes de larga duración.
+| Concepto | Definición | Implementación | Beneficio |
+|----------|-----------|---|---|
+| **Checkpoints** | Guardar estado completo del grafo en cada paso | SQLite, PostgreSQL, caché | Reanudar workflows sin perder progreso |
+| **State Persistence** | Almacenar mensajes, variables, contexto | BD + histórico | Restauración exacta |
+| **Memory Management** | Mantener histórico sin overflow | Limpiar viejo, preservar crítico | Escalable a workflows largos |
 
 ### Ejemplos Incluidos
 

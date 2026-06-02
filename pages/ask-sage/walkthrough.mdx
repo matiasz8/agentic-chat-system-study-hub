@@ -1,0 +1,530 @@
+# 🎯 Ask Sage: Project Walkthrough
+
+> 📊 ASK SAGE: PROJECT WALKTHROUGH
+De pregunta a respuesta en 5 capas.
+
+> Una arquitectura end-to-end: cómo fluye una pregunta del vendedor desde el frontend hasta la respuesta en prod.
+
+---
+
+## 🎬 Escenario Real
+
+### Vendedor MÉXICO pregunta:
+> "¿Cuál es la dosis máxima para pacientes con insuficiencia renal grado 3?"
+
+---
+
+## 📊 DIAGRAMA COMPLETO
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         ARQUITECTURA ASK SAGE                           │
+└─────────────────────────────────────────────────────────────────────────┘
+
+    ┌─────────────────────────────────────────────┐
+    │  CAPA 1: FRONTEND (Vercel AI SDK + Next.js) │
+    │          React + Streaming                   │
+    └────────────────────┬────────────────────────┘
+                         │
+                         │ (1) Vendedor escribe pregunta
+                         │     + envía token Okta
+                         ↓
+    ┌─────────────────────────────────────────────┐
+    │ CAPA 3: IDENTITY & GOVERNANCE (AWS Bedrock) │
+    │ • Verifica token Okta                        │
+    │ • Identifica: Vendedor MX, Territorio MX    │
+    │ • Carga políticas Cedar                      │
+    └────────────────────┬────────────────────────┘
+                         │
+                         │ (2) Identity Forward:
+                         │     "V001 ∈ [MX, LATAM]"
+                         │     "Acceso: Productos X, Y, Z"
+                         ↓
+    ┌─────────────────────────────────────────────┐
+    │ CAPA 2: ORCHESTRATION (LangGraph)           │
+    │ • State centralizado                         │
+    │ • Nodos ejecutables                          │
+    │ • Aristas condicionales                      │
+    └────────────────────┬────────────────────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         │               │               │
+      (3.a) Buscar   (3.b) Consultar  (3.c) Llamar
+      en PDFs        base de datos    LLM para
+                                       contexto
+         │               │               │
+         ↓               ↓               ↓
+    ┌─────────────────────────────────────────────┐
+    │ CAPA 4: DATA LAYER (MCP + Embeddings)       │
+    │ • Servidor MCP: Documentos, DB, Videos      │
+    │ • Embeddings multimodales                   │
+    │ • Búsqueda por similitud                    │
+    │                                              │
+    │ Encuentra:                                   │
+    │ - PDF "Bula Técnica.pdf" pág 12            │
+    │ - DB: "max_dose_renal_g3 = 100mg"          │
+    │ - Video: "Dosificación 4:32"                │
+    └────────────────────┬────────────────────────┘
+                         │
+                         │ (4) Datos traídos
+                         │     Confianza: 0.95
+                         ↓
+    ┌─────────────────────────────────────────────┐
+    │ CAPA 2: ORCHESTRATION (LangGraph cont.)     │
+    │ • Arista: ¿Confianza >= 0.8?               │
+    │   SÍ → Respuesta final                      │
+    │   NO → Checkpoint: Pedir aprobación humana  │
+    └────────────────────┬────────────────────────┘
+                         │
+                         │ (5) Respuesta lista
+                         ↓
+    ┌─────────────────────────────────────────────┐
+    │ CAPA 1: FRONTEND (Streaming)                │
+    │ • Token por token                           │
+    │ • Componentes React dinámicos               │
+    │ • Tabla de dosis interactiva                │
+    └────────────────────┬────────────────────────┘
+                         │
+                         │ (6) Respuesta llega
+                         ↓
+    ┌─────────────────────────────────────────────┐
+    │ VENDEDOR ve:                                │
+    │ ✓ "Dosis máxima: 100mg/día"                 │
+    │ ✓ [TABLA INTERACTIVA de dosis]             │
+    │ ✓ "Fuente: Bula Técnica (PDF pág 12)"     │
+    │ ✓ Botón: "Ver video explicativo"           │
+    │ ✓ Botón: "Compartir con paciente"          │
+    └─────────────────────────────────────────────┘
+```
+
+---
+
+## 🔄 FLUJO PASO A PASO
+
+### PASO 1: FRONTEND - Capturar Entrada
+
+**Ubicación**: `frontend/01_streaming` + `frontend/02_generative_ui`
+
+```javascript
+// pages/chat/[slug].tsx
+export default function ChatPage() {
+  const [messages, setMessages] = useState([]);
+  
+  const handleSubmit = async (question: string) => {
+    // ✅ El vendedor pregunta
+    // ✅ Su token Okta se adjunta automáticamente (interceptor HTTP)
+    
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${okta_token}`, // 🔐
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        question,
+        context: { vendedor_id: 'V001', territorio: 'MX' }
+      })
+    });
+    
+    // ✅ Streaming: recibir tokens uno por uno
+    const stream = response.body.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await stream.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      // 🎬 Mostrar cada token en tiempo real
+      setMessages(prev => [...prev, chunk]);
+    }
+  };
+}
+```
+
+**Conceptos Ask Sage**:
+- ✅ Streaming: Vendedor ve "Por favor espere" → "Buscando" → "Encontré" (en tiempo real)
+- ✅ Generative UI: Tabla de dosis como componente React (no texto plano)
+
+---
+
+### PASO 2: IDENTITY FORWARDING - Verificar Acceso
+
+**Ubicación**: `runtime/21_identity_forwarding`
+
+```python
+# backend/middleware/identity.py
+from aws_agentcore import verify_identity, get_allowed_resources
+
+async def verify_vendedor_access(token: str, territorio: str):
+    """
+    ✅ Verifica: ¿Puede este vendedor acceder a datos de este territorio?
+    """
+    
+    # 1. Validar token Okta
+    claims = verify_identity(token)  # → {'sub': 'V001', 'groups': ['MX', 'LATAM']}
+    
+    # 2. Buscar recursos autorizados
+    allowed = get_allowed_resources(
+        user_id=claims['sub'],
+        territory=territorio
+    )
+    
+    # 3. Ejemplo de respuesta:
+    return {
+        'vendedor_id': 'V001',
+        'territorio': 'MX',
+        'allowed_products': ['P001', 'P002', 'P003'],  # ✅ Solo estos
+        'allowed_territories': ['MX', 'LATAM'],
+        'policies': ['ReadOnly', 'NoExport']
+    }
+
+# IMPORTANTE: Vendedor AR NO PUEDE VER ESTO
+# Si intenta: {"territorio": "BR"} → Error 403 (Forbidden)
+```
+
+**Conceptos Ask Sage**:
+- ✅ Identity: Okta token → Vendedor + Territorios
+- ✅ Governance: Cada vendedor solo ve SUS datos
+- 🔐 CRÍTICO: Token no se exponea en el frontend
+
+---
+
+### PASO 3: ORCHESTRATION - Decidir Flujo
+
+**Ubicación**: `orchestration/11_state` + `orchestration/13_aristas`
+
+```python
+# backend/orchestration/ask_sage_graph.py
+from langgraph.graph import StateGraph
+from typing_extensions import TypedDict
+
+class AskSageState(TypedDict):
+    """Estado centralizado de Ask Sage"""
+    vendedor_id: str
+    territorio: str
+    pregunta: str
+    contexto_permitido: list  # ✅ Productos permitidos
+    resultado_busqueda: dict
+    respuesta_generada: str
+    confianza: float
+    requiere_aprobacion: bool
+
+def create_ask_sage_graph():
+    graph = StateGraph(AskSageState)
+    
+    # NODOS: Funciones ejecutables
+    def nodo_buscar_documentos(state: AskSageState) -> AskSageState:
+        """Buscar en PDFs, videos, DB"""
+        # 🔍 Busca respuesta usando MCP
+        estado['resultado_busqueda'] = {
+            'fuente': 'PDF Bula Técnica pág 12',
+            'contenido': 'Dosis máxima: 100mg/día',
+            'confianza': 0.95
+        }
+        return state
+    
+    def nodo_generar_respuesta(state: AskSageState) -> AskSageState:
+        """Generar respuesta final con componentes React"""
+        state['respuesta_generada'] = f"""
+        Basado en {state['resultado_busqueda']['fuente']}:
+        
+        **Dosis máxima para insuficiencia renal grado 3: 100mg/día**
+        
+        [TABLA INTERACTIVA GENERADA AQUÍ]
+        """
+        state['confianza'] = state['resultado_busqueda']['confianza']
+        return state
+    
+    def nodo_validacion(state: AskSageState) -> AskSageState:
+        """¿Necesita aprobación humana?"""
+        state['requiere_aprobacion'] = state['confianza'] < 0.8
+        return state
+    
+    # Agregar nodos
+    graph.add_node("buscar", nodo_buscar_documentos)
+    graph.add_node("generar", nodo_generar_respuesta)
+    graph.add_node("validar", nodo_validacion)
+    
+    # ARISTAS: Rutas condicionales
+    graph.add_edge("buscar", "generar")
+    
+    # Condicional: ¿Confianza >= 0.8?
+    def arista_confianza(state: AskSageState):
+        if state['confianza'] >= 0.8:
+            return "RESPUESTA_LISTA"
+        else:
+            return "APROBACION_HUMANA"
+    
+    graph.add_conditional_edges(
+        "validar",
+        arista_confianza,
+        {
+            "RESPUESTA_LISTA": "__end__",
+            "APROBACION_HUMANA": "esperar_aprobacion"
+        }
+    )
+    
+    return graph.compile()
+
+# Ejecutar
+ask_sage_graph = create_ask_sage_graph()
+resultado = ask_sage_graph.invoke(initial_state)
+```
+
+**Conceptos Ask Sage**:
+- ✅ State: Guardar contexto (qué búscó, qué encontró)
+- ✅ Nodos: Funciones independientes (buscar, generar, validar)
+- ✅ Aristas: Decidir siguientes pasos (if confianza >= 0.8)
+
+---
+
+### PASO 4: DATA LAYER - Buscar Información
+
+**Ubicación**: `data/30_mcp_protocol` + `data/31_multimodal_embeddings`
+
+```python
+# backend/data/mcp_client.py
+from mcp import MCPClient
+from embeddings import MultimodalEmbedding
+
+class AskSageDataLayer:
+    """Acceso unificado a PDFs, DB, Videos"""
+    
+    def __init__(self):
+        self.mcp = MCPClient()
+        self.embeddings = MultimodalEmbedding()
+    
+    def buscar_respuesta(self, pregunta: str, contexto: dict) -> dict:
+        """
+        Busca en:
+        1. PDFs (embeddings de texto)
+        2. DB (queries SQL)
+        3. Videos (embeddings de frames)
+        """
+        
+        # 1. Vectorizar pregunta
+        vector_pregunta = self.embeddings.embed_text(pregunta)
+        
+        # 2. Buscar similares en Pinecone
+        resultados_pdf = self.mcp.search(
+            vector=vector_pregunta,
+            source="pdfs",
+            territorio=contexto['territorio']  # ✅ Solo datos permitidos
+        )
+        
+        # 3. Query a base de datos
+        resultados_db = self.mcp.query(
+            """
+            SELECT * FROM farmaco_dosis 
+            WHERE condicion LIKE %s 
+            AND territorio IN %s
+            """,
+            params=("insuficiencia renal", contexto['territories'])
+        )
+        
+        # 4. Buscar en videos
+        resultados_videos = self.mcp.search_videos(
+            query="dosificación insuficiencia renal",
+            territorio=contexto['territorio']
+        )
+        
+        return {
+            'pdfs': resultados_pdf,
+            'db': resultados_db,
+            'videos': resultados_videos,
+            'confianza': max([r['score'] for r in resultados_pdf])
+        }
+
+# Resultado:
+# {
+#   'pdfs': [{'fuente': 'Bula.pdf', 'pag': 12, 'score': 0.95}],
+#   'db': [{'dosis': '100mg', 'territorio': 'MX'}],
+#   'videos': [{'url': 'youtube...', 'timestamp': '4:32'}],
+#   'confianza': 0.95
+# }
+```
+
+**Conceptos Ask Sage**:
+- ✅ MCP: Acceso uniforme a cualquier fuente (PDF, DB, Video)
+- ✅ Embeddings: Buscar por similitud semántica
+- ✅ Multimodal: Procesar texto + imágenes + video
+
+---
+
+### PASO 5: GENERATIVE UI - Respuesta Interactiva
+
+**Ubicación**: `frontend/02_generative_ui`
+
+```typescript
+// components/DoseTable.tsx (Componente generado por el bot)
+
+export function DoseTable({ dosages }: { dosages: Dosage[] }) {
+  return (
+    <div className="space-y-4">
+      <h3 className="text-lg font-bold">Dosificación por Condición</h3>
+      
+      <table className="w-full border">
+        <thead className="bg-blue-50">
+          <tr>
+            <th>Condición</th>
+            <th>Dosis Máxima</th>
+            <th>Intervalo</th>
+            <th>Nivel Evidencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dosages.map(d => (
+            <tr key={d.id} className="border-b hover:bg-gray-50">
+              <td>{d.condition}</td>
+              <td className="font-mono">{d.max_dose}</td>
+              <td>{d.interval}</td>
+              <td>
+                <span className={`badge ${d.evidence_level === 'A' ? 'bg-green-100' : 'bg-yellow-100'}`}>
+                  {d.evidence_level}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      {/* Botones interactivos */}
+      <div className="flex gap-2">
+        <button className="btn-primary">
+          📋 Copiar a expediente
+        </button>
+        <button className="btn-secondary">
+          📊 Ver gráfico
+        </button>
+        <button className="btn-secondary">
+          🔗 Compartir link
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// El bot genera esto automáticamente:
+// <DoseTable dosages={[
+//   {id: '1', condition: 'Insuf. renal G3', max_dose: '100mg', interval: 'c/24h', evidence_level: 'A'},
+//   {id: '2', condition: 'Insuf. renal G4', max_dose: '50mg', interval: 'c/48h', evidence_level: 'B'}
+// ]} />
+```
+
+**Conceptos Ask Sage**:
+- ✅ Generative UI: Bot devuelve componentes React (no texto)
+- ✅ Interactivo: Botones, tablas, gráficos sin UI estática
+
+---
+
+### PASO 6: VALIDACIÓN - Tests Ask Sage
+
+**Ubicación**: `validation/51_testing_workflows` + `validation/52_validation_orchestration`
+
+```python
+# tests/test_ask_sage_end_to_end.py
+
+def test_vendedor_mexico_solo_ve_productos_mexico():
+    """✅ Vendedor MX no puede ver datos de AR"""
+    
+    # Setup
+    vendedor = {'id': 'V001', 'territorio': 'MX'}
+    
+    # Ejecutar
+    resultado = ask_sage_graph.invoke({
+        'vendedor_id': vendedor['id'],
+        'territorio': vendedor['territorio'],
+        'pregunta': 'Dosis para insuficiencia renal?'
+    })
+    
+    # Verificar
+    assert 'allowed_products' in resultado
+    assert all(p in ['P001', 'P002', 'P003'] for p in resultado['productos_visibles'])
+    assert 'P999_SOLO_ARGENTINA' not in resultado['productos_visibles']
+    
+def test_streaming_respuesta():
+    """✅ Respuesta llega en tokens (streaming)"""
+    
+    tokens = []
+    
+    def capturar_token(token):
+        tokens.append(token)
+    
+    ask_sage_graph.stream_response(query, callback=capturar_token)
+    
+    # Verificar que llegaron tokens progresivamente
+    assert len(tokens) > 1
+    assert tokens[0] in ['Por', 'Buscando', 'Encontré']
+    
+def test_identity_forwarding_token_valido():
+    """✅ Identity forwarding acepta token Okta válido"""
+    
+    token_valido = generate_okta_token(subject='V001')
+    
+    resultado = verify_vendedor_access(token_valido, 'MX')
+    
+    assert resultado['vendedor_id'] == 'V001'
+    assert 'MX' in resultado['allowed_territories']
+    
+def test_identity_forwarding_token_invalido():
+    """✅ Identity forwarding rechaza token inválido"""
+    
+    token_invalido = "corrupted_token"
+    
+    with pytest.raises(IdentityException):
+        verify_vendedor_access(token_invalido, 'MX')
+```
+
+**Conceptos Ask Sage**:
+- ✅ Testing: Validar seguridad (solo ve sus datos)
+- ✅ E2E: Verificar flujo completo
+
+---
+
+## 🎬 RENDER DEL FLUJO COMPLETO
+
+```
+ENTRADA: Vendedor MX pregunta "¿Dosis insuficiencia renal?"
+         Token Okta adjunto
+
+        ↓ (1s) Identity: Verifica vendedor ✓
+        ↓ (2s) Orchestration: Inicia LangGraph
+        ├─ Nodo 1: Busca en MCP
+        ├─ Nodo 2: Genera respuesta
+        └─ Nodo 3: Valida confianza
+        ↓ (0.5s) Data: MCP consulta PDFs + DB
+        ├─ PDF: "Bula pág 12" → "100mg máx"
+        ├─ DB: "renal_g3_max_dose = 100"
+        └─ Video: "Dosificación 4:32"
+        ↓ (0.5s) Frontend: Streaming tokens
+        ├─ Token 1: "Basado"
+        ├─ Token 2: " en"
+        ├─ Token 3: " Bula"
+        └─ ...
+        ↓ (FINAL) Respuesta completa con tabla interactiva
+
+SALIDA: Tabla de dosis + "Copiar", "Ver gráfico", "Compartir"
+        TODO en tiempo real (< 5 segundos)
+```
+
+---
+
+## 🔐 Checklist: ¿Todo Seguro?
+
+- [ ] ✅ Identity: Token Okta validado
+- [ ] ✅ Governance: Vendedor solo ve territorios permitidos
+- [ ] ✅ Data: MCP filtra por territorio
+- [ ] ✅ Streaming: Token no se expone al cliente
+- [ ] ✅ Audit: Todos los accesos loguiados
+- [ ] ✅ Testing: 100% de casos cubiertos
+
+---
+
+## 📚 Próximos Pasos
+
+1. **Terminar Learning Path**: Estudia en orden Frontend → Orch → Runtime → Data
+2. **Implementar tu propia pregunta**: Diseña una para tu dominio
+3. **Deploy**: Lleva esto a staging → producción
+
+**¡Listo? Vamos a [Ask Sage Learning Path](/ask-sage/path)**

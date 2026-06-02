@@ -1,0 +1,18 @@
+{
+  "modulo-1-frontend": "Módulo 1: Fundamentos Frontend",
+  "modulo-2-streaming": "Módulo 2: Streaming",
+  "modulo-3-state": "Módulo 3: State Management",
+  "modulo-4-nodos": "Módulo 4: Los 3 Nodos",
+  "modulo-5-aristas": "Módulo 5: Aristas & Flujo",
+  "modulo-6-identity": "Módulo 6: Identity Forwarding",
+  "modulo-7-mcp": "Módulo 7: MCP Data Layer",
+  "modulo-8-validacion": "Módulo 8: Validación & Cedar",
+  "modulo-9-testing": "Módulo 9: Testing & E2E",
+  "modulo-10-observability": "Módulo 10: Observability",
+  "modulo-11-docker": "Módulo 11: Docker",
+  "modulo-12-aws": "Módulo 12: AWS Deploy",
+  "ejercicio-1-multi-llm": "🎓 Ejercicio Avanzado 1: Multi-LLM",
+  "ejercicio-2-embeddings": "🎓 Ejercicio Avanzado 2: Embeddings",
+  "ejercicio-3-abtesting": "🎓 Ejercicio Avanzado 3: A/B Testing",
+  "ejercicio-4-okta": "🎓 Ejercicio Avanzado 4: Okta Production"
+}

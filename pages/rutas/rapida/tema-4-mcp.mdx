@@ -1,0 +1,54 @@
+# 🔌 Tema 4: MCP Data Layer
+
+> TEMA 4: MCP
+Datos externos en 1 hora.
+
+**Qué aprenderás:** Cómo Ask Sage busca información de fármacos.
+
+## 📖 Lee
+
+- [MCP Protocol](/data/30-mcp-protocol)
+
+## 🔧 Modifica el Código
+
+Abre: `backend/ask_sage_graph.py` líneas 36-48
+
+```python
+def nodo_buscar_mcp(state):
+    # Mock simple: si pregunta por "dosis" + "insuficiencia"
+    # devuelve tabla de fármacos
+```
+
+**Tarea:** Agrega un nuevo fármaco al mock:
+
+```python
+# DESPUÉS DE línea 43, agrega:
+if "ibuprofeno" in query.lower():
+    return {
+        "search_results": [
+            {"nombre": "Ibuprofeno 400mg", "dosis": "400mg cada 6h"}
+        ]
+    }
+```
+
+## ⚙️ Ejecuta
+
+Pregunta en chat:
+```
+"¿Dosis de ibuprofeno?"
+```
+
+**¿Qué ves?** Respuesta con el nuevo fármaco. ✅
+
+## ✅ Verifica
+
+- [ ] Query llega al backend
+- [ ] Search results incluye tu fármaco nuevo
+- [ ] Frontend muestra tabla
+
+## ➡️ Siguiente
+
+Ahora vamos a validación (guardrails).
+
+---
+

@@ -1,0 +1,123 @@
+# 🎓 Ejercicio Avanzado 3: A/B Testing Framework
+
+> EJERCICIO 3: A/B TESTING
+Compara estrategias de prompts.
+
+**Después de Módulo 12.** Para medir qué funciona.
+
+## ¿Por Qué?
+
+"¿Mi prompt es mejor?" Solo tests lo dicen.
+
+Necesitas framework para:
+- Testear N variantes de prompts
+- Medir accuracy de dosis
+- Comparar confianza entre versiones
+- Detectar regresiones
+
+## Arquitectura
+
+```
+Prompt Versión A → Test contra 100 queries
+Prompt Versión B → Test contra 100 queries
+Prompt Versión C → Test contra 100 queries
+  ↓
+Comparar: Exactitud, Confianza, Latencia
+  ↓
+Elegir ganador → Promover a PROD
+```
+
+## Implementa
+
+**Paso 1: Test data**
+
+```python
+# tests/datos_ab.json
+{
+  "test_cases": [
+    {
+      "query": "Dosis para insuficiencia renal",
+      "esperado": "Dosis reducida (50-75%)",
+      "territorio": "MX"
+    },
+    ...
+  ]
+}
+```
+
+**Paso 2: A/B Test framework**
+
+```python
+import json
+
+def test_prompt_version(version: str, test_cases: list):
+    resultados = []
+    
+    for caso in test_cases:
+        respuesta = ask_sage_con_prompt(
+            query=caso["query"],
+            prompt_version=version,
+            territorio=caso["territorio"]
+        )
+        
+        exacto = (respuesta["dosis"] == caso["esperado"])
+        resultados.append({
+            "exacto": exacto,
+            "confianza": respuesta["confidence"],
+            "latencia": respuesta["time"]
+        })
+    
+    return {
+        "version": version,
+        "accuracy": sum(1 for r in resultados if r["exacto"]) / len(resultados),
+        "avg_confidence": sum(r["confianza"] for r in resultados) / len(resultados),
+        "avg_latency": sum(r["latencia"] for r in resultados) / len(resultados)
+    }
+
+# Ejecutar
+resultados_a = test_prompt_version("v1", test_cases)
+resultados_b = test_prompt_version("v2", test_cases)
+
+print(f"V1: {resultados_a}")
+print(f"V2: {resultados_b}")
+
+# Comparar
+if resultados_b["accuracy"] > resultados_a["accuracy"]:
+    print("✅ V2 es mejor!")
+else:
+    print("❌ V1 sigue siendo mejor")
+```
+
+**Paso 3: Estadística**
+
+```python
+from scipy import stats
+
+# ¿Es diferencia estadísticamente significativa?
+t_stat, p_value = stats.ttest_ind(
+    [1 if r["exacto"] else 0 for r in test_a],
+    [1 if r["exacto"] else 0 for r in test_b]
+)
+
+if p_value < 0.05:
+    print(f"Diferencia significativa (p={p_value})")
+```
+
+## Verifica
+
+```bash
+cd backend
+pytest tests/test_ab.py -v
+
+# Output esperado
+# Version A: Accuracy 0.87, Confianza 0.92
+# Version B: Accuracy 0.91, Confianza 0.94
+# ✅ Version B gana con p < 0.05
+```
+
+## Próximo
+
+Ejercicio 4: Production Okta Integration.
+
+---
+

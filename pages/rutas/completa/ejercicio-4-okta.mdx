@@ -1,0 +1,189 @@
+# 🎓 Ejercicio Avanzado 4: Production Okta Integration
+
+> EJERCICIO 4: OKTA ⭐
+Identidad en producción.
+
+**Después de Módulo 12.** De mock a real.
+
+## ¿Por Qué?
+
+Ahora: Mock hardcoded `territorio = "MX"`
+
+Realidad: Okta controla todo:
+- ¿Quién eres?
+- ¿Qué territorios puedes acceder?
+- ¿Qué grupos perteneces?
+
+Sin Okta real = no es producción.
+
+## Arquitectura
+
+```
+Frontend → envía JWT token
+  ↓
+Backend recibe token
+  ↓
+Valida con Okta
+  ↓
+Extrae claims: territorio, grupos, permisos
+  ↓
+Filtra datos según territorio
+```
+
+## Implementa
+
+**Paso 1: Configurar Okta**
+
+```bash
+# Crea app en Okta dashboard
+# Nota: client_id, client_secret
+# Nota: okta_domain = https://yourorg.okta.com
+```
+
+**Paso 2: Instalar dependencias**
+
+```bash
+pip install okta python-jose cryptography
+```
+
+**Paso 3: Reemplazar mock**
+
+En `backend/ask_sage_graph.py`:
+
+```python
+from okta.client import Client as OktaClient
+from jose import jwt, JWTError
+
+async def nodo_verificar_identidad(state):
+    token = state.get("auth_token")
+    
+    if not token:
+        return {"error": "No token provided"}
+    
+    try:
+        # Verificar token con Okta
+        okta_client = OktaClient({
+            "client_id": os.getenv("OKTA_CLIENT_ID"),
+            "client_secret": os.getenv("OKTA_CLIENT_SECRET"),
+            "base_url": os.getenv("OKTA_BASE_URL")
+        })
+        
+        # Decodificar JWT
+        claims = jwt.get_unverified_claims(token)
+        
+        # Llamar a Okta para verificar
+        user_id = claims["sub"]
+        user = okta_client.get_user(user_id)
+        
+        # Extraer territorio del grupo
+        grupos = user["groups"]
+        territorio = extraer_territorio(grupos)  # "MX", "AR", etc.
+        
+        return {
+            "usuario_id": user_id,
+            "territorio": territorio,
+            "grupos": grupos,
+            "verificado": True
+        }
+    except JWTError:
+        return {"error": "Invalid token"}
+```
+
+**Paso 4: Helpers**
+
+```python
+def extraer_territorio(grupos: list) -> str:
+    """
+    Grupos en Okta:
+    - sales-mx
+    - sales-ar
+    - admin-global
+    
+    Extraer territorio del grupo.
+    """
+    for grupo in grupos:
+        if "sales-mx" in grupo:
+            return "MX"
+        elif "sales-ar" in grupo:
+            return "AR"
+    return "UNKNOWN"
+```
+
+**Paso 5: Frontend envía token**
+
+En `frontend/pages/api/chat.ts`:
+
+```typescript
+import { getSession } from "@auth0/nextjs-auth0";
+
+export default async function handler(req, res) {
+    const session = await getSession(req, res);
+    
+    if (!session) {
+        return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    // Enviar token al backend
+    const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${session.idToken}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            query: req.body.query,
+            auth_token: session.idToken
+        })
+    });
+    
+    return res.json(await response.json());
+}
+```
+
+## Verifica
+
+```bash
+# Obtén token de Okta (o usa curl para debug)
+TOKEN=$(curl -X POST https://yourorg.okta.com/oauth2/v1/token \
+  -H "Accept: application/json" \
+  -d "client_id=xxx&client_secret=xxx&grant_type=client_credentials&scope=okta.users.read")
+
+# Test con token real
+curl -X POST http://localhost:8000/chat \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"query": "Dosis para insuficiencia renal"}'
+
+# Debería ver en logs:
+# [OKTA] User: juan@example.com
+# [OKTA] Territorio: MX
+# [OKTA] Grupos: sales-mx, compliance
+# ✅ Identity verified
+```
+
+## Diferencia Mock vs Real
+
+| | Mock (Ruta Completa) | Production (Ejercicio) |
+|---|---|---|
+| Territorio | Hardcoded "MX" | Extraído de Okta claims |
+| Verificación | No | Sí (JWT validation) |
+| Grupos | No | Sí (permisos) |
+| Escalabilidad | Single user | Multi-tenant |
+
+---
+
+## 🎉 Completado
+
+**Ahora eres experto en Ask Sage production-ready.**
+
+### De aquí en adelante:
+
+1. Integrar Bedrock real
+2. Conectar PostgreSQL
+3. Desplegar en ECS
+4. Monitorear en CloudWatch
+5. Iterar con datos reales
+
+**Ya tienes todo lo que necesitas.**
+
+---
+

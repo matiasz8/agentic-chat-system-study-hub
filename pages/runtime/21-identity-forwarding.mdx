@@ -1,5 +1,8 @@
 # Identity Forwarding
 
+> Identity Forwarding ⭐⭐⭐
+Cada usuario ve solo su datos (CRÍTICO).
+
 # ☁️ Módulo 6: AWS AgentCore - Deployment y Seguridad
 
 > **Cómo subes tu agente LangGraph a AWS con seguridad integrada**
@@ -337,6 +340,153 @@ Tu try/except atrapa:
 
 ---
 
+## 🎯 Ask Sage Example: Identity Forwarding Farmacéutico
+
+**Escenario Crítico**: Vendedor MX pregunta sobre dosificación. Identity Forwarding debe garantizar que SOLO ve productos de MX.
+
+**SIN Identity Forwarding** ❌:
+```
+Vendedor MX pregunta: "¿Dosis máxima?"
+
+Backend recibe: {"pregunta": "...", "token_okta": "..."}
+
+// Ooops, olvidamos verificar el token
+database.query("""
+  SELECT * FROM farmaco_dosis WHERE condicion = 'insuficiencia_renal'
+""")
+
+RESULTADO: Ve productos de TODOS los territorios (MX, AR, BR, etc)
+💥 Brecha de seguridad: Vendedor MX ve precios de otros territorios
+```
+
+**CON Identity Forwarding** ✅:
+```python
+# backend/ask_sage_handler.py
+
+import os
+from aws_agentcore import verify_token, get_user_context
+
+def ask_sage_handler(event: dict, context):
+    """
+    AWS AgentCore automáticamente inyecta:
+    - AWS_USER_TOKEN: Token Okta del vendedor
+    - AWS_USER_ID: ID del vendedor (ej: V001)
+    - AWS_USER_GROUPS: Territorios (ej: ["MX", "LATAM"])
+    """
+    
+    # 1️⃣ AWS ya validó el token, pero confirmamos identidad
+    token = os.getenv("AWS_USER_TOKEN")
+    user_id = os.getenv("AWS_USER_ID")
+    
+    # 2️⃣ Verificar que el token es válido
+    try:
+        user_info = verify_token(token)  # Okta
+        assert user_info["sub"] == user_id  # Asegurar consistencia
+    except:
+        return {"error": "Token inválido"}
+    
+    # 3️⃣ Obtener territorios permitidos del token
+    user_groups = os.getenv("AWS_USER_GROUPS", "").split(",")  # ["MX", "LATAM"]
+    
+    # 4️⃣ Construir state con restricción de seguridad
+    state = {
+        "vendedor_id": user_id,
+        "territorios_permitidos": user_groups,  # ✅ CRÍTICO
+        "pregunta": event["message"],
+        "allowed_products": [],  # Se llenará en siguiente paso
+    }
+    
+    # 5️⃣ LangGraph ejecuta con state restringido
+    result = ask_sage_graph.invoke(state)
+    
+    # 6️⃣ En cada nodo, verificar que el resultado respeta territorios
+    for producto in result["respuesta_final"]["productos"]:
+        assert producto["territorio"] in state["territorios_permitidos"]
+    
+    return result
+
+# NODO: Buscar en MCP (respeta identidad)
+def nodo_buscar_en_mcp(state: dict) -> dict:
+    """
+    Este nodo recibe state["territorios_permitidos"]
+    Solo busca en esos territorios
+    """
+    
+    territorios = state["territorios_permitidos"]  # ["MX", "LATAM"]
+    pregunta = state["pregunta"]
+    
+    # Query respeta seguridad
+    resultados = mcp_client.search(
+        pregunta,
+        territorio_whitelist=territorios  # ✅ Filtrado
+    )
+    
+    state["search_results"] = resultados
+    return state
+
+# VERIFICACIÓN: Cedar Policy (doble validación)
+# Archivo: ask_sage_policies.cedar
+
+permit (
+  principal == ?vendedor,
+  action == SearchDosage,
+  resource
+)
+when {
+  // El vendedor solo puede buscar en sus territorios
+  principal.territories.contains(resource.territory)
+};
+
+forbid (
+  principal == ?vendedor,
+  action == SearchPrice,
+  resource
+)
+when {
+  // Nunca mostrar precios de otros territorios
+  !principal.territories.contains(resource.territory)
+};
+```
+
+**Flujo Completo**:
+```
+Vendedor MX (token_okta_mx)
+        │
+        ├─→ AWS recibe y valida token
+        │   ✅ Extraigo: user_id=V001, groups=["MX", "LATAM"]
+        │
+        ├─→ Mi código recibe state con territorios_permitidos=["MX", "LATAM"]
+        │
+        ├─→ Busco en MCP: "¿Dosis insuf renal?"
+        │   Solo en territorios de MX y LATAM
+        │   Encontré: Bula MX + Bula LATAM
+        │
+        ├─→ Cedar Policy valida ANTES de retornar
+        │   ✅ Producto MX → permitido
+        │   ✅ Producto LATAM → permitido
+        │   ❌ Producto BR → BLOQUEADO
+        │
+        └─→ Respuesta: Solo ve MX + LATAM
+            ✅ SEGURO: Vendedor MX no puede ver datos de AR/BR
+
+Intento de ataque (Vendedor MX intenta ver BR):
+        │
+        ├─→ Manipula request: {"territorios": ["MX", "BR", "LATAM"]}
+        │
+        ├─→ AWS valida: token_okta_mx solo tiene acceso a ["MX", "LATAM"]
+        │   ❌ RECHAZA: "BR no autorizado"
+        │
+        └─→ Resultado: Error 403 Forbidden
+```
+
+**Por qué es crítico para Ask Sage**:
+- ✅ **Compliance**: Cada vendedor ve solo sus datos (GDPR, regulaciones farmacéuticas)
+- ✅ **Seguridad**: Token validado en AWS, no en tu código
+- ✅ **Auditoría**: Cada acceso loguiado con identidad verificada
+- ✅ **Multi-región**: Vendedores en MX, AR, BR pueden usar el mismo backend
+
+---
+
 ## 5️⃣ EJERCICIOS
 
 ### Ejercicio 1: Diseña la Seguridad
@@ -584,3 +734,42 @@ Completa los ejercicios y procede al siguiente módulo.
 ---
 
 **Última actualización:** 2026-05-31
+
+---
+
+## 🎯 Contexto Ask Sage
+
+**Ruta**: [Ruta Rápida](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional) ⭐⭐⭐ CRÍTICO  
+**Módulo Map**: [Ver correspondencia Hub ↔ Código](/rutas/module-map#módulo-21-identity-forwarding-⭐⭐⭐)
+
+### Dónde está en ask-sage-starter
+
+```
+📁 backend/ask_sage_graph.py (Línea 22-35)
+
+def nodo_verificar_identidad(state: AskSageState) -> AskSageState:
+    # ❌ ACTUALMENTE: MOCK Okta
+    # TODO PRODUCCIÓN: Integrar token Okta real
+    estado["messages"] = [...] + [
+        f"✅ Identidad verificada: {state['vendedor_id']} en {state['territorio']}"
+    ]
+    return estado
+```
+
+### El TODO para Ask Sage
+
+```python
+# Paso 1: Validar token Okta real
+token = os.getenv("AWS_USER_TOKEN")
+user_info = verify_token(token)
+
+# Paso 2: Verificar territorios permitidos
+allowed_territories = get_user_territories(user_info['sub'])
+
+# Paso 3: Asegurarse de que el Estado respeta territorios
+state['contexto_permitido'] = allowed_territories
+```
+
+**Esto es CRÍTICO**: Sin Identity Forwarding, un vendedor de MX ve datos de AR.
+
+[Ver module-map completo →](/rutas/module-map)

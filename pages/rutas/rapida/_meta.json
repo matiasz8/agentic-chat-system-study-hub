@@ -1,0 +1,8 @@
+{
+  "tema-1-setup": "Tema 1: Setup & Arquitectura",
+  "tema-2-langgraph": "Tema 2: LangGraph (3 Nodos)",
+  "tema-3-identity": "Tema 3: Identity Forwarding",
+  "tema-4-mcp": "Tema 4: MCP Data Layer",
+  "tema-5-validacion": "Tema 5: Validación & Guardrails",
+  "tema-6-deploy": "Tema 6: Deploy a AWS"
+}

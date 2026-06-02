@@ -1,7 +1,7 @@
-import { CodeBlock, BasicExample, AdvancedExample } from '../../components/CodeBlock';
-import { ModuleNav } from '../../components/ModuleNav';
-
 # Ask Sage: MVP (Q&A Agent Médico)
+
+> Ask Sage MVP
+Producción en 1 semana: funcional y seguro.
 
 **Ask Sage** es un agente IA que responde preguntas sobre medicamentos y salud usando RAG (Retrieval-Augmented Generation).
 
@@ -63,183 +63,13 @@ Response: "La Aspirina es..."
 
 ## 💻 Nivel 1: MVP Simple (RAG Básico)
 
-<BasicExample
-  code={`from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.llms import OpenAI
-
-# 1. Crear base de datos vectorial
-embeddings = OpenAIEmbeddings()
-vectordb = Chroma(
-    collection_name="medical_docs",
-    embedding_function=embeddings,
-    persist_directory="./chroma_db"
-)
-
-# 2. Crear retriever
-retriever = vectordb.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 3}  # Top 3 resultados
-)
-
-# 3. Crear cadena QA
-llm = OpenAI(temperature=0)
-qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=retriever
-)
-
-# 4. Usar
-answer = qa_chain.run("¿Qué es la Aspirina?")
-print(answer)
-`}
-  title="01_ask_sage_simple.py"
-/>
-
 ---
 
 ## 💻 Nivel 2: MVP Completo (con Ranking)
 
-<BasicExample
-  code={`from langgraph.graph import StateGraph, START, END
-from typing import TypedDict, Annotated
-from operator import add
-
-class AskSageState(TypedDict):
-    question: str
-    retrieved_docs: Annotated[list, add]
-    ranked_docs: list
-    answer: str
-    confidence: float
-
-def retrieval_node(state: AskSageState):
-    """Busca documentos relevantes"""
-    # Simular búsqueda semántica
-    results = [
-        {"title": "Aspirin Overview", "score": 0.95},
-        {"title": "Dosage Guidelines", "score": 0.87},
-        {"title": "Side Effects", "score": 0.72}
-    ]
-    return {"retrieved_docs": results}
-
-def ranking_node(state: AskSageState):
-    """Ordena por relevancia"""
-    ranked = sorted(
-        state['retrieved_docs'],
-        key=lambda x: x['score'],
-        reverse=True
-    )
-    return {"ranked_docs": ranked}
-
-def generation_node(state: AskSageState):
-    """Genera respuesta con LLM"""
-    context = "\\n".join([
-        f"- {doc['title']}" 
-        for doc in state['ranked_docs'][:3]
-    ])
-    
-    prompt = f"""Based on:
-{context}
-
-Answer: {state['question']}"""
-    
-    # Simular LLM call
-    answer = f"La Aspirina es un antiinflamatorio usado para..."
-    confidence = 0.92
-    
-    return {"answer": answer, "confidence": confidence}
-
-# Construir grafo
-graph = StateGraph(AskSageState)
-graph.add_node("retrieve", retrieval_node)
-graph.add_node("rank", ranking_node)
-graph.add_node("generate", generation_node)
-
-graph.add_edge(START, "retrieve")
-graph.add_edge("retrieve", "rank")
-graph.add_edge("rank", "generate")
-graph.add_edge("generate", END)
-
-# Ejecutar
-compiled = graph.compile()
-result = compiled.invoke({
-    "question": "¿Qué es la Aspirina?",
-    "retrieved_docs": [],
-    "ranked_docs": [],
-    "answer": "",
-    "confidence": 0.0
-})
-print(f"Answer: {result['answer']}")
-print(f"Confidence: {result['confidence']}")
-`}
-  title="02_ask_sage_complete.py"
-/>
-
 ---
 
 ## 💻 Nivel 3: Production (con Validación)
-
-<AdvancedExample
-  code={`class ProductionAskSage:
-    def __init__(self, vector_db_path: str, api_key: str):
-        self.vectordb = self._init_db(vector_db_path)
-        self.validator = ResponseValidator()
-        self.monitor = MonitoringClient()
-    
-    def answer_question(self, question: str) -> Dict:
-        """Responde pregunta con validación"""
-        
-        # 1. Retrieve
-        relevant_docs = self.vectordb.search(question, top_k=5)
-        
-        # 2. Rank
-        ranked = self._rerank_docs(relevant_docs)
-        
-        # 3. Generate
-        context = self._build_context(ranked)
-        answer = self._generate_with_llm(question, context)
-        
-        # 4. Validate
-        is_valid = self.validator.check(
-            question=question,
-            answer=answer,
-            sources=ranked
-        )
-        
-        if not is_valid:
-            answer = "I cannot provide a confident answer to this question."
-            confidence = 0.0
-        else:
-            confidence = self._calculate_confidence(ranked)
-        
-        # 5. Log
-        self.monitor.log_query(
-            question=question,
-            answer=answer,
-            confidence=confidence,
-            sources=ranked
-        )
-        
-        return {
-            "answer": answer,
-            "confidence": confidence,
-            "sources": ranked,
-            "valid": is_valid
-        }
-
-# Uso
-sage = ProductionAskSage(
-    vector_db_path="./medical_db",
-    api_key="sk-..."
-)
-
-result = sage.answer_question("¿Es segura la Aspirina en embarazo?")
-print(result)
-`}
-  title="03_ask_sage_production.py"
-/>
 
 ---
 
@@ -285,16 +115,6 @@ http://localhost:3000
 - ✅ Monitoreo y logging
 
 ---
-
-<ModuleNav
-  current="/proyectos/40-ask-sage-mvp"
-  section="Proyectos"
-  modules={[
-    { title: "40. Ask Sage MVP", href: "/proyectos/40-ask-sage-mvp", level: "avanzado", completed: true },
-    { title: "41. Ask Sage Enterprise", href: "/proyectos/41-ask-sage-enterprise", level: "avanzado" },
-    { title: "42. Deployment AWS", href: "/proyectos/42-deployment-aws", level: "avanzado" },
-  ]}
-/>
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐⭐ Avanzado  

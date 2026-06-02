@@ -7,7 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "validate:routes": "node scripts/validate-routes.js",
+    "validate:links": "node scripts/validate-links.js",
+    "validate:build": "node scripts/validate-build.js",
+    "validate": "npm run validate:routes && npm run validate:links && npm run validate:build"
   },
   "dependencies": {
     "lucide-react": "^1.17.0",

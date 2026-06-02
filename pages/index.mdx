@@ -1,150 +1,171 @@
-# 🤖 Agentic Chat System: Full Stack Study Hub
+# 🎓 Agentic Chat System Study Hub
 
-> **Arquitectura de 3 Capas Integradas para Construir Chat IA Empresarial**
-
-Este es un **hub de estudio universitario** completo sobre cómo construir un **sistema de chat IA con Generative UI** siguiendo la arquitectura moderna recomendada: 
-- **Frontend** (Vercel AI SDK)
-- **Orchestration** (LangGraph) 
-- **Runtime** (AWS AgentCore)
-- **Validation** (Testing & CI/CD)
+> Guía completa de Ask Sage: chatbot para vendedores farmacéuticos con seguridad integrada.
 
 ---
 
-## 🎯 ¿Por Qué Este Hub Existe?
+## 🚀 ¿Por Dónde Empiezo?
 
-Hace 5 años, construir un agente de IA significaba escribir `if/else` anidados. **LangGraph cambió todo**: te permite escribir grafos donde la IA "piensa en círculos" hasta encontrar la respuesta correcta.
+### Tu Situación
 
-Este hub te prepara para construir sistemas como **Ask Sage** (del caso de uso farmacéutico), donde el agente puede:
-- 🗄️ Consultar bases de datos
-- 🤖 Tomar decisiones automáticas
-- ⏸️ Pausarse para aprobación humana
-- 💾 Recordar contexto entre preguntas
-- ✅ Todo sin reescribir lógica cada vez
+Elige la que mejor te describes:
 
----
+**A) Recibí la solicitud: Ask Sage funcionando en 1 semana**
+- 📍 Tiempo: 7 días
+- 📍 Objetivo: MVP en producción
+- 📍 Enfoque: CRÍTICO solo
+- → [Ir a Ruta Rápida](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional) ⚡
 
-## 📚 Las 4 Capas
+**B) Quiero dominar la arquitectura completa de agentes IA**
+- 📍 Tiempo: 21 días
+- 📍 Objetivo: Expert
+- 📍 Enfoque: TODO
+- → [Ir a Ruta Completa](/rutas/learning-paths#ruta-completa-21-días---expert) 📚
 
-### 🧠 **CAPA 1: Orchestration (LangGraph)**
-El cerebro del agente. Grafos ejecutables que piensan.
-- State centralizado
-- Nodos y Aristas condicionales
-- Checkpoints para persistencia
-
-### 🎨 **CAPA 2: Frontend (Vercel AI SDK)**
-La cara del agente. Streaming + Generative UI.
-- Streaming de tokens en tiempo real
-- Componentes React desde el servidor
-- UX moderna y responsiva
-
-### ☁️ **CAPA 3: Runtime (AWS Bedrock AgentCore)**
-La infraestructura del agente. Serverless + Seguridad.
-- Deployment sin servidor
-- Identity forwarding (credenciales delegadas)
-- Cedar policies (control de acceso)
-
-### ✅ **CAPA 4: Validation (Testing)**
-**NEW** - La calidad del agente. Prompts testeados.
-- Testing de prompts
-- Validación de workflows
-- CI/CD automatizado
+**C) Solo quiero aprender un módulo específico**
+- 📍 Ej: "Qué es LangGraph State?"
+- → [Ver Module Map](/rutas/module-map) 📍
 
 ---
 
-## 🚀 Cómo Usar Este Hub
+## 🎯 Requisitos del Proyecto
 
-### Opción A: Aprendizaje Lineal (Recomendado)
-```
-1. Ve a "Quick Start" → obtén configuración
-2. Lee una sección (Ej: Orchestration)
-3. Ejecuta ejemplos en python/modulos/
-4. Resuelve ejercicios
-5. Valida con tests
-```
+Se solicitó:
+> "Chatbot para vendedores farmacéuticos que conozca:
+> - Dosis por condición
+> - Contraindicaciones
+> - Pero cada vendedor solo ve sus territorios"
 
-### Opción B: Saltar a Conceptos
-Si ya sabes un tema, puedes ir directo. Pero recomendamos comenzar por lo básico.
+Esto requiere:
+- ✅ **Capa 1: Frontend** - Streaming + Generative UI (Vendedor ve tablas interactivas)
+- ✅ **Capa 2: Orchestration** - LangGraph (Decisiones: buscar, generar, validar)
+- ✅ **Capa 3: Runtime** - Identity Forwarding (Vendedor MX ≠ Vendedor AR)
+- ✅ **Capa 4: Data** - MCP + Embeddings (PDFs, videos, bases de datos)
+- ✅ **Capa 5: Validation** - Tests (Seguridad, compliance, SLA)
 
-### Opción C: Solo Ejemplos
-Si prefieres aprender viendo código:
-```bash
-cd python/modulos/00_fundamentos/examples/
-python 01_basico.py
-```
+**Este hub te enseña EXACTAMENTE eso.**
 
 ---
 
-## 📊 Estructura de Este Hub
+## 🗺️ Cómo Navegar
 
-Cada **módulo** sigue el mismo patrón:
-
+### Opción 1: Seguir una Ruta
 ```
-1️⃣ CONCEPTO       → ¿Qué es?
-2️⃣ PARA QUÉ SIRVE → ¿Cuándo lo uso?
-3️⃣ HISTORIA       → ¿Por qué se creó así?
-4️⃣ EJEMPLOS       → Código funcional, paso a paso
-5️⃣ EJERCICIOS     → Practica lo aprendido
-6️⃣ TESTS          → Valida tu solución
+→ [Learning Paths](/rutas/learning-paths)
+
+Elige:
+- Ruta Rápida (1 semana)
+- Ruta Completa (3 semanas)
+```
+
+### Opción 2: Ver Paralelismo Hub ↔ Código
+```
+→ [Module Map](/rutas/module-map)
+
+Preguntas que resuelve:
+- ¿Dónde está X módulo en el código?
+- ¿Qué tengo que modificar en ask-sage-starter?
+```
+
+### Opción 3: Empezar por Ask Sage directamente
+```
+→ [Ask Sage Learning Path](/ask-sage/path)
+
+O:
+→ [Ask Sage Project Walkthrough](/ask-sage/walkthrough)
+
+O:
+→ [Ask Sage Validation Suite](/ask-sage/validation)
 ```
 
 ---
 
-## 💾 Requisitos Técnicos
+## 📊 Hub Structure
 
-### Python (para Orchestration + Backend)
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r python/requirements.txt
+```
+🎨 CAPA 1: FRONTEND (Vercel AI SDK)
+├─ 00-vercel-intro
+├─ 01-streaming ⭐
+├─ 02-generative-ui
+└─ 03-frontend-completo
+
+🧠 CAPA 2: ORCHESTRATION (LangGraph)
+├─ 10-fundamentos-grafos
+├─ 11-state ⭐
+├─ 12-nodos ⭐
+├─ 13-aristas
+└─ 14-checkpoints
+
+☁️ CAPA 3: RUNTIME (AWS AgentCore)
+├─ 20-serverless-basics
+├─ 21-identity-forwarding ⭐⭐⭐
+├─ 22-agentcore-governance
+├─ 23-cedar-policies
+└─ 24-tools-management
+
+🔌 CAPA 4: DATA (MCP + Embeddings)
+├─ 30-mcp-protocol
+└─ 31-multimodal-embeddings
+
+✅ CAPA 5: VALIDATION (Testing)
+└─ ask-sage-validation
+
+🎯 PROYECTOS
+├─ 40-ask-sage-mvp
+├─ 41-ask-sage-enterprise
+└─ 42-deployment-aws
 ```
 
-### Node.js (para Frontend + Documentación)
-```bash
-npm install
-npm run dev
-```
+---
+
+## ⚡ Quick Checklist
+
+Antes de empezar:
+
+- [ ] ¿Decidí mi ruta? (Rápida o Completa)
+- [ ] ¿Tengo 1-3 semanas disponibles?
+- [ ] ¿Instalé Node.js + Python?
+- [ ] ¿Tengo Docker? (opcional pero recomendado)
 
 ---
 
-## 📖 Filosofía de Este Hub
+## 🎓 Pro Tips
 
-### ✅ Lo Que SÍ Hacemos
-- Enseñar **LangGraph moderno** (v0.1.0+)
-- Usar **Anthropic Claude** como LLM
-- Ejemplo real: **bot farmacéutico**
-- Código **ejecutable** que funciona ahora
-- **Testing desde el día 1**
-- Explicaciones en **español puro**
+1. **Lee primero, codifica después**  
+   Cada módulo explica el "POR QUÉ". Luego el código muestra el "CÓMO".
 
-### ❌ Lo Que NO Hacemos
-- No cubrimos LangChain básico
-- No explicamos cómo funciona internamente Claude
-- No enseñamos "mejores prácticas generales"
-- **Somos opinionados**: esta es la forma correcta
+2. **Usa Module Map**  
+   Cuando leas un módulo, mira `[Módulo Map](/rutas/module-map)` para ver dónde está en ask-sage-starter.
+
+3. **Modifica el código mientras lees**  
+   La mejor forma de aprender es cambiar cosas y ver qué pasa.
+
+4. **Prioriza lo CRÍTICO**  
+   Si tienes 1 semana, salta a [Ruta Rápida](/rutas/learning-paths) - solo 7 módulos.
 
 ---
 
-## 🎓 Próximo Paso
+## 🚀 Empezar Ahora
 
-👉 **Ve a [Quick Start →](/quickstart)**
+### Ya decidiste tu ruta?
 
-Toma 15 minutos. No esperes a "estar listo". La mejor forma de aprender es empezar.
+**Ruta Rápida (1 semana)**: [Empezar →](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional)
 
----
+**Ruta Completa (3 semanas)**: [Empezar →](/rutas/learning-paths#ruta-completa-21-días---expert)
 
-## 📞 Preguntas Frecuentes
-
-### P: ¿Necesito saber qué es un LLM?
-**R:** Sí. Mínimo: "Es una red neuronal que predice la siguiente palabra". No necesitas matemática detrás.
-
-### P: ¿Puedo saltarme módulos?
-**R:** Depende. Algunos son independientes, otros tienen dependencias. Ve el README de cada uno.
-
-### P: ¿Cuánto tiempo toma todo?
-**R:** ~20 horas si sigues todo. ~8 horas si solo quieres lo esencial (Orchestration + Frontend).
+**Ver Paralelismo Hub ↔ Código**: [Module Map →](/rutas/module-map)
 
 ---
 
-**Versión:** 1.0  
-**Última actualización:** Mayo 2026  
-**Repo:** https://github.com/matiasz8/agentic-chat-system-study-hub (Privado)
+## 📝 Resumen Ejecutivo
+
+> "Tengo todo lo necesario para Ask Sage en 2 semanas.
+> 
+> Semana 1: Frontend + Orchestration + Identity (CRÍTICO)
+> Semana 2: Data + Testing + Deploy"
+
+---
+
+**Última actualización**: 2026-06-01  
+**Status**: ✅ 100% Ask Sage Aligned  
+**Listo para**: MVP + Producción

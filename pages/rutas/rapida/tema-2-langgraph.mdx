@@ -1,0 +1,47 @@
+# 🧠 Tema 2: LangGraph - Los 3 Nodos
+
+> TEMA 2: LANGGRAPH
+Grafos básicos en 1 hora.
+
+**Qué aprenderás:** Cómo el backend ejecuta el flujo. El "corazón" de Ask Sage.
+
+## 📖 Lee
+
+- [State](/orchestration/11-state)
+- [Nodos](/orchestration/12-nodos)
+
+## 🔧 Modifica el Código
+
+Abre: `backend/ask_sage_graph.py`
+
+Líneas 22-57: Los 3 nodos en orden:
+```python
+1. nodo_verificar_identidad()    # ¿Quién eres?
+2. nodo_buscar_mcp()             # ¿Qué datos buscas?
+3. nodo_validar()                # ¿Es seguro?
+```
+
+**Tarea:** Cambia el mock de territorio en línea 25:
+```python
+# ANTES
+contexto["territorio"] = "MX"  # Hardcoded
+
+# DESPUÉS
+contexto["territorio"] = "AR"
+```
+
+## ⚙️ Ejecuta y Verifica
+
+El backend sigue corriendo. Pregunta en chat:
+```
+"¿Vendedor de Argentina?"
+```
+
+Respuesta cambia porque el territorio es diferente. ✅
+
+## ➡️ Siguiente
+
+Ahora vas a conectar el frontend para pasar el token real.
+
+---
+

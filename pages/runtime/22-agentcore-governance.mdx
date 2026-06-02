@@ -1,7 +1,7 @@
-import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
-import { ModuleNav } from '../../components/ModuleNav';
-
 # Governance: Control y Auditoría de Agentes
+
+> Governance en AgentCore
+Control, auditoría, restricciones.
 
 El **governance** es la "ley" de tu agente. Define qué puede hacer, qué no, y deja rastro de todo.
 
@@ -32,54 +32,6 @@ CON GOVERNANCE:
 
 ## 💻 Nivel 1: Auditoría Básica
 
-<BasicExample
-  code={`from typing import TypedDict
-from datetime import datetime
-import json
-
-class AuditLog(TypedDict):
-    timestamp: str
-    action: str
-    tool: str
-    parameters: dict
-    result: str
-    user_id: str
-
-def audit_action(
-    action: str,
-    tool: str,
-    parameters: dict,
-    result: str,
-    user_id: str
-) -> AuditLog:
-    """Log simple de cada acción del agente"""
-    log_entry: AuditLog = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "action": action,
-        "tool": tool,
-        "parameters": parameters,
-        "result": result,
-        "user_id": user_id
-    }
-    
-    # Guardar en archivo
-    with open("audit.log", "a") as f:
-        f.write(json.dumps(log_entry) + "\\n")
-    
-    return log_entry
-
-# Uso
-audit_action(
-    action="search",
-    tool="database",
-    parameters={"query": "SELECT * FROM users"},
-    result="3 users found",
-    user_id="user_123"
-)
-`}
-  title="01_audit_basic.py"
-/>
-
 **Qué quedó registrado**:
 ```json
 {
@@ -96,58 +48,6 @@ audit_action(
 
 ## 💻 Nivel 2: Control de Presupuesto
 
-<BasicExample
-  code={`class BudgetControl:
-    def __init__(self, daily_limit: float = 100.0):
-        self.daily_limit = daily_limit
-        self.spent_today = 0.0
-        self.rate_limit = 10  # max 10 API calls per minute
-        self.call_count = 0
-    
-    def check_budget(self, tool_cost: float) -> bool:
-        """Verifica si hay presupuesto para esta acción"""
-        if self.spent_today + tool_cost > self.daily_limit:
-            return False
-        return True
-    
-    def check_rate_limit(self) -> bool:
-        """Verifica límite de velocidad"""
-        if self.call_count >= self.rate_limit:
-            return False
-        return True
-    
-    def execute_with_controls(self, tool_name: str, cost: float):
-        """Ejecuta herramienta solo si pasa validaciones"""
-        if not self.check_budget(cost):
-            raise Exception(
-                f"Budget exceeded. Spent: \${self.spent_today}, "
-                f"Limit: \${self.daily_limit}"
-            )
-        
-        if not self.check_rate_limit():
-            raise Exception("Rate limit exceeded")
-        
-        # Ejecutar herramienta
-        print(f"✅ Ejecutando {tool_name}")
-        self.spent_today += cost
-        self.call_count += 1
-
-# Uso
-budget = BudgetControl(daily_limit=100.0)
-
-# Esto pasa ✅
-budget.execute_with_controls("gpt4_call", cost=2.50)
-
-# Esto falla ❌
-for i in range(100):
-    try:
-        budget.execute_with_controls("expensive_api", cost=50.0)
-    except Exception as e:
-        print(f"Bloqueado: {e}")
-`}
-  title="02_budget_control.py"
-/>
-
 **Protecciones**:
 - ✅ Límite diario ($100)
 - ✅ Rate limiting (10 llamadas/min)
@@ -156,65 +56,6 @@ for i in range(100):
 ---
 
 ## 💻 Nivel 3: AWS AgentCore Governance
-
-<AdvancedExample
-  code={`import boto3
-from typing import Dict, List
-
-class AgentCoreGovernance:
-    def __init__(self, agent_id: str):
-        self.bedrock = boto3.client('bedrock-agent')
-        self.agent_id = agent_id
-    
-    def define_tool_policy(self, allowed_tools: List[str]) -> Dict:
-        """Define qué herramientas puede usar el agente"""
-        policy = {
-            "allowed_tools": allowed_tools,
-            "restrictions": {
-                "database": ["SELECT"],  # Solo lectura
-                "api": ["GET"],  # Solo GET, no DELETE/PUT
-                "storage": ["READ"],  # Solo lectura
-            }
-        }
-        return policy
-    
-    def enforce_policy(self, tool_name: str, action: str) -> bool:
-        """Verifica si la acción cumple la política"""
-        policy = self.define_tool_policy([
-            "database",
-            "api",
-            "storage"
-        ])
-        
-        if tool_name not in policy["allowed_tools"]:
-            return False
-        
-        restrictions = policy["restrictions"].get(tool_name, [])
-        if action not in restrictions:
-            return False
-        
-        return True
-    
-    def audit_agent_actions(self, limit: int = 10):
-        """Obtiene historial de acciones del agente"""
-        response = self.bedrock.list_agent_action_groups(
-            agentId=self.agent_id
-        )
-        return response.get('agentActionGroupSummaries', [])[:limit]
-
-# Uso
-gov = AgentCoreGovernance(agent_id="my-agent")
-
-# ✅ Permitido: SELECT en database
-if gov.enforce_policy("database", "SELECT"):
-    print("✅ Acceso permitido")
-
-# ❌ Bloqueado: DELETE en database
-if not gov.enforce_policy("database", "DELETE"):
-    print("❌ Acción bloqueada por política")
-`}
-  title="03_agentcore_governance.py"
-/>
 
 ---
 
@@ -231,37 +72,7 @@ if not gov.enforce_policy("database", "DELETE"):
 
 ## 🏋️ Ejercicios
 
-<Exercise
-  title="Ejercicio 1: Audit Logger"
-  problem="Crea una clase que:
-1. Registre todas las acciones en JSON
-2. Guarde en archivo con rotación diaria
-3. Proporcione método para leer logs filtrados por usuario/fecha
-
-Nombre: AuditLogger"
-/>
-
-<Exercise
-  title="Ejercicio 2: Budget Alert"
-  problem="Extiende BudgetControl para:
-1. Enviar alerta cuando alcance 80% del presupuesto
-2. Registrar advertencia en audit log
-3. Notificar al administrador por email (simular)"
-/>
-
 ---
-
-<ModuleNav
-  current="/runtime/22-agentcore-governance"
-  section="Runtime"
-  modules={[
-    { title: "20. Serverless Basics", href: "/runtime/20-serverless-basics", level: "básico", completed: true },
-    { title: "21. Identity Forwarding", href: "/runtime/21-identity-forwarding", level: "intermedio", completed: true },
-    { title: "22. Governance", href: "/runtime/22-agentcore-governance", level: "intermedio", completed: true },
-    { title: "23. Cedar Policies", href: "/runtime/23-cedar-policies", level: "intermedio" },
-    { title: "24. Tools Management", href: "/runtime/24-tools-management", level: "intermedio" },
-  ]}
-/>
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐ Intermedia  

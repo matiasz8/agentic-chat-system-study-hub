@@ -1,7 +1,7 @@
-import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
-import { ModuleNav } from '../../components/ModuleNav';
-
 # Streaming: Respuestas en Tiempo Real
+
+> Streaming en Tiempo Real
+Tokens progresivos, no respuestas de golpe.
 
 El **streaming** hace que tu chat IA se sienta **instantáneo**. En lugar de esperar a que el LLM termine toda la respuesta, recibes tokens uno por uno, mostrando progreso en tiempo real.
 
@@ -46,39 +46,6 @@ CON STREAMING:
 
 ## 💻 Nivel 1: Streaming Básico
 
-<BasicExample
-  code={`import { useChat } from 'ai/react';
-
-export function ChatUI() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    streamProtocol: 'text',  // Streaming habilitado
-  });
-
-  return (
-    <div>
-      {/* Mensajes se actualizan en tiempo real */}
-      {messages.map(msg => (
-        <div key={msg.id}>
-          {msg.role}: {msg.content}  {/* Aparece carácter por carácter */}
-        </div>
-      ))}
-      
-      {/* Input */}
-      <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Escribe aquí..."
-        />
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
-  );
-}
-`}
-  title="01_streaming_basico.tsx"
-/>
-
 **¿Qué sucede?**
 1. Usuario envía mensaje
 2. Servidor comienza a generar respuesta
@@ -90,67 +57,106 @@ export function ChatUI() {
 
 ## 💻 Nivel 2: Streaming Avanzado
 
-<BasicExample
-  code={`import { useChat } from 'ai/react';
-import { useEffect, useRef } from 'react';
-
-export function AdvancedChat() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = 
-    useChat({
-      streamProtocol: 'text',
-      onFinish: (message) => {
-        console.log('Respuesta completa:', message.content);
-      },
-    });
-
-  const messagesEndRef = useRef(null);
-
-  // Auto-scroll a los nuevos mensajes
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  return (
-    <div className="chat-container">
-      {/* Indicador de carga */}
-      {isLoading && <div className="spinner">Escribiendo...</div>}
-      
-      {/* Mensajes con streaming */}
-      {messages.map(msg => (
-        <div key={msg.id} className={msg.role}>
-          <p className="message-content">
-            {msg.content}
-            {/* Cursor intermitente mientras se escribe */}
-            {isLoading && msg.role === 'assistant' && <span className="cursor">▌</span>}
-          </p>
-        </div>
-      ))}
-      
-      <div ref={messagesEndRef} />
-      
-      <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          disabled={isLoading}
-          placeholder="Escribe aquí..."
-        />
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Streaming...' : 'Enviar'}
-        </button>
-      </form>
-    </div>
-  );
-}
-`}
-  title="02_streaming_avanzado.tsx"
-/>
-
 **Mejoras**:
 - ✅ Auto-scroll automático
 - ✅ Cursor intermitente visual
 - ✅ Indicador de carga
 - ✅ Callback cuando termina
+
+---
+
+## 🎯 Ask Sage Example: Streaming Farmacéutico
+
+**Escenario Real**: Vendedor pregunta "¿Dosis para insuficiencia renal?"
+
+```
+TIEMPO   EVENTO
+────────────────────────────────────────────────────
+T=0s     [Input] Vendedor escribe y presiona Enter
+         {"mensaje": "¿Dosis insuf renal?", "token_okta": "..."}
+         
+T=0.1s   [Status] "Búscando en base de datos..."
+         (Spinner animado)
+         
+T=0.5s   [Token 1] "Basado"
+T=0.6s   [Token 2] " en"
+T=0.7s   [Token 3] " la"
+T=0.8s   [Token 4] " bula"
+T=0.9s   [Token 5] " técnica,"
+         
+T=1.2s   [Chunk] "aquí están las opciones:"
+         (Streaming pausa aquí para renderizar componente React)
+         
+T=1.5s   [Component] Tabla interactiva:
+         ┌──────────────────────────────┐
+         │ Dosificación por Insuficiencia│
+         │ Grado | Dosis Máx | Intervalo│
+         │ ───────────────────────────── │
+         │ G3    | 100mg     | c/24h    │
+         │ G4    | 50mg      | c/48h    │
+         └──────────────────────────────┘
+         
+T=2.0s   [Final] Botones:
+         [Copiar] [Ver Fuente] [Compartir]
+```
+
+**Código Ask Sage**:
+
+```typescript
+// components/AskSageChat.tsx
+export function AskSagePharmacyChat() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    streamProtocol: 'text',
+    
+    // Callback: cuando llega cada token
+    onData: (chunk: string) => {
+      // Si el token contiene JSON, es un componente React
+      if (chunk.startsWith('{')) {
+        const component = JSON.parse(chunk);
+        renderComponent(component);  // Tabla, gráfico, etc.
+      } else {
+        // Sino, es texto normal - mostrar streaming
+        appendToCurrentMessage(chunk);
+      }
+    },
+    
+    // Callback: cuando termina
+    onFinish: (message) => {
+      logAudit({
+        vendedor_id: 'V001',
+        pregunta: input,
+        respuesta: message.content,
+        timestamp: new Date()
+      });
+    }
+  });
+  
+  return (
+    <div className="ask-sage-chat">
+      {/* Mensajes con streaming */}
+      {messages.map(msg => (
+        <div key={msg.id} className={`message ${msg.role}`}>
+          {msg.role === 'assistant' ? (
+            // Renderizar componentes + texto
+          ) : (
+            msg.content
+          )}
+      ))}
+      
+      {/* Input con autocomplete Ask Sage */}
+      <form onSubmit={handleSubmit}>
+        <datalist id="ask-sage-sugerencias">
+        <button disabled={isLoading}>
+          {isLoading ? '📤 Enviando...' : '📨 Enviar'}
+  );
+}
+```
+
+**Beneficios para Ask Sage**:
+- ✅ **UX Profesional**: Vendedor ve progreso, no espera en blanco
+- ✅ **Interactividad**: Tabla de dosis se renderiza mientras se genera
+- ✅ **Audit Trail**: Cada respuesta se loga con timestamp
+- ✅ **Autocomplete**: Sugerencias de preguntas frecuentes
 
 ---
 
@@ -168,43 +174,7 @@ export function AdvancedChat() {
 
 ## 🏋️ Ejercicios
 
-<Exercise
-  title="Ejercicio 1: Token Counter"
-  problem="Crea un componente que muestre:
-- Tokens generados en tiempo real
-- Tokens por segundo (TPS)
-- Estimación de tiempo total
-
-Pista: Cuenta caracteres en lugar de tokens para simplificar."
-  hints={[
-    "Usa useEffect para detectar cambios en el mensaje",
-    "Calcula TPS dividiendo tokens por tiempo transcurrido",
-    "Usa useRef para tracking de timestamps"
-  ]}
-/>
-
-<Exercise
-  title="Ejercicio 2: Pausa/Resume"
-  problem="Implementa un botón que:
-1. Pause la generación (detiene streaming)
-2. Resume desde donde se pausó
-3. Muestre estado (paused/generating/done)
-
-Nota: Requiere backend con soporte para pausar."
-/>
-
 ---
-
-<ModuleNav
-  current="/frontend/01-streaming"
-  section="Frontend"
-  modules={[
-    { title: "00. Vercel Intro", href: "/frontend/00-vercel-intro", level: "básico", completed: true },
-    { title: "01. Streaming", href: "/frontend/01-streaming", level: "básico", completed: true },
-    { title: "02. Generative UI", href: "/frontend/02-generative-ui", level: "intermedio" },
-    { title: "03. Frontend Completo", href: "/frontend/03-frontend-completo", level: "intermedio" },
-  ]}
-/>
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐ Básico  

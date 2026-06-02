@@ -1,0 +1,48 @@
+# 📚 Ruta Completa: Módulo 7
+
+> MÓDULO 7: MCP
+Integración de datos.
+
+**Objetivo:** MCP - Cómo conectar a datos.
+
+## Lee
+
+- [MCP Protocol](/data/30-mcp-protocol)
+
+## Entiende
+
+MCP es el puente entre agentes y datos.
+
+```
+LangGraph → MCP Client → Database / PDF / API
+```
+
+Ask Sage necesita:
+- PDFs de fármacos
+- Base de datos de dosis
+- Screenshots / videos
+- Búsqueda embeddings
+
+## Ejecuta
+
+`backend/ask_sage_graph.py` línea 36-48:
+
+Mock actual:
+```python
+# Si "dosis" + "insuficiencia" en query
+# Devuelve tabla hardcoded
+```
+
+Upgrade: Conectar a:
+1. SQLAlchemy + PostgreSQL
+2. Vector store (Pinecone / Weaviate)
+3. AWS Bedrock embeddings
+
+¿Cuál priorizar?
+
+## Próximo
+
+Módulo 8: Validación & Cedar.
+
+---
+

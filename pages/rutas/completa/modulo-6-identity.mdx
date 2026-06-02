@@ -1,0 +1,50 @@
+# 📚 Ruta Completa: Módulo 6
+
+> MÓDULO 6: IDENTITY ⭐⭐
+Forwarding y territorios.
+
+**Objetivo:** Identity Forwarding ⭐⭐⭐ - Seguridad farmacéutica.
+
+## Lee
+
+- [Identity Forwarding](/runtime/21-identity-forwarding) ⭐⭐⭐
+- [AgentCore Governance](/runtime/22-agentcore-governance)
+
+## Entiende
+
+La pregunta de oro:
+**¿Cómo aseguramos que vendedor MX NO ve datos de AR?**
+
+Respuesta: Identity Forwarding.
+
+```
+1. Usuario loguea con Okta (MX grupo)
+2. Token llega a frontend
+3. Frontend envía token a backend
+4. Backend valida con Okta
+5. Backend filtra por territorio (MX)
+6. Búsqueda MCP usa territorio (MX)
+```
+
+Sin esto = compliance breach. Vendedor MX ve TODO.
+
+## Ejecuta
+
+`backend/ask_sage_graph.py` línea 22-35:
+```python
+# Mock: Lee el territorio
+# PROD: Validar token con Okta
+# PROD: Extraer territorio de claims
+```
+
+Entiendes el flujo mock. Haz el upgrade a Okta real:
+- Qué endpoint usar
+- Cómo enviar token
+- Cómo extraer grupos
+
+## Próximo
+
+Módulo 7: MCP Data Layer.
+
+---
+

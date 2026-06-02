@@ -1,0 +1,47 @@
+# 📚 Ruta Completa: Módulo 10
+
+> MÓDULO 10: OBSERVABILITY
+Monitoreo y logs.
+
+**Objetivo:** Observability - Ver qué pasa en producción.
+
+## Lee
+
+- [CI/CD](/validation/04-ci-cd)
+- [Multimodal Embeddings](/data/31-multimodal-embeddings)
+
+## Entiende
+
+En producción, no ves los logs locales.
+
+Necesitas:
+- **CloudWatch Logs** - Dónde están los logs
+- **CloudWatch Metrics** - Latencia, errores, requests
+- **X-Ray Tracing** - Seguir una request end-to-end
+- **Dashboards** - Ver salud en tiempo real
+
+## Ejecuta
+
+Agrega logging a cada nodo:
+
+```python
+def nodo_verificar_identidad(state):
+    print(f"[VERIFY] territory={state['territorio']}")
+    # resto del código
+```
+
+Ejecuta y ve los logs:
+```bash
+npm run backend 2>&1 | grep VERIFY
+```
+
+¿Ves los prints? ✅
+
+Para PROD: Reemplaza print con CloudWatch.
+
+## Próximo
+
+Módulo 11: Deploy Local (Docker).
+
+---
+

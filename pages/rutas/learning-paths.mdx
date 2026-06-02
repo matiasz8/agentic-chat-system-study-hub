@@ -1,0 +1,207 @@
+# 🎯 Learning Paths: Elige tu Camino
+
+> 📚 LEARNING PATHS
+Dos caminos: corto o completo.
+
+> Dos rutas explícitas para llegar a Ask Sage: **Rápida** (1 semana) o **Completa** (2-3 semanas)
+
+---
+
+## 🏃 RUTA RÁPIDA (7 días - MVP funcional)
+
+> Para: Necesito Ask Sage funcionando YA
+
+**Meta**: Ask Sage MVP en producción en 1 semana
+
+```
+DÍA 1-2: FRONTEND (Streaming + UX)
+├─ 00-vercel-intro (30 min)
+├─ 01-streaming (1 h) ⭐ CRÍTICO
+├─ 02-generative-ui (1 h)
+└─ Código: AskSageChat.tsx
+
+DÍA 3-4: ORCHESTRATION (LangGraph)
+├─ 10-fundamentos-grafos (30 min)
+├─ 11-state (1 h) ⭐ CRÍTICO
+├─ 12-nodos (1 h)
+└─ Código: ask_sage_graph.py (3 nodos básicos)
+
+DÍA 5: RUNTIME/IDENTITY (Seguridad)
+├─ 21-identity-forwarding (2 h) ⭐⭐⭐ CRÍTICO
+└─ Código: nodo_verificar_identidad (mock Okta)
+
+DÍA 6: DATA LAYER (Búsqueda)
+├─ 30-mcp-protocol (1 h)
+└─ Código: nodo_buscar_en_mcp (búsqueda simulada)
+
+DÍA 7: TESTING + DEPLOY
+├─ ask-sage-validation (1 h)
+├─ Ejecutar tests
+└─ Deploy a AWS (básico)
+```
+
+**Resultado**: Chat funcional con seguridad básica ✅
+
+### Módulos Ruta Rápida
+
+| Día | Módulo Web | Corresponde a | Tiempo |
+|-----|-----------|--------------|--------|
+| 1-2 | 00-vercel-intro | `frontend/pages/index.tsx` | 1.5h |
+| 1-2 | 01-streaming | `frontend/components/AskSageChat.tsx` | 1h |
+| 3-4 | 11-state | `backend/ask_sage_graph.py:AskSageState` | 1h |
+| 3-4 | 12-nodos | `backend/ask_sage_graph.py:nodo_*()` | 1h |
+| 5 | 21-identity-forwarding | `backend/ask_sage_graph.py:nodo_verificar_identidad` | 2h |
+| 6 | 30-mcp-protocol | `backend/ask_sage_graph.py:nodo_buscar_en_mcp` | 1h |
+
+[Empezar Ruta Rápida →](/ask-sage/path#prioridad-1-frontend-días-1-3)
+
+---
+
+## 🧑‍🎓 RUTA COMPLETA (21 días - Expert)
+
+> Para: Quiero dominar la arquitectura completa
+
+**Meta**: Entender TODO (frontend, orquestación, seguridad, datos, testing)
+
+```
+SEMANA 1: FUNDAMENTOS
+├─ DÍA 1-2: Frontend (Vercel, streaming, Generative UI)
+│  ├─ 00-vercel-intro
+│  ├─ 01-streaming
+│  ├─ 02-generative-ui
+│  └─ 03-frontend-completo ⭐
+├─ DÍA 3-4: Orchestration (LangGraph, State, Nodos)
+│  ├─ 10-fundamentos-grafos
+│  ├─ 11-state
+│  ├─ 12-nodos
+│  └─ 13-aristas ⭐
+└─ DÍA 5: Checkpoints (Persistencia)
+   └─ 14-checkpoints
+
+SEMANA 2: RUNTIME & SEGURIDAD
+├─ DÍA 6-7: Basics
+│  ├─ 20-serverless-basics
+│  └─ 21-identity-forwarding ⭐⭐⭐
+├─ DÍA 8-9: Governance
+│  ├─ 22-agentcore-governance ⭐
+│  └─ 23-cedar-policies ⭐
+└─ DÍA 10: Tools
+   └─ 24-tools-management
+
+SEMANA 3: DATA & VALIDATION
+├─ DÍA 11-12: Data Layer
+│  ├─ 30-mcp-protocol ⭐
+│  └─ 31-multimodal-embeddings ⭐
+├─ DÍA 13-15: Testing
+│  ├─ ask-sage-validation (Unit)
+│  ├─ ask-sage-validation (Integration)
+│  └─ ask-sage-validation (E2E)
+└─ DÍA 16-21: Proyecto
+   ├─ 40-ask-sage-mvp
+   ├─ 41-ask-sage-enterprise
+   └─ 42-deployment-aws
+```
+
+**Resultado**: Expert en Ask Sage, listo para entrevistas técnicas ✅
+
+### Módulos Ruta Completa
+
+Todos los módulos, en orden de dependencia.
+
+[Empezar Ruta Completa →](/ask-sage/path)
+
+---
+
+## 📊 Comparación
+
+| Aspecto | Ruta Rápida | Ruta Completa |
+|--------|-----------|---------------|
+| **Tiempo** | 7 días | 21 días |
+| **Objetivo** | MVP funcional | Expert completo |
+| **Módulos** | 7 críticos | 32 todos |
+| **Profundidad** | Básica → Intermedia | Básica → Avanzada |
+| **Código** | Starter ejecutable | Production-ready |
+| **Tests** | Básicos | Completo (Unit/Int/E2E) |
+| **Deployment** | Manual | Automatizado |
+
+---
+
+## 🎯 ¿Cuál Elegir?
+
+### Elige RUTA RÁPIDA si:
+- ✅ Necesitas Ask Sage en 1 semana
+- ✅ Solo quieres lo CRÍTICO
+- ✅ Presupuesto/tiempo limitado
+- ✅ Ya tienes experiencia con LangGraph
+
+### Elige RUTA COMPLETA si:
+- ✅ Quieres dominar la arquitectura
+- ✅ Tienes 3 semanas disponibles
+- ✅ Necesitas ir a producción confiable
+- ✅ Quieres hacer entrevistas técnicas
+
+### Recomendación Oficial (Tu Jefe):
+**RUTA RÁPIDA + Semana 4 de mejoras** = Mejor relación costo/tiempo
+
+---
+
+## 🔗 Módulo ↔ Código: Paralelismo
+
+Cada módulo de la web tiene código correspondiente en **ask-sage-starter**.
+
+### Ejemplo: State (Módulo 11)
+
+```
+PÁGINA WEB:
+/orchestration/11-state.mdx
+├─ Concepto: AskSageState TypedDict
+├─ Ejemplo: State centralizado
+└─ Ejercicio: Define tu State
+
+↓ CORRESPONDE A ↓
+
+CÓDIGO (ask-sage-starter):
+backend/ask_sage_graph.py
+├─ Línea 5-20: class AskSageState(TypedDict)
+├─ Línea 25-35: Uso en nodos
+└─ Línea 60-65: Actualización
+
+INSTRUCCIONES:
+1. Lee /orchestration/11-state (45 min)
+2. Abre backend/ask_sage_graph.py
+3. Reconoce AskSageState
+4. Modifica un campo (ej: agrega "temperatura")
+5. VES CAMBIOS EN http://localhost:3000
+```
+
+---
+
+## 📋 Checklist: Antes de Empezar
+
+- [ ] Decidiste: ¿Ruta Rápida o Completa?
+- [ ] Instalaste: Docker o (Node.js + Python)
+- [ ] Clonaste: ask-sage-starter
+- [ ] Ejecutaste: npm run dev + python backend/server.py
+- [ ] Accediste: http://localhost:3000
+- [ ] Probaste: Preguntaste al chat
+
+---
+
+## 🚀 Empezar Ahora
+
+### Ruta Rápida
+[Empezar →](/ask-sage/path#prioridad-1-frontend-días-1-3)
+
+### Ruta Completa
+[Empezar →](/ask-sage/path)
+
+### Ambas con Código
+[ask-sage-starter QUICKSTART →](https://github.com/your-org/ask-sage-starter#quickstart)
+
+---
+
+**Última decisión**: ¿Tienes 1 semana o 3 semanas?
+
+- **1 semana** → Ruta Rápida (enfoque MVP)
+- **3 semanas** → Ruta Completa (enfoque experto)
+- **Indefinido** → Ruta Completa + Ruta Rápida en paralelo

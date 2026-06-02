@@ -1,0 +1,13 @@
+{
+  "index": "Rutas Interactivas",
+  "learning-paths": "🎯 Learning Paths (referencia)",
+  "module-map": "📍 Module Map (Hub ↔ Código)",
+  "rapida": {
+    "title": "Ruta Rápida (6 Temas)",
+    "display": "hidden"
+  },
+  "completa": {
+    "title": "Ruta Completa (12 Módulos + 4 Ejercicios)",
+    "display": "hidden"
+  }
+}

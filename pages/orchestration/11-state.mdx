@@ -1,12 +1,7 @@
-import { CodeBlock, BasicExample, AdvancedExample, Exercise } from '../../components/CodeBlock';
-import { ModuleNav } from '../../components/ModuleNav';
-
-export const metadata = {
-  title: 'El State en LangGraph',
-  description: 'Aprende cómo manejar estado centralizado en tus agentes IA',
-};
-
 # El State (Estado Centralizado) en LangGraph
+
+> State: Memoria del Grafo
+TypedDict + contexto compartido entre nodos.
 
 El **State** es la memoria compartida de tu agente. Todo viaja por aquí: mensajes, contexto, resultados, errores.
 
@@ -54,20 +49,6 @@ Piénsalo así: Si tu agente es un cerebro, el State es la sangre. 🧠💉
 
 El form más simple es un **TypedDict**:
 
-<BasicExample 
-  code={`from typing import TypedDict
-
-class SimpleState(TypedDict):
-    """Estado mínimo para un agente"""
-    messages: list[str]      # Historial de mensajes
-    current_step: str        # Paso actual ("validation", "processing", etc)
-
-# Uso:
-state = {"messages": ["Hola"], "current_step": "inicio"}
-`}
-  title="01_state_basico.py"
-/>
-
 **Cuándo usar**: Prototipos rápidos, demos, desarrollo local
 
 ---
@@ -75,38 +56,6 @@ state = {"messages": ["Hola"], "current_step": "inicio"}
 ## 💻 Nivel 2: State Intermedio (Con Reducers)
 
 Cuando necesitas **control granular** sobre cómo se actualiza cada campo:
-
-<AdvancedExample
-  code={`from typing import TypedDict, Annotated
-from operator import add
-
-class AgentState(TypedDict):
-    """State con múltiples campos y reducers"""
-    messages: Annotated[list, add]        # ✅ Acumula (concatena)
-    current_step: str                     # Reemplaza valor
-    context: dict                         # Reemplaza diccionario
-    results: Annotated[list, add]         # ✅ Acumula
-    conversation_id: str                  # ID único
-
-# El reducer 'add' = concatena/acumula
-# Sin reducer = reemplaza valor
-
-# Ejemplo de uso:
-from langgraph.graph import StateGraph, START, END
-
-def node_1(state: AgentState):
-    # Retorna qué campos actualizar
-    return {
-        "messages": ["Node 1 ejecutado"],  # Se suma a la lista existente
-        "current_step": "processing"       # Se reemplaza
-    }
-
-graph = StateGraph(AgentState)
-graph.add_node("node1", node_1)
-graph.add_edge(START, "node1")
-`}
-  title="02_state_con_reducers.py"
-/>
 
 **Ventaja**: Control preciso de cómo se actualizan datos  
 **Cuándo usar**: Agentes con múltiples nodos, conversaciones, históricos
@@ -116,40 +65,6 @@ graph.add_edge(START, "node1")
 ## 💻 Nivel 3: State Avanzado (Custom Reducers)
 
 Para casos complejos, define **reducers personalizados**:
-
-<AdvancedExample
-  code={`from typing import TypedDict, Annotated
-
-def merge_context(existing: dict, update: dict) -> dict:
-    """Merge inteligente de contextos"""
-    merged = existing.copy() if existing else {}
-    merged.update(update)
-    return merged
-
-def deduplicate_errors(existing: list, new_errors: list) -> list:
-    """Acumula errores pero elimina duplicados"""
-    seen = set()
-    result = []
-    for error in (existing or []) + new_errors:
-        error_str = str(error)
-        if error_str not in seen:
-            seen.add(error_str)
-            result.append(error)
-    return result
-
-class AdvancedState(TypedDict):
-    messages: Annotated[list, add]
-    context: Annotated[dict, merge_context]
-    errors: Annotated[list, deduplicate_errors]
-    metadata: Annotated[dict, merge_context]
-
-# Ahora cuando actualizas:
-# - context se hace merge (no reemplaza)
-# - errors se acumula pero sin duplicados
-# - metadata se combina inteligentemente
-`}
-  title="03_state_advanced_reducers.py"
-/>
 
 **Cuándo usar**: Producción, agentes con requisitos de seguridad/compliance
 
@@ -171,59 +86,9 @@ class AdvancedState(TypedDict):
 
 ### 1. Define el State
 
-<BasicExample
-  code={`from typing import TypedDict, Annotated
-from operator import add
-
-class MyState(TypedDict):
-    user_input: str
-    messages: Annotated[list, add]
-    result: str
-`}
-  title="step_1_define_state.py"
-/>
-
 ### 2. Crea un nodo que lo use
 
-<BasicExample
-  code={`def process_node(state: MyState):
-    # Lee del state
-    user_msg = state['user_input']
-    
-    # Procesa
-    result = f"Procesando: {user_msg}"
-    
-    # Actualiza state
-    return {
-        "messages": [f"[process_node]: {result}"],
-        "result": result
-    }
-`}
-  title="step_2_crear_nodo.py"
-/>
-
 ### 3. Construye el grafo
-
-<BasicExample
-  code={`from langgraph.graph import StateGraph, START, END
-
-graph = StateGraph(MyState)
-graph.add_node("process", process_node)
-graph.add_edge(START, "process")
-graph.add_edge("process", END)
-
-# Compila y ejecuta
-compiled = graph.compile()
-result = compiled.invoke({
-    "user_input": "Hola agente",
-    "messages": [],
-    "result": ""
-})
-
-print(result["messages"])  # ["[process_node]: Procesando: Hola agente"]
-`}
-  title="step_3_compilar.py"
-/>
 
 ---
 
@@ -231,88 +96,120 @@ print(result["messages"])  # ["[process_node]: Procesando: Hola agente"]
 
 ### Ejemplo 1: Chatbot con Histórico
 
-<BasicExample
-  code={`class ChatState(TypedDict):
-    user_message: str
-    messages: Annotated[list, add]      # Acumula conversación
-    mode: Literal["chat", "search"]     # Modo actual
-    confidence_score: float             # Confianza en respuesta
-
-# Cuando el usuario envía "Hola", messages puede ser:
-# ["Usuario: Hola", "Asistente: ¡Hola! ¿Cómo te llamas?", "Usuario: Soy Juan"]
-# Y cada nodo agrega su parte automáticamente
-`}
-  title="ejemplo_1_chatbot.py"
-/>
-
 ### Ejemplo 2: Workflow de Validación
 
-<BasicExample
-  code={`class ValidationState(TypedDict):
-    input_data: dict
-    validation_errors: Annotated[list, deduplicate_errors]
-    step: str  # "receive" → "validate" → "process" → "done"
-    attempts: Annotated[int, add]  # Cuenta intentos
+---
+
+## 🎯 Ask Sage Example: State Farmacéutico
+
+**Escenario**: Vendedor MX pregunta sobre dosis. El State viaja por todo el grafo guardando información.
+
+```python
+from typing import TypedDict, Annotated, Literal
+from operator import add
+
+class AskSageState(TypedDict):
+    # INPUT
+    vendedor_id: str                    # "V001"
+    territorio: str                     # "MX"
+    pregunta: str                       # "¿Dosis insuf. renal?"
     
-# Flujo:
-# Paso 1 (receive): 0 errores
-# Paso 2 (validate): encontramos 3 errores → validation_errors = [e1, e2, e3]
-# Paso 3 (validate retry): encontramos 2 errores más → 5 total
-# Reducer evita duplicados, así no tenemos [e1, e2, e3, e1, e2, e3, e4, e5]
-`}
-  title="ejemplo_2_validacion.py"
-/>
+    # CONTEXTO DE SEGURIDAD (Identity Forward)
+    allowed_products: list              # ["P001", "P002", "P003"]
+    allowed_territories: list           # ["MX", "LATAM"]
+    user_roles: list                    # ["Sales", "Senior"]
+    
+    # HISTÓRICO DE CONVERSACIÓN
+    messages: Annotated[list, add]      # Acumula todo lo que sucede
+    
+    # BÚSQUEDA EN DATA LAYER
+    search_results: dict                # PDFs encontrados, DB queries, videos
+    confidence_score: float             # 0-1 (qué tan seguro está)
+    
+    # ESTADO DE ORQUESTACIÓN
+    current_step: Literal[
+        "authorize",        # Verificar identidad
+        "search",           # Buscar en MCP
+        "generate",         # Generar respuesta
+        "validate",         # Validar confianza
+        "approve",          # Esperar aprobación humana?
+        "respond"           # Enviar respuesta
+    ]
+    
+    # RESULTADO FINAL
+    respuesta_final: str                # La respuesta para el vendedor
+    requiere_aprobacion_humana: bool    # Si confidence < 0.8
+    audit_trail: Annotated[list, add]   # Log de cada paso
+```
+
+**Cómo viaja el State**:
+
+```
+[INICIAL]
+{
+  vendedor_id: "V001",
+  territorio: "MX",
+  pregunta: "¿Dosis insuf. renal?",
+  allowed_products: [],
+  messages: [],
+  current_step: "authorize"
+}
+      │
+      ├─→ [NODO 1: Authorize]
+      │   • Lee: vendedor_id, territorio
+      │   • Verifica token Okta ✅
+      │   • Actualiza: allowed_products, messages, audit_trail
+      │
+      ├─→ [NODO 2: Search]
+      │   • Lee: allowed_products, pregunta
+      │   • Busca en PDFs, DB, Videos usando MCP
+      │   • Actualiza: search_results, confidence_score, messages
+      │
+      ├─→ [NODO 3: Generate]
+      │   • Lee: search_results, allowed_products
+      │   • Genera respuesta (puede incluir tablas React)
+      │   • Actualiza: respuesta_final, messages
+      │
+      ├─→ [NODO 4: Validate]
+      │   • Lee: confidence_score
+      │   • Si >= 0.8 → siguiente step
+      │   • Si < 0.8 → requiere_aprobacion_humana = True
+      │   • Actualiza: current_step
+      │
+      └─→ [FINAL: Respond]
+          • Envía respuesta al frontend con streaming
+          • Loga en audit_trail
+
+[FINAL]
+{
+  # ...todos los anteriores...
+  respuesta_final: "Dosis máxima: 100mg/día...",
+  requiere_aprobacion_humana: False,
+  current_step: "respond",
+  messages: [
+    "[authorize]: Vendedor V001 verificado en territorio MX",
+    "[search]: Encontrada bula en PDF pág 12",
+    "[generate]: Respuesta generada con confianza 0.95",
+    "[validate]: Confianza suficiente, proceder"
+  ],
+  audit_trail: [
+    {"step": "authorize", "duration": "0.05s", "status": "ok"},
+    {"step": "search", "duration": "0.80s", "status": "ok", "sources": 3},
+    {"step": "generate", "duration": "1.20s", "status": "ok"},
+    {"step": "validate", "duration": "0.02s", "status": "ok"}
+  ]
+}
+```
+
+**Por qué es importante**:
+- ✅ **Auditoría**: Cada vendedor, cada pregunta, cada decisión está loguiada
+- ✅ **Debugging**: Si algo falla, ves exactamente dónde
+- ✅ **Seguridad**: `allowed_products` viaja con la pregunta, evita cheats
+- ✅ **Persistencia**: El State se puede guardar en DB para pause/resume
 
 ---
 
 ## 🏋️ Ejercicios
-
-<Exercise
-  title="Ejercicio 1: Define tu StateSchema"
-  problem="Crea un State para un agente Q&A que mantenga:
-- La pregunta del usuario
-- Un histórico de Q&A (lista de tuplas)
-- El score de confianza de cada respuesta
-- El paso actual (searching, formulating, done)
-
-Usa TypedDict y asegúrate de que messages se acumule."
-  hints={[
-    "TypedDict es similar a typing.Dict pero con estructura fija",
-    "Usa Annotated[list, add] para campos que se acumulan",
-    "El score puede ser float entre 0 y 1"
-  ]}
-/>
-
-<Exercise
-  title="Ejercicio 2: Implementa un Reducer Custom"
-  problem="Crea un reducer que:
-1. Acumule errores de validación
-2. Elimine duplicados
-3. Mantenga el orden de aparición
-4. No permita más de 10 errores (trunca el resto)
-
-Llámalo 'limited_errors'."
-  hints={[
-    "Necesitas comparar strings para detectar duplicados",
-    "Usa un set() para tracking",
-    "Puedes usar slicing para limitar: lista[:10]"
-  ]}
-/>
-
-<Exercise
-  title="Ejercicio 3: State con Logging Automático"
-  problem="Crea un State que automáticamente registre:
-- Timestamp de cada actualización
-- Quién hizo el cambio (nombre del nodo)
-- El valor anterior y nuevo
-
-Pista: Crea un reducer personalizado que reciba esta metadata."
-  hints={[
-    "Importa datetime para timestamps",
-    "Estructura los logs como: {timestamp, node, field, old_value, new_value}",
-    "El reducer recibe (existing, update) y retorna el nuevo estado"
-  ]}
-/>
 
 ---
 
@@ -324,22 +221,42 @@ Pista: Crea un reducer personalizado que reciba esta metadata."
 
 ---
 
-<ModuleNav
-  current="/orchestration/11-state"
-  section="Orquestación"
-  modules={[
-    { title: "10. Fundamentos", href: "/orchestration/10-fundamentos-grafos", level: "básico" },
-    { title: "11. El State", href: "/orchestration/11-state", level: "básico", completed: true },
-    { title: "12. Nodos", href: "/orchestration/12-nodos", level: "intermedio", duration: "90 min" },
-    { title: "13. Aristas", href: "/orchestration/13-aristas", level: "intermedio", duration: "75 min" },
-    { title: "14. Checkpoints", href: "/orchestration/14-checkpoints", level: "intermedio", duration: "75 min" },
-  ]}
-  showProgressBar={true}
-/>
-
 ---
 
 **Última actualización:** 2026-05-31  
 **Dificultad:** ⭐⭐ Intermedia  
 **Duración:** 90 minutos (lectura + ejercicios)  
 **Prerequisitos:** Módulos 00-02, conocimiento básico de Python
+
+---
+
+## 🎯 Contexto Ask Sage
+
+**Ruta**: [Ruta Rápida](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional) ⭐  
+**Módulo Map**: [Ver correspondencia Hub ↔ Código](/rutas/module-map#módulo-11-state)
+
+### Dónde está en ask-sage-starter
+
+```
+📁 backend/ask_sage_graph.py (Línea 5-20)
+
+class AskSageState(TypedDict):
+    vendedor_id: str              # Ask Sage: Quién pregunta
+    territorio: str               # Ask Sage: Qué territorios ve
+    pregunta: str                 # Ask Sage: La pregunta
+    contexto_permitido: list      # Ask Sage: Productos permitidos
+    messages: Annotated[list, add]  # Ask Sage: Histórico
+    respuesta_final: str          # Ask Sage: Respuesta
+    confianza: float              # Ask Sage: Seguridad de respuesta
+```
+
+### Ejercicio Práctico
+
+1. **Lee** este módulo (45 min)
+2. **Abre** `backend/ask_sage_graph.py`
+3. **Reconoce** cada campo de AskSageState
+4. **Modifica**: Agrega un campo nuevo (ej: `timestamp: str`)
+5. **Ejecuta**: `npm run dev` + `npm run backend`
+6. **Verifica**: Los tests pasan
+
+[Ver module-map completo →](/rutas/module-map)

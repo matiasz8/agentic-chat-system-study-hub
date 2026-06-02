@@ -1,0 +1,57 @@
+# ✅ Tema 5: Validación & Guardrails
+
+> TEMA 5: VALIDACIÓN
+Tests en 1 hora.
+
+**Qué aprenderás:** Cómo Ask Sage verifica que las respuestas sean seguras.
+
+## 📖 Lee
+
+- [Validación Básica](/validation/00-testing-basico)
+- [Validación de Workflows](/validation/02-validation-workflows)
+
+## 🔧 Modifica el Código
+
+Abre: `backend/ask_sage_graph.py` líneas 49-57
+
+```python
+def nodo_validar(state):
+    # Chequea que la respuesta sea "safe"
+    # Si confidence_score < 0.5, rechaza
+```
+
+**Tarea:** Cambiar el threshold:
+
+```python
+# ANTES
+MIN_CONFIDENCE = 0.5
+
+# DESPUÉS
+MIN_CONFIDENCE = 0.8  # Más estricto
+```
+
+## ⚙️ Ejecuta Tests
+
+```bash
+cd backend
+pytest tests/test_ask_sage.py -v
+```
+
+**Espera:** Con confidence más alto, ¿cuál test falla?
+
+Pista: `test_confianza_baja`
+
+## ✅ Verifica
+
+```bash
+pytest tests/test_ask_sage.py::test_confianza_baja -v
+```
+
+Debería FAIL ahora. ✅ (Eso significa la validación funciona)
+
+## ➡️ Siguiente
+
+Última: Frontend & Deploy.
+
+---
+

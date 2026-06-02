@@ -1,0 +1,42 @@
+# 📚 Ruta Completa: Módulo 2
+
+> MÓDULO 2: STREAMING
+Tokens y generación progresiva.
+
+**Objetivo:** Token streaming - La UX que define Ask Sage.
+
+## Lee
+
+- [Streaming](/frontend/01-streaming)
+- [Generative UI](/frontend/02-generative-ui)
+
+## Entiende
+
+¿Por qué streaming?
+```
+❌ Esperar 10s → Respuesta completa
+✅ Ver tokens → Respuesta iterativa
+```
+
+Mejor UX. Menos percepción de latencia.
+
+## Ejecuta
+
+`frontend/components/AskSageChat.tsx` línea 35:
+```typescript
+// Mock stream - reemplaza con backend real
+const stream = async function* () {
+  yield "Cargando...";
+  yield "Buscando dosis...";
+  yield "Completado.";
+};
+```
+
+Cambia el stream. ¿Qué ves?
+
+## Próximo
+
+Módulo 3: State Management.
+
+---
+

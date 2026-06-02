@@ -29,6 +29,7 @@ export default {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta property="og:title" content="Agentic Chat System - Study Hub" />
       <meta property="og:description" content="Hub completo: LangGraph, AWS, Vercel AI, Testing" />
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     </>
   ),
   darkMode: true,

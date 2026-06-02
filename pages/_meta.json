@@ -1,6 +1,11 @@
 {
   "index": "🏠 Home",
   "quickstart": "🚀 Quick Start",
+  "rutas": "🛤️ Rutas Interactivas",
+  "ask-sage": {
+    "title": "📚 Ask Sage Project",
+    "type": "dir"
+  },
   "frontend": "🎨 Frontend & UX",
   "orchestration": "🧠 Orchestration",
   "runtime": "☁️ Runtime & Infrastructure",
@@ -8,3 +13,4 @@
   "validation": "✅ Validation & Testing",
   "proyectos": "🎯 Proyectos Integrados"
 }
+

@@ -1,0 +1,52 @@
+# 📚 Ruta Completa: Módulo 8
+
+> MÓDULO 8: VALIDACIÓN
+Testing en profundidad.
+
+**Objetivo:** Validación & Cedar Policies.
+
+## Lee
+
+- [Validación Básica](/validation/00-testing-basico)
+- [Cedar Policies](/runtime/23-cedar-policies)
+- [Testing de Workflows](/validation/02-validation-workflows)
+
+## Entiende
+
+Guardrails en Ask Sage:
+
+**Nodo Validar:**
+```python
+def nodo_validar(state):
+    confidence = calcular_confianza(respuesta)
+    if confidence < THRESHOLD:
+        return {"error": "Low confidence"}
+    return {"respuesta": respuesta}
+```
+
+**Cedar (Producción):**
+```cedar
+permit(
+  principal == ?principal,
+  action == Action::"View",
+  resource == ?resource
+) when { 
+  principal.territorio == resource.territorio
+};
+```
+
+## Ejecuta
+
+`backend/ask_sage_graph.py` línea 49-57:
+- ¿Qué es confidence_score?
+- ¿Cuál es el threshold?
+- ¿Qué pasa si es < threshold?
+
+Escribe una política Cedar para Ask Sage.
+
+## Próximo
+
+Módulo 9: Testing & E2E.
+
+---
+
