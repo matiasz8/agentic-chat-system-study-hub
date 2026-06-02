@@ -9,7 +9,7 @@ import json
 from typing import Dict, Any
 
 # Imports para testing
-from mock_llm import MockAnthropic, get_test_response
+from .mock_llm import MockAnthropic, get_test_response
 
 
 class TestPromptValidation:
