@@ -7,57 +7,115 @@ Dos caminos: corto o completo.
 
 ---
 
-## 🏃 RUTA RÁPIDA (7 días - MVP funcional)
+## 🏃 ESTUDIO RÁPIDO (3-5 días - Teoría + Ejemplos)
 
-> Para: Necesito Ask Sage funcionando YA
+> Para: Quiero entender la arquitectura SIN escribir código aún
 
-**Meta**: Ask Sage MVP en producción en 1 semana
+**Meta**: Dominar conceptos en 3-5 días (solo LEER y VER ejemplos)
 
 ```
-DÍA 1-2: FRONTEND (Streaming + UX)
-├─ 00-vercel-intro (30 min)
-├─ 01-streaming (1 h) ⭐ CRÍTICO
-├─ 02-generative-ui (1 h)
-└─ Código: AskSageChat.tsx
+DÍA 1: FRONTEND - Conceptos (2 horas)
+├─ Lee: 00-vercel-intro.mdx (30 min) 
+├─ Lee: 01-streaming.mdx (30 min) ⭐ CRÍTICO
+│  └─ Mira: Código ejemplo de streaming en la página
+├─ Lee: 02-generative-ui.mdx (30 min)
+│  └─ Mira: Screenshot de Gen UI
+└─ Entiende: useChat hook, token streaming, componentes vivos
 
-DÍA 3-4: ORCHESTRATION (LangGraph)
-├─ 10-fundamentos-grafos (30 min)
-├─ 11-state (1 h) ⭐ CRÍTICO
-├─ 12-nodos (1 h)
-└─ Código: ask_sage_graph.py (3 nodos básicos)
+DÍA 2: ORCHESTRATION - LangGraph (2 horas)
+├─ Lee: 10-fundamentos-grafos.mdx (30 min)
+├─ Lee: 11-state.mdx (30 min) ⭐ CRÍTICO
+│  └─ Mira: Código ejemplo de State en la página
+├─ Lee: 12-nodos.mdx (30 min)
+│  └─ Mira: Diagrama 3 nodos básicos
+└─ Entiende: State centralizado, nodos como funciones, aristas como decisiones
 
-DÍA 5: RUNTIME/IDENTITY (Seguridad)
-├─ 21-identity-forwarding (2 h) ⭐⭐⭐ CRÍTICO
-└─ Código: nodo_verificar_identidad (mock Okta)
+DÍA 3: RUNTIME - Seguridad (2 horas)
+├─ Lee: 21-identity-forwarding.mdx (1 h) ⭐⭐⭐ CRÍTICO
+│  └─ Mira: Diagrama Okta/AD flow
+├─ Lee: 23-cedar-policies.mdx (30 min)
+│  └─ Mira: Código ejemplo de Cedar
+└─ Entiende: Identity forwarding end-to-end, governance policies
 
-DÍA 6: DATA LAYER (Búsqueda)
-├─ 30-mcp-protocol (1 h)
-└─ Código: nodo_buscar_en_mcp (búsqueda simulada)
+DÍA 4: DATA LAYER - MCP (1 hora)
+├─ Lee: 30-mcp-protocol.mdx (30 min)
+│  └─ Mira: Diagrama MCP architecture
+├─ Lee: 31-multimodal-embeddings.mdx (30 min)
+└─ Entiende: Cómo se conectan datos, embeddings multimodales
 
-DÍA 7: TESTING + DEPLOY
-├─ ask-sage-validation (1 h)
-├─ Ejecutar tests
-└─ Deploy a AWS (básico)
+DÍA 5 (Opcional): VALIDATION (1 hora)
+├─ Lee: ask-sage-validation.mdx (30 min)
+├─ Lee Python: test_prompts.py (15 min)
+├─ Lee Python: test_workflows.py (15 min)
+└─ Entiende: Cómo se valida arquitectura
 ```
 
-**Resultado**: Chat funcional con seguridad básica ✅
+**Resultado**: Entiendes TODO (no escribiste código) ✅
 
-### Módulos Ruta Rápida
+### Módulos Estudio Rápido
 
-| Día | Módulo Web | Corresponde a | Tiempo |
-|-----|-----------|--------------|--------|
-| 1-2 | 00-vercel-intro | `frontend/pages/index.tsx` | 1.5h |
-| 1-2 | 01-streaming | `frontend/components/AskSageChat.tsx` | 1h |
-| 3-4 | 11-state | `backend/ask_sage_graph.py:AskSageState` | 1h |
-| 3-4 | 12-nodos | `backend/ask_sage_graph.py:nodo_*()` | 1h |
-| 5 | 21-identity-forwarding | `backend/ask_sage_graph.py:nodo_verificar_identidad` | 2h |
-| 6 | 30-mcp-protocol | `backend/ask_sage_graph.py:nodo_buscar_en_mcp` | 1h |
+| Día | SOLO Lee | Tiempo |
+|-----|----------|--------|
+| 1 | 00-vercel + 01-streaming + 02-gen-ui | 1.5h |
+| 2 | 10-grafos + 11-state + 12-nodos | 1.5h |
+| 3 | 21-identity + 23-cedar | 1.5h |
+| 4 | 30-mcp + 31-embeddings | 1h |
+| 5 | ask-sage-validation + tests | 1h |
 
-[Empezar Ruta Rápida →](/ask-sage/path#prioridad-1-frontend-días-1-3)
+**TOTAL: 6-7 horas de ESTUDIO PURO**
+
+[Empezar Estudio Rápido →](/ask-sage/path)
 
 ---
 
-## 🧑‍🎓 RUTA COMPLETA (21 días - Expert)
+## 🛠️ RUTA POC (14-21 días - Desarrollo)
+
+> Para: Quiero CONSTRUIR Ask Sage funcional (necesita ask-sage-poc repo)
+
+**Meta**: POC funcionando en 2-3 semanas
+
+```
+SEMANA 1: SETUP + FRONTEND
+├─ DÍA 1-2: Next.js + Vercel AI SDK
+│  ├─ Clona ask-sage-poc repo
+│  ├─ npm install
+│  └─ npm run dev → http://localhost:3000
+├─ DÍA 3: Implementa AskSageChat.tsx
+│  ├─ useChat hook
+│  ├─ Streaming UI
+│  └─ Test con LLM mock
+└─ DÍA 4-5: Deploy a Vercel
+   └─ git push → automático
+
+SEMANA 2: BACKEND + ORCHESTRATION
+├─ DÍA 6: Setup FastAPI
+│  ├─ python -m venv venv
+│  └─ pip install -r requirements.txt
+├─ DÍA 7-10: LangGraph + 3 nodos
+│  ├─ nodo_verificar_identidad (mock Okta)
+│  ├─ nodo_buscar_en_mcp (búsqueda)
+│  └─ nodo_responder (LLM)
+└─ DÍA 11: Tests
+   └─ pytest python/
+
+SEMANA 3: DEPLOYMENT
+├─ DÍA 12-14: AWS
+│  ├─ CloudFormation templates
+│  ├─ Lambda deployment
+│  └─ Identity Forwarding real
+└─ DÍA 15-21: Polish + Docs
+   └─ Production-ready
+```
+
+**Resultado**: POC ejecutable en producción ✅
+
+⚠️ **IMPORTANTE**: Esta ruta requiere:
+- [ ] ask-sage-poc repo (separado, con código completo)
+- [ ] Experiencia escribiendo código
+- [ ] AWS account configurada
+- [ ] 3 semanas dedicadas
+
+---
 
 > Para: Quiero dominar la arquitectura completa
 
@@ -112,38 +170,50 @@ Todos los módulos, en orden de dependencia.
 
 ---
 
-## 📊 Comparación
+## 📊 Comparación de Rutas
 
-| Aspecto | Ruta Rápida | Ruta Completa |
-|--------|-----------|---------------|
-| **Tiempo** | 7 días | 21 días |
-| **Objetivo** | MVP funcional | Expert completo |
-| **Módulos** | 7 críticos | 32 todos |
-| **Profundidad** | Básica → Intermedia | Básica → Avanzada |
-| **Código** | Starter ejecutable | Production-ready |
-| **Tests** | Básicos | Completo (Unit/Int/E2E) |
-| **Deployment** | Manual | Automatizado |
+| Aspecto | Estudio Rápido | Estudio Completo | POC Desarrollo |
+|--------|---|---|---|
+| **Tiempo** | 3-5 días | 3 semanas | 2-3 semanas |
+| **Objetivo** | Entender conceptos | Dominar arquitectura | Código funcionando |
+| **¿Escribes código?** | ❌ No | ❌ No | ✅ Sí (completo) |
+| **¿Ejecutas código?** | ❌ No | ❌ No | ✅ Sí (local + AWS) |
+| **Módulos** | 7 críticos | 32 todos | Infinito (custom) |
+| **Profundidad** | Básica | Avanzada | Production |
+| **Para tu jefe?** | ✅ Perfecto | ✅ Mejor aún | Para dev team |
+| **Dificultad** | Fácil (leer) | Media (leer) | Difícil (programar) |
 
 ---
 
 ## 🎯 ¿Cuál Elegir?
 
-### Elige RUTA RÁPIDA si:
-- ✅ Necesitas Ask Sage en 1 semana
-- ✅ Solo quieres lo CRÍTICO
-- ✅ Presupuesto/tiempo limitado
-- ✅ Ya tienes experiencia con LangGraph
+### Elige ESTUDIO RÁPIDO si:
+- ✅ Eres gestor/jefe y quieres entender arquitectura
+- ✅ Tienes 3-5 días disponibles
+- ✅ Necesitas decisiones informadas ANTES de dev
+- ✅ No quieres escribir código (aún)
 
-### Elige RUTA COMPLETA si:
-- ✅ Quieres dominar la arquitectura
-- ✅ Tienes 3 semanas disponibles
-- ✅ Necesitas ir a producción confiable
-- ✅ Quieres hacer entrevistas técnicas
+**→ [Empezar Estudio Rápido](#estudio-rápido-3-5-días---teoría--ejemplos)**
 
-### Recomendación Oficial (Tu Jefe):
-**RUTA RÁPIDA + Semana 4 de mejoras** = Mejor relación costo/tiempo
+### Elige ESTUDIO COMPLETO si:
+- ✅ Eres architect/senior dev
+- ✅ Quieres dominar TODA la arquitectura
+- ✅ Tienes 3 semanas
+- ✅ Necesitas hacer technical interviews
+- ✅ Vas a revisar código POC luego
 
----
+**→ [Empezar Estudio Completo](#ruta-completa-21-días---expert)**
+
+### Elige RUTA POC si:
+- ✅ Eres dev y vas a ESCRIBIR el código
+- ✅ Tienes 2-3 semanas dedicadas
+- ✅ Ask-sage-poc repo ya existe
+- ✅ Necesitas POC en producción
+
+**→ [Empezar POC Development](#ruta-poc-14-21-días---desarrollo)**
+
+### ⭐ Recomendación Oficial (Para tu Jefe):
+**ESTUDIO RÁPIDO** (3-5 días) = Entiende TODO antes de comprometerse con dev team
 
 ## 🔗 Módulo ↔ Código: Paralelismo
 
@@ -189,19 +259,20 @@ INSTRUCCIONES:
 
 ## 🚀 Empezar Ahora
 
-### Ruta Rápida
-[Empezar →](/ask-sage/path#prioridad-1-frontend-días-1-3)
+### Estudio Rápido (3-5 días)
+[Empezar →](#estudio-rápido-3-5-días---teoría--ejemplos)
 
-### Ruta Completa
-[Empezar →](/ask-sage/path)
+### Estudio Completo (3 semanas)
+[Empezar →](#ruta-completa-21-días---expert)
 
-### Ambas con Código
-[ask-sage-starter QUICKSTART →](https://github.com/your-org/ask-sage-starter#quickstart)
+### POC Development (2-3 semanas)
+[Empezar →](#ruta-poc-14-21-días---desarrollo)
+(Requiere ask-sage-poc repo separado)
 
 ---
 
-**Última decisión**: ¿Tienes 1 semana o 3 semanas?
+**Tu decisión**: ¿Qué quieres hacer?
 
-- **1 semana** → Ruta Rápida (enfoque MVP)
-- **3 semanas** → Ruta Completa (enfoque experto)
-- **Indefinido** → Ruta Completa + Ruta Rápida en paralelo
+- **Solo entender** → Estudio Rápido ✅ (3-5 días)
+- **Dominar todo** → Estudio Completo ✅ (3 semanas)
+- **Escribir código** → POC Development (otro repo)
