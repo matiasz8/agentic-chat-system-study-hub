@@ -1,0 +1,48 @@
+# 05. Testing Local (2 horas)
+
+> Escribir tests para tu lógica.
+
+## 🎯 Objetivo
+
+Tests de:
+1. State management
+2. Nodos individuales
+3. Flujo completo
+
+---
+
+## 📝 Código
+
+```python
+# backend/test_agent.py
+import pytest
+from graph import agent, AgentState
+
+def test_verify_identity():
+    state = AgentState(user_id="javier", query="test")
+    result = agent.invoke(state)
+    assert "verificado" in result["response"]
+
+def test_invalid_user():
+    state = AgentState(user_id="", query="test")
+    result = agent.invoke(state)
+    assert "no válido" in result["response"]
+
+def test_search_flow():
+    state = AgentState(user_id="javier", query="medicamento")
+    result = agent.invoke(state)
+    assert result["search_result"] is not None
+    assert result["response"] != ""
+```
+
+---
+
+## ✅ Ejecutar Tests
+
+```bash
+pytest backend/test_agent.py -v
+```
+
+---
+
+**Siguiente**: [06. Deployment Local →](/rutas/poc/deployment-local)

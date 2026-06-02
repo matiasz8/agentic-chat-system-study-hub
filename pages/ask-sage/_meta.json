@@ -1,5 +1,13 @@
 {
-  "path": "📚 Learning Path",
-  "walkthrough": "🎬 Project Walkthrough",
-  "validation": "🧪 Validation Tests"
+  "index": "Ask Sage",
+  "index": "Ask Sage",
+  "00-introduccion": "Introducción",
+  "01-caso-de-uso": "Caso de Uso",
+  "02-arquitectura": "Arquitectura",
+  "03-validacion": "Validación",
+  "04-deployment-prod": "Deployment (NUEVO)",
+  "05-identity-asksage": "Identity (NUEVO)",
+  "path": "Path Original",
+  "walkthrough": "Walkthrough",
+  "validation": "Validation Suite"
 }

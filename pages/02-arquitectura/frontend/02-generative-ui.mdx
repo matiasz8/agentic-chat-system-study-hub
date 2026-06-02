@@ -1,0 +1,609 @@
+# Generative UI
+
+> Generative UI
+Componentes dinámicos generados por el bot.
+
+# 🎨 Módulo 10: Generative UI - La Magia
+
+> **Cómo tu backend envía componentes React completos que el frontend renderiza automáticamente**
+
+---
+
+## 1️⃣ CONCEPTO: ¿Qué es Generative UI?
+
+### La Idea Revolucionaria
+
+**Streaming de Texto (Módulo 9):**
+```
+Backend:     El stock es...
+             El stock es 1500...
+             El stock es 1500 unidades...
+
+Frontend:    Muestra TEXTO progresivamente
+```
+
+**Generative UI (Este Módulo):**
+```
+Backend:     [ENVÍA COMPONENTE REACT]
+             <StockChart data={...} />
+             [ENVÍA OTRO COMPONENTE]
+             <OrderButton />
+
+Frontend:    Renderiza COMPONENTES progresivamente
+             No texto: interfaz dinámica
+```
+
+### Visual
+
+```
+Sin Generative UI:
+┌─────────────────────────────┐
+│ Chat                        │
+├─────────────────────────────┤
+│ Bot: El stock es 1500       │
+│ unidades. Hay bajo stock    │
+│ en las sucursales...        │
+└─────────────────────────────┘
+
+Con Generative UI:
+┌─────────────────────────────┐
+│ Chat                        │
+├─────────────────────────────┤
+│ Bot: Comparación de stock   │
+│                             │
+│ [Gráfico interactivo]       │
+│  Sede A: 1500 │███████████  │
+│  Sede B: 450  │███          │
+│  Sede C: 200  │██           │
+│                             │
+│ [Botón: "Requisición"]      │
+└─────────────────────────────┘
+```
+
+---
+
+## 2️⃣ PARA QUÉ SIRVE
+
+### Caso: Ask Sage Reportes
+
+**Sin Generative UI:**
+```
+Usuario: "Compara stock de medicamentos A vs B"
+
+Respuesta (texto):
+"El medicamento A tiene 1500 unidades en la sede central,
+ 450 en la sede norte y 200 en la sur. El medicamento B
+ tiene 800 en la central, 600 en norte y 100 en sur.
+ A está mejor distribuido. Se recomienda..."
+
+Usuario: Tiene que INTERPRETAR los datos mentalmente
+```
+
+**Con Generative UI:**
+```
+Usuario: "Compara stock de medicamentos A vs B"
+
+Respuesta (componente):
+┌────────────────────────┐
+│ Comparación de Stock   │
+├────────────────────────┤
+│ Medicamento A          │
+│  ███ 1500              │
+│  ██  450               │
+│  █   200               │
+│                        │
+│ Medicamento B          │
+│  ██  800               │
+│  ██  600               │
+│  █   100               │
+│                        │
+│ [Ver detalles]         │
+└────────────────────────┘
+
+Usuario: Ve el gráfico INMEDIATAMENTE
+         Entiende sin leer párrafos
+```
+
+---
+
+## 3️⃣ HISTORIA: ¿Por Qué Surge?
+
+### 2023: Claude y OpenAI con Streaming
+```
+OK tenemos streaming de texto
+Pero los usuarios dicen:
+"Prefiero un gráfico a 1000 palabras"
+```
+
+### 2024: Anthropic Introduce RSC Streaming
+```
+"¿Y si el LLM decidiera enviar un gráfico?"
+```python
+model.tool_use() → "Necesito gráfico"
+model.tool_result() → <StockChart />
+```
+
+Vercel AI SDK capta esto:
+"Vamos a hacer que sea FÁCIL"
+```
+
+### Hoy: Generative UI es Normal
+
+```
+ChatGPT: Envía gráficos, tablas, código
+Gemini: Envía gráficos interactivos
+Claude: Envía componentes React complejos
+```
+
+---
+
+## 4️⃣ EJEMPLOS BÁSICOS
+
+### Ejemplo 1: Backend - Usar streamUI
+
+**Archivo: `app/api/chat/route.ts`**
+
+```typescript
+import { streamUI } from 'ai/react-server';
+import { z } from 'zod';
+
+export async function POST(req: Request) {
+  const { message } = await req.json();
+  
+  const result = await streamUI({
+    model: bedrock,
+    prompt: message,
+    text: {
+      // Si el LLM decide SOLO responder con texto
+      type: 'text',
+    },
+    tools: {
+      // Las herramientas que el LLM puede invocar
+      
+      showStockComparison: {
+        description: 'Muestra un gráfico comparativo de stock',
+        parameters: z.object({
+          drugA: z.string().describe('Primer medicamento'),
+          drugB: z.string().describe('Segundo medicamento'),
+        }),
+        generate: async ({ drugA, drugB }) => {
+          // 1. Backend obtiene los datos
+          const dataA = await getStockData(drugA);
+          const dataB = await getStockData(drugB);
+          
+          // 2. Retorna un componente React
+          return (
+            <StockComparisonChart 
+              medicineA={{ name: drugA, data: dataA }}
+              medicineB={{ name: drugB, data: dataB }}
+            />
+          );
+        },
+      },
+      
+      showOrderForm: {
+        description: 'Muestra formulario para hacer una orden',
+        parameters: z.object({
+          medicineId: z.string(),
+          quantity: z.number(),
+        }),
+        generate: async ({ medicineId, quantity }) => {
+          const price = await getPrice(medicineId);
+          
+          return (
+            <OrderForm 
+              medicineId={medicineId}
+              recommendedQty={quantity}
+              pricePerUnit={price}
+            />
+          );
+        },
+      },
+    },
+  });
+  
+  return result.toDataStream();
+}
+```
+
+---
+
+### Ejemplo 2: El Componente React (React Server Component)
+
+**Archivo: `components/StockComparisonChart.tsx`**
+
+```typescript
+'use client'; // Client component (necesario para interactividad)
+
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+
+interface StockData {
+  location: string;
+  quantity: number;
+}
+
+interface Medicine {
+  name: string;
+  data: StockData[];
+}
+
+export function StockComparisonChart({
+  medicineA,
+  medicineB,
+}: {
+  medicineA: Medicine;
+  medicineB: Medicine;
+}) {
+  // Preparar datos para el gráfico
+  const chartData = medicineA.data.map((locA) => ({
+    location: locA.location,
+    [medicineA.name]: locA.quantity,
+    [medicineB.name]: medicineB.data.find(
+      (locB) => locB.location === locA.location
+    )?.quantity || 0,
+  }));
+  
+  return (
+    <div className="chart-container">
+      <h3>Comparación: {medicineA.name} vs {medicineB.name}</h3>
+      
+      <BarChart width={500} height={300} data={chartData}>
+        <XAxis dataKey="location" />
+        <YAxis />
+        <Tooltip />
+        <Bar dataKey={medicineA.name} fill="#8884d8" />
+        <Bar dataKey={medicineB.name} fill="#82ca9d" />
+      </BarChart>
+      
+      <div className="summary">
+        <p>
+          <strong>{medicineA.name}</strong> tiene {
+            medicineA.data.reduce((sum, d) => sum + d.quantity, 0)
+          } unidades en total
+        </p>
+        <p>
+          <strong>{medicineB.name}</strong> tiene {
+            medicineB.data.reduce((sum, d) => sum + d.quantity, 0)
+          } unidades en total
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Ejemplo 3: Frontend - Usar streamUI
+
+**Archivo: `components/ChatComponent.tsx`**
+
+```typescript
+'use client';
+
+import { useChat } from 'ai/react';
+import { ReactNode } from 'react';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string | ReactNode; // Puede ser texto O componente
+}
+
+export default function ChatComponent() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/chat',
+  });
+  
+  return (
+    <div className="chat">
+      <div className="messages">
+        {(messages as Message[]).map((message) => (
+          <div key={message.id} className={`message ${message.role}`}>
+            {/* ✨ Puede ser texto o componente React */}
+            {message.content}
+          </div>
+        ))}
+      </div>
+      
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Pregunta algo..."
+        />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  );
+}
+```
+
+**¿Cómo funciona la magia?**
+
+1. Usuario escribe: "Compara A vs B"
+2. Frontend envía POST a `/api/chat`
+3. Backend con streamUI:
+   - LLM lee: "¿Debo mostrar gráfico?"
+   - LLM decide: "Sí, uso showStockComparison"
+   - Backend: Llama a `generate()`
+   - `generate()` devuelve `<StockComparisonChart />`
+   - Vercel serializa el componente
+   - Envía al cliente
+4. Cliente renderiza el componente
+   - No es texto, es un componente REAL
+   - Con datos, interactividad, etc
+
+---
+
+### Ejemplo 4: Componente Más Complejo (Con Botones)
+
+**Archivo: `components/OrderForm.tsx`**
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useFormStatus } from 'react-dom';
+
+interface OrderFormProps {
+  medicineId: string;
+  recommendedQty: number;
+  pricePerUnit: number;
+}
+
+export function OrderForm({
+  medicineId,
+  recommendedQty,
+  pricePerUnit,
+}: OrderFormProps) {
+  const [quantity, setQuantity] = useState(recommendedQty);
+  const { pending } = useFormStatus();
+  
+  const total = quantity * pricePerUnit;
+  
+  async function handleOrder() {
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        medicineId,
+        quantity,
+      }),
+    });
+    
+    if (response.ok) {
+      alert('Orden creada!');
+    }
+  }
+  
+  return (
+    <div className="order-form">
+      <h4>Crear Orden</h4>
+      
+      <div className="form-group">
+        <label>Cantidad</label>
+        <input
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value))}
+          min="1"
+        />
+      </div>
+      
+      <div className="summary">
+        <p>Precio unitario: ${pricePerUnit}</p>
+        <p><strong>Total: ${total}</strong></p>
+      </div>
+      
+      <button 
+        onClick={handleOrder}
+        disabled={pending}
+      >
+        {pending ? 'Procesando...' : 'Confirmar Orden'}
+      </button>
+    </div>
+  );
+}
+```
+
+**¿Qué hace diferente?**
+- No es solo lectura
+- Tiene estado (`useState`)
+- Tiene acciones (`handleOrder`)
+- Es un componente VIVO generado por IA
+
+---
+
+## 5️⃣ EJERCICIOS
+
+### Ejercicio 1: Crea un Componente
+
+**Enunciado:**
+Crea un componente React que muestre:
+- Lista de órdenes recientes
+- Estado de cada orden
+- Botón para detalles
+
+**Solución esperada:**
+
+```typescript
+'use client';
+
+interface Order {
+  id: string;
+  medicine: string;
+  quantity: number;
+  status: 'pending' | 'shipped' | 'delivered';
+  date: Date;
+}
+
+export function RecentOrders({ orders }: { orders: Order[] }) {
+  return (
+    <div className="orders-list">
+      <h3>Órdenes Recientes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Medicamento</th>
+            <th>Cantidad</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.id}>
+              <td>{order.id}</td>
+              <td>{order.medicine}</td>
+              <td>{order.quantity}</td>
+              <td>
+                <span className={`status ${order.status}`}>
+                  {order.status}
+                </span>
+              </td>
+              <td>{order.date.toLocaleDateString()}</td>
+              <td>
+                <button>Ver Detalles</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+```
+
+---
+
+### Ejercicio 2: Integra Generative UI
+
+**Enunciado:**
+Modifica tu backend para:
+1. El LLM pueda invocar `showRecentOrders`
+2. Envíe el componente al cliente
+3. El usuario vea la tabla de órdenes
+
+**Solución:**
+
+```typescript
+// app/api/chat/route.ts
+
+tools: {
+  showRecentOrders: {
+    description: 'Muestra las órdenes recientes del usuario',
+    parameters: z.object({}), // Sin parámetros
+    generate: async () => {
+      const orders = await getRecentOrders();
+      return <RecentOrders orders={orders} />;
+    },
+  },
+},
+```
+
+---
+
+## 🎯 Conceptos Clave
+
+| Término | Significado | En Generative UI |
+|---------|-----------|--------------|
+| **streamUI** | Stream de componentes | Backend envía React |
+| **RSC** | React Server Component | Componente generado en servidor |
+| **generate()** | Función que retorna JSX | Dónde creas el componente |
+| **tool_use** | LLM decide usar herramienta | LLM: "Necesito gráfico" |
+| **Serialization** | Componente → JSON → Cliente | Vercel lo maneja |
+
+---
+
+## ☑️ Checklist: Generative UI Lista
+
+- [ ] ¿Tu endpoint usa `streamUI`?
+- [ ] ¿Definiste `tools` con `generate()`?
+- [ ] ¿Los componentes están bien tipados?
+- [ ] ¿Probaste con Javier (usuario real)?
+- [ ] ¿Los gráficos son claros?
+- [ ] ¿Los botones funcionan?
+
+---
+
+## 📚 Próximo Módulo
+
+👉 **Módulo 11: Proyecto Final - Ask Sage Integrado**
+
+Aquí juntas:
+- LangGraph (backend)
+- AWS AgentCore (infraestructura)
+- Vercel AI SDK (frontend)
+- Generative UI (interfaz)
+
+---
+
+## 💡 Tips Finales
+
+1. **Generative UI es el futuro**
+   - No siempre es más complejo que texto
+   - Pero la UX es MUCHO mejor
+
+2. **Los componentes deben ser simples**
+   - No intentes gráficos 3D generados
+   - Recharts, Plotly, simple HTML
+
+3. **Testing es crítico**
+   - ¿Qué si el LLM genera gráfico mal?
+   - Necesitas fallbacks (texto si falla)
+
+```typescript
+// Ejemplo de fallback
+try {
+  return <StockChart data={data} />;
+} catch (e) {
+  return <div>Error en gráfico: {e.message}</div>;
+}
+```
+
+---
+
+## 🚀 Ahora
+
+1. Instala Recharts: `npm install recharts`
+2. Copia Ejemplo 2
+3. Integra con tu backend
+4. Prueba localmente
+
+```bash
+npm run dev
+# Abre http://localhost:3000
+```
+
+---
+
+**Versión:** 1.0  
+**Duración estimada:** 90 minutos  
+**Dificultad:** 🔴 Avanzada  
+**Requisitos:** React, TypeScript, Recharts
+
+
+---
+
+## Código Fuente
+
+El código para este módulo está disponible en:
+
+\`\`\`
+python/modulos/02_generative_ui/
+\`\`\`
+
+Incluye:
+- 📖 README.md (este contenido)
+- 💻 Ejemplos prácticos en `examples/`
+- 🏋️ Ejercicios en `exercises/`
+
+## Próximos Pasos
+
+Completa los ejercicios y procede al siguiente módulo.
+
+---
+
+**Última actualización:** 2026-05-31

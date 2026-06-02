@@ -1,0 +1,181 @@
+# Streaming: Respuestas en Tiempo Real
+
+> Streaming en Tiempo Real
+Tokens progresivos, no respuestas de golpe.
+
+El **streaming** hace que tu chat IA se sienta **instantáneo**. En lugar de esperar a que el LLM termine toda la respuesta, recibes tokens uno por uno, mostrando progreso en tiempo real.
+
+Sin streaming = ⏳ Espera 5 segundos, luego aparece todo  
+Con streaming = ⚡ Aparecen caracteres mientras se generan
+
+---
+
+## 🔄 ¿Qué es el Streaming?
+
+```
+SIN STREAMING:
+┌──────────────────────────────┐
+│ Usuario espera...             │
+│ (5 segundos...)               │
+└──────────────────────────────┘
+            │
+            ▼
+┌──────────────────────────────┐
+│ "Hola, soy Claude. Estoy     │
+│  aquí para ayudarte..."      │
+│ (todo aparece de una)        │
+└──────────────────────────────┘
+
+CON STREAMING:
+┌──────────────────────────────┐
+│ Usuario ve progreso:          │
+│ "Hola"                       │
+│ "Hola, soy"                  │
+│ "Hola, soy Claude"           │
+│ (aparece carácter por carácter)
+└──────────────────────────────┘
+```
+
+**Beneficios**:
+✅ Mejor UX (parece más rápido)
+✅ Feedback inmediato
+✅ Menos percepción de latencia
+✅ Profesional (como ChatGPT)
+
+---
+
+## 💻 Nivel 1: Streaming Básico
+
+**¿Qué sucede?**
+1. Usuario envía mensaje
+2. Servidor comienza a generar respuesta
+3. Cada token se envía inmediatamente
+4. React actualiza la UI en tiempo real
+5. Usuario ve progreso ⚡
+
+---
+
+## 💻 Nivel 2: Streaming Avanzado
+
+**Mejoras**:
+- ✅ Auto-scroll automático
+- ✅ Cursor intermitente visual
+- ✅ Indicador de carga
+- ✅ Callback cuando termina
+
+---
+
+## 🎯 Ask Sage Example: Streaming Farmacéutico
+
+**Escenario Real**: Vendedor pregunta "¿Dosis para insuficiencia renal?"
+
+```
+TIEMPO   EVENTO
+────────────────────────────────────────────────────
+T=0s     [Input] Vendedor escribe y presiona Enter
+         {"mensaje": "¿Dosis insuf renal?", "token_okta": "..."}
+         
+T=0.1s   [Status] "Búscando en base de datos..."
+         (Spinner animado)
+         
+T=0.5s   [Token 1] "Basado"
+T=0.6s   [Token 2] " en"
+T=0.7s   [Token 3] " la"
+T=0.8s   [Token 4] " bula"
+T=0.9s   [Token 5] " técnica,"
+         
+T=1.2s   [Chunk] "aquí están las opciones:"
+         (Streaming pausa aquí para renderizar componente React)
+         
+T=1.5s   [Component] Tabla interactiva:
+         ┌──────────────────────────────┐
+         │ Dosificación por Insuficiencia│
+         │ Grado | Dosis Máx | Intervalo│
+         │ ───────────────────────────── │
+         │ G3    | 100mg     | c/24h    │
+         │ G4    | 50mg      | c/48h    │
+         └──────────────────────────────┘
+         
+T=2.0s   [Final] Botones:
+         [Copiar] [Ver Fuente] [Compartir]
+```
+
+**Código Ask Sage**:
+
+```typescript
+// components/AskSageChat.tsx
+export function AskSagePharmacyChat() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    streamProtocol: 'text',
+    
+    // Callback: cuando llega cada token
+    onData: (chunk: string) => {
+      // Si el token contiene JSON, es un componente React
+      if (chunk.startsWith('{')) {
+        const component = JSON.parse(chunk);
+        renderComponent(component);  // Tabla, gráfico, etc.
+      } else {
+        // Sino, es texto normal - mostrar streaming
+        appendToCurrentMessage(chunk);
+      }
+    },
+    
+    // Callback: cuando termina
+    onFinish: (message) => {
+      logAudit({
+        vendedor_id: 'V001',
+        pregunta: input,
+        respuesta: message.content,
+        timestamp: new Date()
+      });
+    }
+  });
+  
+  return (
+    <div className="ask-sage-chat">
+      {/* Mensajes con streaming */}
+      {messages.map(msg => (
+        <div key={msg.id} className={`message ${msg.role}`}>
+          {msg.role === 'assistant' ? (
+            // Renderizar componentes + texto
+          ) : (
+            msg.content
+          )}
+      ))}
+      
+      {/* Input con autocomplete Ask Sage */}
+      <form onSubmit={handleSubmit}>
+        <datalist id="ask-sage-sugerencias">
+        <button disabled={isLoading}>
+          {isLoading ? '📤 Enviando...' : '📨 Enviar'}
+  );
+}
+```
+
+**Beneficios para Ask Sage**:
+- ✅ **UX Profesional**: Vendedor ve progreso, no espera en blanco
+- ✅ **Interactividad**: Tabla de dosis se renderiza mientras se genera
+- ✅ **Audit Trail**: Cada respuesta se loga con timestamp
+- ✅ **Autocomplete**: Sugerencias de preguntas frecuentes
+
+---
+
+## 🏗️ Alternativas
+
+| Framework | Enfoque | Mejor para |
+|-----------|---------|-----------|
+| **Vercel AI** ⭐ | useChat hook | Chat UI + streaming |
+| LangChain | Chains + streaming | Backend processing |
+| OpenAI SDK | streaming param | Control total |
+| Socket.IO | WebSockets | Real-time apps |
+| tRPC | Subscriptions | Full-stack TypeScript |
+
+---
+
+## 🏋️ Ejercicios
+
+---
+
+**Última actualización:** 2026-05-31  
+**Dificultad:** ⭐ Básico  
+**Duración:** 45 minutos

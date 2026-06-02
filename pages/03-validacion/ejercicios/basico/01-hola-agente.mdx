@@ -1,0 +1,48 @@
+# Ejercicio 1: Hola Agente
+
+> Tiempo: 15 minutos. Crear tu primer grafo mínimo.
+
+## 🎯 Objetivo
+
+Crear un LangGraph que reciba un input y devuelva un output.
+
+## 📝 Código Base
+
+```python
+from langgraph.graph import StateGraph
+from pydantic import BaseModel
+
+class SimpleState(BaseModel):
+    input: str
+    output: str
+
+# TODO: Implementar
+```
+
+## 🎯 Desafío
+
+1. Crea un nodo que tome `input` y devuelva `output`
+2. El nodo debe retornar: `{"output": f"Hola {input}"}`
+3. Crea el grafo
+4. Ejecuta: `app.invoke({"input": "Mundo", "output": ""})`
+5. Resultado esperado: `{"input": "Mundo", "output": "Hola Mundo"}`
+
+## ✅ Solución
+
+```python
+def hello_node(state: SimpleState):
+    return {"output": f"Hola {state.input}"}
+
+graph = StateGraph(SimpleState)
+graph.add_node("hello", hello_node)
+graph.set_entry_point("hello")
+graph.set_finish_point("hello")
+
+app = graph.compile()
+result = app.invoke({"input": "Mundo", "output": ""})
+print(result)  # output: "Hola Mundo" ✓
+```
+
+---
+
+**Siguiente**: [02. State 101 →](/validacion/ejercicios/basico/state-101)

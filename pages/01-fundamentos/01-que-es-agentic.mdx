@@ -1,0 +1,76 @@
+# ¿Qué es un Agente Agentic?
+
+> 5 minutos. Un agente es software que piensa + actúa + aprende.
+
+---
+
+## Definición Simple
+
+Un **agente agentic** es un programa que puede:
+
+1. **Entender** contexto (qué el usuario pregunta)
+2. **Planificar** (decidir qué hacer)
+3. **Actuar** (ejecutar acciones)
+4. **Iterar** (repetir hasta lograr meta)
+
+---
+
+## Ejemplo Mental
+
+**SIN agente**:
+```
+Usuario: "¿Stock de Amoxicilina?"
+API: SELECT stock FROM inventario WHERE producto='Amoxicilina'
+Respuesta: 500 unidades
+Fin.
+```
+
+**CON agente**:
+```
+Usuario: "¿Tengo Amoxicilina 500mg en stock? Si no, 
+         ¿cuándo me llega? Y además, ¿qué interacciones 
+         tiene con Warfarina?"
+
+Agente:
+  1. Entiende: Hay 3 preguntas (stock + ETA + interacciones)
+  2. Planifica: Necesita 2 queries (inventario + interacciones)
+  3. Actúa: Ejecuta ambas búsquedas
+  4. Responde: "Tenemos 500 unidades. Interacción grave detectada."
+  5. Pregunta: "¿Quieres contactar con farmacéutico?"
+  6. Itera: Espera respuesta del usuario para siguiente paso
+```
+
+La diferencia: el agente **razona** y **decide** automáticamente.
+
+---
+
+## ¿Por Qué Agentes?
+
+| Tarea | API Traditional | Agente |
+|------|-----------------|--------|
+| "¿Stock?" | Simple query | Entiende contexto |
+| "¿Hay alternativas?" | Múltiples queries | Piensa y busca |
+| "Soy alérgico a..." | No puede | Valida contraindicaciones |
+| Cambios de requisitos | Código nuevo | Adapta automáticamente |
+
+Agentes = **más inteligencia con menos código**.
+
+---
+
+## Ask Sage es un Agente
+
+Ask Sage no es una API que devuelve datos. Es un agente que:
+
+✓ Lee tu pregunta  
+✓ Entiende contexto  
+✓ Busca información  
+✓ Valida regulaciones  
+✓ Genera respuesta segura  
+
+---
+
+## ¿Cuál es la Próxima Lectura?
+
+→ [Las 4 Capas del Sistema](/fundamentos/4-capas)
+
+5 minutos más y tendrás el modelo mental completo.

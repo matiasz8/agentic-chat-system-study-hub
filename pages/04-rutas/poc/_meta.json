@@ -1,0 +1,10 @@
+{
+  "00-que-es": "¿Qué es POC?",
+  "01-setup-env": "01. Setup (2h)",
+  "02-aprender-orch": "02. Aprender LangGraph (3h)",
+  "03-implementar-grafo": "03. Implementar Grafo (2h)",
+  "04-frontend-streaming": "04. Frontend + Streaming (2h)",
+  "05-testing-local": "05. Testing (2h)",
+  "06-deployment-local": "06. Deployment Local (1h)",
+  "07-validacion-final": "07. Validación Final (1h)"
+}

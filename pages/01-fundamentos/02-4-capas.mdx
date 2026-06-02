@@ -1,0 +1,185 @@
+# Las 4 Capas del Sistema
+
+> Arquitectura de referencia. Todos los agentes tienen estas 4 capas.
+
+---
+
+## Diagrama de Capas
+
+```
+                    ┌─────────────┐
+                    │   USUARIO   │
+                    └──────┬──────┘
+                           │
+           ┌───────────────▼───────────────┐
+           │  CAPA 1: FRONTEND             │
+           │  - Chat UI bonito             │
+           │  - Streaming tokens           │
+           │  - React + Vercel AI SDK      │
+           └───────────────┬───────────────┘
+                           │
+           ┌───────────────▼───────────────┐
+           │  CAPA 2: ORCHESTRATION        │
+           │  - Lógica de decisión         │
+           │  - LLM elige qué hacer        │
+           │  - LangGraph (Python)         │
+           └───────────────┬───────────────┘
+                           │
+           ┌───────────────▼───────────────┐
+           │  CAPA 3: RUNTIME              │
+           │  - Seguridad + Permisos       │
+           │  - Identity Forwarding        │
+           │  - AWS AgentCore              │
+           └───────────────┬───────────────┘
+                           │
+           ┌───────────────▼───────────────┐
+           │  CAPA 4: DATA                 │
+           │  - Acceso a información       │
+           │  - Bases de datos             │
+           │  - MCP + Embeddings           │
+           └───────────────────────────────┘
+```
+
+---
+
+## Capa 1: Frontend
+
+**Pregunta**: ¿Qué ve el usuario?
+
+**Responsabilidades**:
+- Interfaz bonita
+- Streaming de tokens (respuesta progresiva)
+- Generative UI (componentes dinámicos)
+- Manejo de errores
+
+**Tecnología**: Vercel AI SDK + React + Next.js
+
+**Ejemplo**:
+```typescript
+const { messages, input, handleSubmit } = useChat({
+  api: '/api/chat'
+});
+
+return (
+  <form onSubmit={handleSubmit}>
+    <input value={input} onChange={...} />
+    {messages.map(msg => <Message>{msg}</Message>)}
+  </form>
+);
+```
+
+---
+
+## Capa 2: Orchestration
+
+**Pregunta**: ¿Cómo el agente decide qué hacer?
+
+**Responsabilidades**:
+- Memorizar contexto (State)
+- LLM decide "¿qué herramienta usar?"
+- Ejecutar herramientas
+- Iterar hasta solución
+
+**Tecnología**: LangGraph (Python)
+
+**Ejemplo**:
+```python
+graph = StateGraph(AgentState)
+graph.add_node("agent", agent_fn)
+graph.add_node("search", search_fn)
+graph.add_conditional_edges("agent", router)
+
+# Router decide: ¿Qué nodo ejecutar?
+def router(state):
+    if "search" in state["decision"]:
+        return "search"
+    return "agent"
+```
+
+---
+
+## Capa 3: Runtime
+
+**Pregunta**: ¿Dónde corre de forma segura?
+
+**Responsabilidades**:
+- Validar identidad del usuario
+- Aplicar permisos (¿puede Javier ver este dato?)
+- Ejecutar herramientas de forma segura
+- Auditoría y compliance
+
+**Tecnología**: AWS AgentCore + Cedar Policies
+
+**Ejemplo**:
+```python
+# AWS AgentCore inyecta user_token
+user_id = os.getenv("AWS_USER_TOKEN")
+
+# Cedar valida: ¿Javier puede buscar medicamentos?
+# (Externo, no escribimos código)
+
+# Nuestro código recibe OK/DENY
+if has_permission(user_id, "search_drugs"):
+    result = db.query(...)
+```
+
+---
+
+## Capa 4: Data
+
+**Pregunta**: ¿Dónde busca información?
+
+**Responsabilidades**:
+- Conectar a bases de datos
+- APIs de terceros
+- Búsqueda vectorial (embeddings)
+- Filtrar datos por usuario
+
+**Tecnología**: MCP Protocol + Vector DBs
+
+**Ejemplo**:
+```python
+@mcp_server.tool("search_drugs")
+def search_drugs(name: str) -> List[Drug]:
+    # Solo devuelve datos que el usuario puede ver
+    return db.query(
+        "SELECT * FROM drugs WHERE name ILIKE ?",
+        [name],
+        user_id=context.user_id
+    )
+```
+
+---
+
+## Las 4 Capas en Conjunto
+
+```
+Usuario pregunta:
+"¿Amoxicilina + Warfarina?"
+    │
+    ├─→ Capa 1: Frontend recibe texto
+    │
+    ├─→ Capa 2: Orquestación decide "buscar interacciones"
+    │
+    ├─→ Capa 3: Runtime valida "¿Javier puede verlo?"
+    │
+    ├─→ Capa 4: Data busca en BD
+    │
+    ├─→ Respuesta: "ALERTA: Interacción grave"
+    │
+    └─→ Capa 1: Frontend muestra respuesta bonita
+```
+
+---
+
+## ¿Cuál es la Próxima Lectura?
+
+Ahora tienes el modelo mental. Es hora de elegir tu ruta:
+
+- **📚 Estudio**: [Ruta Estudio](/rutas/estudio) - Profundiza en cada capa
+- **💻 Práctica**: [Ruta POC](/rutas/poc) - Código paso-a-paso
+- **☁️ Producción**: [Ruta Producción](/rutas/produccion) - Deploy AWS
+
+---
+
+**¿Listo?** Ve a tu ruta. En los próximos módulos exploraremos cada capa en profundidad.

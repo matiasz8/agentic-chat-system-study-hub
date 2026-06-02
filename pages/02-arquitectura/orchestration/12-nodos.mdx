@@ -1,0 +1,87 @@
+# Nodos: Las Funciones Ejecutables del Grafo
+
+> Nodos: Unidades de Trabajo
+Funciones que procesar entrada y emiten salida.
+
+Los **nodos** son funciones Python que reciben el State, lo procesan, y lo devuelven actualizado.
+
+Piénsalo así: Si el State es la data, los nodos son el procesamiento. ⚙️
+
+---
+
+## 🔄 ¿Qué es un Nodo?
+
+```
+Estado Inicial      Nodo Ejecuta      Estado Final
+┌──────────┐       ┌─────────┐       ┌──────────┐
+│ messages │──────▶│ Process │──────▶│ messages │
+│ step     │       │ Logic   │       │ step     │
+│ result   │       └─────────┘       │ result   │
+└──────────┘                         └──────────┘
+```
+
+Un nodo es:
+- ✅ Una función Python normal
+- ✅ Recibe state: MyState
+- ✅ Retorna diccionario con cambios
+- ✅ Ejecutada por el grafo en orden
+
+---
+
+## Tipos de Nodos
+
+| Tipo | Característica | Cuándo Usar | Ventaja |
+|------|---|---|---|
+| Básico | def nodo(state): return estado | Lógica simple | Fácil de entender |
+| Con Errores | try/except y logging | Llamadas a APIs | Grafo robusto |
+| Asincrónico | async def nodo(state) | Paralelo | Escalable |
+| Validación | Valida y modifica | Antes siguiente nodo | Evita errores |
+| Transformación | Convierte formato | Entre nodos | Modular |
+| Logging | Registra eventos | Debugging | Trazabilidad |
+
+---
+
+## 💻 Nivel 1: Nodo Básico
+
+**Cuándo usar**: Operaciones simples, transformaciones
+
+---
+
+## 💻 Nivel 2: Nodo con Manejo de Errores
+
+**Ventaja**: Tu grafo no se rompe por excepciones  
+**Cuándo usar**: Nodos que hacen I/O, llamadas a APIs
+
+---
+
+## 💻 Nivel 3: Nodo Asincronico
+
+**Ventaja**: Ejecuta múltiples operaciones en paralelo  
+**Cuándo usar**: Llamadas a APIs, queries a DB, operaciones de red
+
+---
+
+## 🏗️ Patrones Comunes
+
+### Patrón 1: Nodo de Validación
+
+### Patrón 2: Nodo de Transformación
+
+### Patrón 3: Nodo que Registra Logs
+
+---
+
+## 🏋️ Ejercicios
+
+---
+
+## 📚 Recursos
+
+- 📖 [LangGraph Nodes Docs](https://python.langchain.com/docs/langgraph/)
+- 🎓 [Async Python](https://docs.python.org/3/library/asyncio.html)
+
+---
+
+**Última actualización:** 2026-05-31  
+**Dificultad:** ⭐⭐ Intermedia  
+**Duración:** 90 minutos

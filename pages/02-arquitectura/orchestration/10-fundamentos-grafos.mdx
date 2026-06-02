@@ -1,0 +1,361 @@
+# Fundamentos de Grafos
+
+> Fundamentos de Grafos
+Nodos, aristas, flujos de decisión.
+
+# 🧠 Módulo 0: Fundamentos de Grafos
+
+> **¿Qué es un grafo? ¿Por qué LangGraph se llama "Lang**GRAPH**"?**
+
+---
+
+## 1️⃣ CONCEPTO: ¿Qué es un Grafo?
+
+Un **grafo** es una estructura matemática que tiene:
+- **Nodos** (vértices): Puntos o cajas que representan estados o acciones
+- **Aristas** (edges): Líneas que conectan nodos, mostrando cómo fluye la información
+
+### Ejemplo Visual Simple
+
+```
+    ┌─────────────┐
+    │  Inicio     │
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │ Preguntar   │
+    │ al Usuario  │
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │ Procesar    │
+    │ Respuesta   │
+    └──────┬──────┘
+           │
+           ▼
+    ┌─────────────┐
+    │   Fin       │
+    └─────────────┘
+```
+
+### Diferencia: Programación Lineal vs Grafos
+
+**Programación Lineal (Tradicional)**
+```
+paso1() → paso2() → paso3() → fin()
+```
+Siempre va en orden. Si necesitas bifurcación, usas `if/else`.
+
+**Programación con Grafos (LangGraph)**
+```
+       ┌─→ nodo_A ─→ nodo_C ─┐
+inicio ┤                      ├─ fin
+       └─→ nodo_B ─→ nodo_D ─┘
+```
+El flujo decide dónde ir según lógica (condicionales inteligentes).
+
+---
+
+## 2️⃣ PARA QUÉ SIRVE
+
+### Caso 1: Chatbot Farmacéutico (Ask Sage)
+
+```
+Usuario pregunta: "¿Cuál es el stock del medicamento X?"
+
+           ┌──────────────────┐
+           │  Usuario pregunta │
+           └────────┬─────────┘
+                    ▼
+           ┌──────────────────┐
+           │  LLM interpreta  │
+           │  (¿Qué quiere?)  │
+           └────────┬─────────┘
+                    ▼
+    ┌───────────────┴───────────────┐
+    ▼                               ▼
+┌─────────┐                   ┌──────────┐
+│ Consulta│                   │ Cancela  │
+│ Stock   │                   │  Orden   │
+└────┬────┘                   └────┬─────┘
+     ▼                             ▼
+┌─────────┐                   ┌──────────┐
+│ Devuelve│                   │ Devuelve │
+│ Datos BD│                   │ Confirmación
+└────┬────┘                   └────┬─────┘
+     └─────────────┬────────────────┘
+                   ▼
+            ┌──────────────┐
+            │ LLM formatea │
+            │ respuesta    │
+            └────────┬─────┘
+                     ▼
+            ┌──────────────┐
+            │ Usuario ve   │
+            │ respuesta    │
+            └──────────────┘
+```
+
+Sin grafos, esto sería un `if/elif/else` gigante. Con LangGraph, cada rama es un **nodo independiente**.
+
+### Caso 2: Procesamiento de Videos
+
+```
+Usuario: "Busca en los videos de capacitación"
+
+    ┌────────────────┐
+    │ Usuario uploads│
+    │ video          │
+    └────────┬───────┘
+             ▼
+    ┌────────────────┐
+    │ Extraer frames │
+    │ (cada 5 seg)   │
+    └────────┬───────┘
+             ▼
+    ┌────────────────┐
+    │ Transcribir    │
+    │ audio          │
+    └────────┬───────┘
+             ▼
+    ┌────────────────┐
+    │ Generar        │
+    │ embeddings     │
+    └────────┬───────┘
+             ▼
+    ┌────────────────┐
+    │ Guardar en BD  │
+    └────────┬───────┘
+             ▼
+    ┌────────────────┐
+    │ Usuario        │
+    │ busca dentro   │
+    └─────────────────┘
+```
+
+Cada paso puede ejecutarse en paralelo, reintentarse si falla, o pausarse si necesita aprobación.
+
+---
+
+## 3️⃣ HISTORIA: ¿Por Qué Se Creó LangGraph?
+
+### Antes de LangGraph (2022-2023)
+
+```python
+# Así era construir agentes (horrible)
+def agent():
+    msg = input("¿Qué quieres?")
+    if "stock" in msg:
+        result = query_database()
+    elif "cancelar" in msg:
+        result = cancel_order()
+    elif "grafico" in msg:
+        result = generate_chart()
+    else:
+        result = "No entiendo"
+    print(result)
+
+# Problemas:
+# 1. ¿Qué si el LLM decide que necesita hacer DOS cosas? (stock + gráfico)
+# 2. ¿Qué si falla la BD? ¿Reintentas? ¿Cómo?
+# 3. ¿Dónde guardas el contexto entre preguntas?
+# 4. ¿Cómo pausa para aprobación humana?
+```
+
+### La Solución: LangGraph (2024+)
+
+```python
+# Con LangGraph: Defines el flujo una sola vez
+graph_builder = StateGraph(AgentState)
+graph_builder.add_node("agent", agent_fn)
+graph_builder.add_node("query_inventory", inventory_fn)
+graph_builder.add_conditional_edges("agent", route_decision)
+
+# LangGraph maneja automáticamente:
+# ✅ Ciclos (el agente pregunta múltiples veces)
+# ✅ Persistencia (checkpoints automáticos)
+# ✅ Recuperación ante errores
+# ✅ Integración con aprobación humana
+```
+
+### Por Qué los Grafos Importan
+
+**La IA NO piensa linealmente:**
+- Necesita múltiples intentos
+- A veces necesita datos adicionales
+- Puede cambiar de opinión
+- Requiere validación humana a veces
+
+LangGraph captura este comportamiento de forma natural.
+
+---
+
+## 4️⃣ EJEMPLOS BÁSICOS
+
+### Ejemplo 1: Grafo Lineal Más Simple
+
+**Un grafo que va siempre en línea recta:**
+
+```python
+# No necesitas LangGraph para esto, pero mira cómo se vería
+
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
+
+class SimpleState(TypedDict):
+    resultado: str
+
+def nodo_1(state):
+    return {"resultado": "Paso 1 completado"}
+
+def nodo_2(state):
+    return {"resultado": state["resultado"] + " → Paso 2 completado"}
+
+# Construir el grafo
+grafo_builder = StateGraph(SimpleState)
+grafo_builder.add_node("paso1", nodo_1)
+grafo_builder.add_node("paso2", nodo_2)
+grafo_builder.add_edge(START, "paso1")
+grafo_builder.add_edge("paso1", "paso2")
+grafo_builder.add_edge("paso2", END)
+
+# Compilar y ejecutar
+grafo = grafo_builder.compile()
+resultado = grafo.invoke({"resultado": ""})
+print(resultado)
+# Output: {'resultado': 'Paso 1 completado → Paso 2 completado'}
+```
+
+### Ejemplo 2: Grafo con Decisión
+
+**Un grafo que decide a dónde ir según una condición:**
+
+```python
+def router(state):
+    """Decide: ¿Vamos al nodo A o al nodo B?"""
+    if len(state["mensaje"]) > 5:
+        return "nodo_largo"
+    else:
+        return "nodo_corto"
+
+class RouterState(TypedDict):
+    mensaje: str
+    respuesta: str
+
+grafo_builder = StateGraph(RouterState)
+
+def procesar_corto(state):
+    return {"respuesta": "Mensaje corto"}
+
+def procesar_largo(state):
+    return {"respuesta": "Mensaje largo"}
+
+grafo_builder.add_node("procesar", procesar_corto)  # Renombrado para claridad
+grafo_builder.add_node("procesar_largo", procesar_largo)
+grafo_builder.add_edge(START, "procesar")
+grafo_builder.add_conditional_edges("procesar", router)
+grafo_builder.add_edge("procesar_largo", END)
+
+grafo = grafo_builder.compile()
+print(grafo.invoke({"mensaje": "Hola", "respuesta": ""}))
+```
+
+---
+
+## 5️⃣ EJERCICIOS
+
+### Ejercicio 1: Dibuja un Grafo
+
+**Enunciado:** Imagina un chatbot que ayuda a comprar medicinas. Dibuja un grafo ASCII que muestre:
+1. El usuario pregunta algo
+2. El LLM decide si es una pregunta sobre stock, precio o efectos secundarios
+3. Cada rama hace algo diferente
+4. Todo converge en una respuesta final
+
+**Solución esperada:**
+
+```
+        ┌──────────────┐
+        │ Usuario      │
+        │ pregunta     │
+        └──────┬───────┘
+               ▼
+        ┌──────────────┐
+        │ LLM          │
+        │ interpreta   │
+        └─┬─────────┬──┴──┬───────┐
+          ▼         ▼     ▼       ▼
+    ┌────────┐ ┌──────┐ ┌──────┐ ┌─────────┐
+    │ Stock  │ │Precio│ │Efectos│ │Desconoce│
+    └────┬───┘ └───┬──┘ └───┬──┘ └────┬────┘
+         └────┬────┴────┬───┴────┬────┘
+              ▼         ▼        ▼
+         ┌────────────────────────┐
+         │ Formatear respuesta    │
+         └────────┬───────────────┘
+                  ▼
+         ┌────────────────────────┐
+         │ Mostrar al usuario     │
+         └────────────────────────┘
+```
+
+---
+
+## 🎯 Conceptos Clave
+
+| Término | Significado | Ejemplo |
+|---------|-----------|---------|
+| **Nodo** | Una acción o estado | "Consultar BD", "Preguntar al LLM" |
+| **Arista** | Conexión entre nodos | "Si el resultado es X, va al nodo Y" |
+| **Grafo** | La red completa de nodos + aristas | Todo el flujo del chatbot |
+| **Estado** | La información compartida | Historial de chat, variables globales |
+| **Enrutamiento** | Decidir a qué nodo ir | Una función `if/else` inteligente |
+
+---
+
+## 📚 Próximo Paso
+
+Ve al **Módulo 1: El State (Estado Centralizado)**
+
+```bash
+cd ../01_state/
+# Lee README.md
+# Ejecuta los ejemplos
+```
+
+---
+
+## 💡 Tips de Estudio
+
+1. **No memorices**, entiende la lógica
+2. **Dibuja grafos** en papel antes de código
+3. **Piensa en nodos** como funciones independientes
+4. **LangGraph es solo** una forma de conectar funciones
+
+Si esto tiene sentido, ya está 90% del camino hecho. 🎉
+
+
+---
+
+## Código Fuente
+
+El código para este módulo está disponible en:
+
+\`\`\`
+python/modulos/10_fundamentos_grafos/
+\`\`\`
+
+Incluye:
+- 📖 README.md (este contenido)
+- 💻 Ejemplos prácticos en `examples/`
+- 🏋️ Ejercicios en `exercises/`
+
+## Próximos Pasos
+
+Completa los ejercicios y procede al siguiente módulo.
+
+---
+
+**Última actualización:** 2026-05-31

@@ -1,0 +1,69 @@
+# 02. Aprender LangGraph (3 horas)
+
+> Entender la orquestación antes de implementar.
+
+## 🎯 Objetivo
+
+Leer y entender los 5 módulos principales de LangGraph:
+
+1. **State** - Cómo el agente recuerda contexto
+2. **Nodes** - Funciones que ejecuta el agente
+3. **Edges** - Decisiones de qué nodo ejecutar
+4. **Checkpoints** - Persistencia de estado
+5. **Tools** - Funciones disponibles
+
+---
+
+## 📚 Lectura Rápida
+
+- Lee: [Orchestration: Fundamentos →](/arquitectura/orchestration/fundamentos-grafos) (30 min)
+- Lee: [Orchestration: State →](/arquitectura/orchestration/state) (30 min)
+- Lee: [Orchestration: Nodos →](/arquitectura/orchestration/nodos) (20 min)
+- Lee: [Orchestration: Aristas →](/arquitectura/orchestration/aristas) (20 min)
+- Lee: [Orchestration: Checkpoints →](/arquitectura/orchestration/checkpoints) (20 min)
+
+**Total**: 2 horas de lectura
+
+---
+
+## 💻 Ahora: Código Mínimo
+
+```python
+from langgraph.graph import StateGraph
+from pydantic import BaseModel
+
+# 1. Define tu State
+class AgentState(BaseModel):
+    input: str
+    output: str
+    step: int
+
+# 2. Define nodos
+def node_1(state):
+    return {"output": f"Procesé: {state.input}", "step": 1}
+
+# 3. Crea grafo
+graph = StateGraph(AgentState)
+graph.add_node("process", node_1)
+graph.set_entry_point("process")
+graph.set_finish_point("process")
+
+# 4. Ejecuta
+app = graph.compile()
+result = app.invoke({"input": "Hola", "output": "", "step": 0})
+print(result)  # output: "Procesé: Hola"
+```
+
+---
+
+## ✅ Checklist
+
+- [ ] Leí los 5 módulos (2h)
+- [ ] Entiendo qué es State
+- [ ] Entiendo qué es un Nodo
+- [ ] Entiendo qué es Conditional Edge
+- [ ] Entiendo Checkpoints
+
+---
+
+**Siguiente**: [03. Implementar Grafo →](/rutas/poc/implementar-grafo)

@@ -1,171 +1,76 @@
-# 🎓 Agentic Chat System Study Hub
+# 🚀 Agentic Chat System Study Hub
 
-> Guía completa de Ask Sage: chatbot para vendedores farmacéuticos con seguridad integrada.
+> Guía completa: De principiante a producción en AWS.
 
----
+## Bienvenido
 
-## 🚀 ¿Por Dónde Empiezo?
+Este hub te lleva de **"¿Qué es un agente?"** a **"Tengo un sistema en producción"**.
 
-### Tu Situación
-
-Elige la que mejor te describes:
-
-**A) Recibí la solicitud: Ask Sage funcionando en 1 semana**
-- 📍 Tiempo: 7 días
-- 📍 Objetivo: MVP en producción
-- 📍 Enfoque: CRÍTICO solo
-- → [Ir a Ruta Rápida](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional) ⚡
-
-**B) Quiero dominar la arquitectura completa de agentes IA**
-- 📍 Tiempo: 21 días
-- 📍 Objetivo: Expert
-- 📍 Enfoque: TODO
-- → [Ir a Ruta Completa](/rutas/learning-paths#ruta-completa-21-días---expert) 📚
-
-**C) Solo quiero aprender un módulo específico**
-- 📍 Ej: "Qué es LangGraph State?"
-- → [Ver Module Map](/rutas/module-map) 📍
+Elige tu ruta:
 
 ---
 
-## 🎯 Requisitos del Proyecto
+## 🛣️ Elige Tu Ruta
 
-Se solicitó:
-> "Chatbot para vendedores farmacéuticos que conozca:
-> - Dosis por condición
-> - Contraindicaciones
-> - Pero cada vendedor solo ve sus territorios"
+### 🟢 **Ruta Estudio** (8-20 horas)
+"Quiero entender la arquitectura"
 
-Esto requiere:
-- ✅ **Capa 1: Frontend** - Streaming + Generative UI (Vendedor ve tablas interactivas)
-- ✅ **Capa 2: Orchestration** - LangGraph (Decisiones: buscar, generar, validar)
-- ✅ **Capa 3: Runtime** - Identity Forwarding (Vendedor MX ≠ Vendedor AR)
-- ✅ **Capa 4: Data** - MCP + Embeddings (PDFs, videos, bases de datos)
-- ✅ **Capa 5: Validation** - Tests (Seguridad, compliance, SLA)
+- 📚 Lectura profunda
+- 📊 Diagramas y conceptos
+- Ideal para: Arquitectos, Product Owners
 
-**Este hub te enseña EXACTAMENTE eso.**
+**→ [Ir a Ruta Estudio](/rutas/estudio)**
 
 ---
 
-## 🗺️ Cómo Navegar
+### 🟡 **Ruta POC** (16 horas)
+"Quiero código ejecutable"
 
-### Opción 1: Seguir una Ruta
-```
-→ [Learning Paths](/rutas/learning-paths)
+- 💻 Paso-a-paso
+- 🎯 32+ ejercicios
+- 🐳 Docker local
 
-Elige:
-- Ruta Rápida (1 semana)
-- Ruta Completa (3 semanas)
-```
-
-### Opción 2: Ver Paralelismo Hub ↔ Código
-```
-→ [Module Map](/rutas/module-map)
-
-Preguntas que resuelve:
-- ¿Dónde está X módulo en el código?
-- ¿Qué tengo que modificar en ask-sage-starter?
-```
-
-### Opción 3: Empezar por Ask Sage directamente
-```
-→ [Ask Sage Learning Path](/ask-sage/path)
-
-O:
-→ [Ask Sage Project Walkthrough](/ask-sage/walkthrough)
-
-O:
-→ [Ask Sage Validation Suite](/ask-sage/validation)
-```
+**→ [Ir a Ruta POC](/rutas/poc)**
 
 ---
 
-## 📊 Hub Structure
+### 🔴 **Ruta Producción** (2-3 semanas)
+"Quiero deploy real en AWS"
 
-```
-🎨 CAPA 1: FRONTEND (Vercel AI SDK)
-├─ 00-vercel-intro
-├─ 01-streaming ⭐
-├─ 02-generative-ui
-└─ 03-frontend-completo
+- ☁️ AWS AgentCore
+- 🔐 Identity + Governance
+- 📋 Checklist completo
 
-🧠 CAPA 2: ORCHESTRATION (LangGraph)
-├─ 10-fundamentos-grafos
-├─ 11-state ⭐
-├─ 12-nodos ⭐
-├─ 13-aristas
-└─ 14-checkpoints
-
-☁️ CAPA 3: RUNTIME (AWS AgentCore)
-├─ 20-serverless-basics
-├─ 21-identity-forwarding ⭐⭐⭐
-├─ 22-agentcore-governance
-├─ 23-cedar-policies
-└─ 24-tools-management
-
-🔌 CAPA 4: DATA (MCP + Embeddings)
-├─ 30-mcp-protocol
-└─ 31-multimodal-embeddings
-
-✅ CAPA 5: VALIDATION (Testing)
-└─ ask-sage-validation
-
-🎯 PROYECTOS
-├─ 40-ask-sage-mvp
-├─ 41-ask-sage-enterprise
-└─ 42-deployment-aws
-```
+**→ [Ir a Ruta Producción](/rutas/produccion)**
 
 ---
 
-## ⚡ Quick Checklist
+## 📖 Contenido Principal
 
-Antes de empezar:
-
-- [ ] ¿Decidí mi ruta? (Rápida o Completa)
-- [ ] ¿Tengo 1-3 semanas disponibles?
-- [ ] ¿Instalé Node.js + Python?
-- [ ] ¿Tengo Docker? (opcional pero recomendado)
-
----
-
-## 🎓 Pro Tips
-
-1. **Lee primero, codifica después**  
-   Cada módulo explica el "POR QUÉ". Luego el código muestra el "CÓMO".
-
-2. **Usa Module Map**  
-   Cuando leas un módulo, mira `[Módulo Map](/rutas/module-map)` para ver dónde está en ask-sage-starter.
-
-3. **Modifica el código mientras lees**  
-   La mejor forma de aprender es cambiar cosas y ver qué pasa.
-
-4. **Prioriza lo CRÍTICO**  
-   Si tienes 1 semana, salta a [Ruta Rápida](/rutas/learning-paths) - solo 7 módulos.
+| Sección | Contenido | Tiempo |
+|---------|----------|--------|
+| **Fundamentos** | Conceptos 101 | 15 min |
+| **Arquitectura** | 4 capas del sistema | 5-20h |
+| **Validación** | Testing + ejercicios | 5h |
+| **Ask Sage** | Caso de uso específico | 8h |
+| **Proyectos** | MVP, Enterprise, Deploy | 6h |
 
 ---
 
-## 🚀 Empezar Ahora
+## 🆘 Necesitas Ayuda?
 
-### Ya decidiste tu ruta?
-
-**Ruta Rápida (1 semana)**: [Empezar →](/rutas/learning-paths#ruta-rápida-7-días---mvp-funcional)
-
-**Ruta Completa (3 semanas)**: [Empezar →](/rutas/learning-paths#ruta-completa-21-días---expert)
-
-**Ver Paralelismo Hub ↔ Código**: [Module Map →](/rutas/module-map)
+- [Troubleshooting](/troubleshooting) - Errores comunes
+- [FAQ](/troubleshooting/faq) - Preguntas frecuentes
+- [Ejercicios](/validacion/ejercicios) - Aprende haciendo
 
 ---
 
-## 📝 Resumen Ejecutivo
+## ⚡ Quick Start (5 minutos)
 
-> "Tengo todo lo necesario para Ask Sage en 2 semanas.
-> 
-> Semana 1: Frontend + Orchestration + Identity (CRÍTICO)
-> Semana 2: Data + Testing + Deploy"
+1. Lee [Fundamentos](/fundamentos/que-es-agentic)
+2. Elige tu ruta arriba
+3. ¡Empecemos!
 
 ---
 
-**Última actualización**: 2026-06-01  
-**Status**: ✅ 100% Ask Sage Aligned  
-**Listo para**: MVP + Producción
+**¡Bienvenido! 🎉**

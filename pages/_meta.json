@@ -1,16 +1,12 @@
 {
-  "index": "🏠 Home",
-  "quickstart": "🚀 Quick Start",
-  "rutas": "🛤️ Rutas Interactivas",
-  "ask-sage": {
-    "title": "📚 Ask Sage Project",
-    "type": "dir"
-  },
-  "frontend": "🎨 Frontend & UX",
-  "orchestration": "🧠 Orchestration",
-  "runtime": "☁️ Runtime & Infrastructure",
-  "data": "🔌 Data & Connections",
-  "validation": "✅ Validation & Testing",
-  "proyectos": "🎯 Proyectos Integrados"
+  "index": "Inicio",
+  "00-inicio": "🚀 Bienvenida",
+  "01-fundamentos": "📚 Fundamentos",
+  "02-arquitectura": "🧠 Arquitectura",
+  "03-validacion": "🔬 Validación",
+  "04-rutas": "🛣️ Rutas",
+  "05-ask-sage": "📖 Ask Sage",
+  "07-troubleshooting": "🆘 Troubleshooting",
+  "proyectos": "🎯 Proyectos",
+  "quickstart": "⚡ Quick Start"
 }
-

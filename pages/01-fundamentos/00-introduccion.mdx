@@ -1,0 +1,130 @@
+# 📚 Fundamentos: Conceptos 101
+
+> Todo comienza aquí. 5-15 minutos para entender las bases.
+
+Bienvenido a los fundamentos. Este módulo es muy corto a propósito: queremos que entiendas los conceptos básicos en menos de 15 minutos.
+
+Después de leer esto, irás a una de las 3 rutas:
+- **Estudio**: Profundizar en teoría
+- **POC**: Aprender haciendo
+- **Producción**: Deploy en AWS
+
+Vamos.
+
+---
+
+## 🤔 ¿Qué es un "Agente" en IA?
+
+Un **agente agentic** es un programa que puede:
+
+1. **Leer** contexto (mensajes del usuario, datos)
+2. **Pensar** (usar un LLM para decidir)
+3. **Actuar** (ejecutar funciones/tools)
+4. **Iterar** (repetir hasta lograr el objetivo)
+
+**Ejemplo**: Un usuario pregunta "¿Cuál es el stock del medicamento X?"
+
+```
+Usuario: "¿Stock de Amoxicilina 500mg?"
+   ↓
+Agente Lee: ¿Qué pregunta es?
+   ↓
+Agente Piensa: "Necesito consultar la BD de stock"
+   ↓
+Agente Actúa: Ejecuta búsqueda en BD
+   ↓
+Agente Retorna: "Tenemos 500 unidades en el almacén A"
+   ↓
+Usuario Feliz ✓
+```
+
+---
+
+## ⚙️ ¿Cómo Funciona?
+
+Un sistema agentic típico tiene estos componentes:
+
+```
+┌──────────────────────────────────────────────────┐
+│ 1. FRONTEND (Usuario escribe mensaje)             │
+│    Vercel AI + React                             │
+└─────────────┬──────────────────────────────────────┘
+              │
+              ├─→ POST /api/chat
+              │
+┌─────────────▼──────────────────────────────────────┐
+│ 2. BACKEND (Orquestación de lógica)               │
+│    LangGraph + Python                            │
+│    - Lee entrada                                 │
+│    - LLM decide "¿qué hacer?"                    │
+│    - Ejecuta herramientas                        │
+│    - Retorna respuesta                           │
+└─────────────┬──────────────────────────────────────┘
+              │
+              ├─→ Usa herramientas (tools)
+              │
+┌─────────────▼──────────────────────────────────────┐
+│ 3. RUNTIME (Ejecución segura)                     │
+│    AWS AgentCore                                 │
+│    - Valida permisos (identity)                  │
+│    - Ejecuta herramientas de forma segura        │
+└─────────────┬──────────────────────────────────────┘
+              │
+              ├─→ Accede a datos (BD, APIs)
+              │
+┌─────────────▼──────────────────────────────────────┐
+│ 4. DATOS (Información)                            │
+│    MCP + Bases de Datos                          │
+│    - Devuelve datos relevantes                   │
+└──────────────────────────────────────────────────────┘
+```
+
+**Lo importante**: Cada capa tiene responsabilidades claras.
+
+---
+
+## 🎯 Las 4 Capas Explicadas en 2 Minutos
+
+| Capa | Pregunta | Respuesta | Tecnología |
+|------|----------|-----------|------------|
+| **1. Frontend** | ¿Qué ve el usuario? | Interfaz bonita + streaming | Vercel AI SDK + React |
+| **2. Orchestration** | ¿Cómo el agente decide? | LLM elige qué hacer | LangGraph |
+| **3. Runtime** | ¿Dónde corre seguro? | AWS + identidad + permisos | AWS AgentCore |
+| **4. Data** | ¿Dónde busca información? | BD + APIs + búsqueda vectorial | MCP + Embeddings |
+
+---
+
+## 💡 Ejemplo: Ask Sage
+
+**Ask Sage** es un chatbot farmacéutico. Cuando un usuario pregunta algo:
+
+```
+Usuario: "¿Qué interacciones tiene Amoxicilina + Warfarina?"
+
+Capa 1: Frontend muestra un chat bonito
+Capa 2: Orquestación decide "necesito buscar interacciones"
+Capa 3: Runtime valida "¿Javier puede ver este medicamento?"
+Capa 4: Data busca en BD de interacciones medicamentosas
+   ↓
+Respuesta: "ALERTA: Interacción grave detectada..."
+```
+
+---
+
+## 🚀 ¿Cuál es el Siguiente Paso?
+
+### Si quieres **entender bien**
+→ [Ruta Estudio](/rutas/estudio)  
+Lee teoría profunda (8-20 horas)
+
+### Si quieres **hacer algo**
+→ [Ruta POC](/rutas/poc)  
+Código paso-a-paso (16 horas)
+
+### Si quieres **producción**
+→ [Ruta Producción](/rutas/produccion)  
+Deploy en AWS (2-3 semanas)
+
+---
+
+**¿Listo?** Elige una ruta. Las capas se van a profundizar mucho en los módulos siguientes. Aquí solo quisimos darte la intuición.
