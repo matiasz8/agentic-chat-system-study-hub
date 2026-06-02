@@ -1,8 +1,7 @@
 {
-  "index": "Arquitectura",
-  "frontend": "Frontend: Vercel AI SDK",
-  "orchestration": "Orchestration: LangGraph",
-  "runtime": "Runtime: AWS AgentCore",
-  "data": "Data: MCP + Embeddings",
-  "observability": "Observability"
+  "index": "Arquitectura (4 Capas)",
+  "frontend": "🎨 Frontend",
+  "orchestration": "�� Orchestration",
+  "runtime": "⚙️ Runtime",
+  "data": "💾 Data"
 }

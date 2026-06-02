@@ -1,12 +1,11 @@
 {
-  "index": "Inicio",
-  "00-inicio": "🚀 Bienvenida",
-  "01-fundamentos": "📚 Fundamentos",
-  "02-arquitectura": "🧠 Arquitectura",
-  "03-validacion": "🔬 Validación",
+  "index": "📚 Inicio",
+  "01-fundamentos": "🎯 Fundamentos",
+  "02-arquitectura": "🏗️ Arquitectura",
+  "03-validacion": "✅ Validación",
   "04-rutas": "🛣️ Rutas",
-  "05-ask-sage": "📖 Ask Sage",
+  "ask-sage": "💊 Ask Sage",
+  "proyectos": "🚀 Proyectos",
   "07-troubleshooting": "🆘 Troubleshooting",
-  "proyectos": "🎯 Proyectos",
   "quickstart": "⚡ Quick Start"
 }

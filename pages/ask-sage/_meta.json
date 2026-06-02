@@ -1,13 +1,12 @@
 {
-  "index": "Ask Sage",
-  "index": "Ask Sage",
-  "00-introduccion": "Introducción",
+  "index": "Introducción",
+  "00-introduccion": "Concepto",
   "01-caso-de-uso": "Caso de Uso",
   "02-arquitectura": "Arquitectura",
   "03-validacion": "Validación",
-  "04-deployment-prod": "Deployment (NUEVO)",
-  "05-identity-asksage": "Identity (NUEVO)",
-  "path": "Path Original",
-  "walkthrough": "Walkthrough",
-  "validation": "Validation Suite"
+  "03-deployment-prod": "Deployment",
+  "04-identity-asksage": "Identity",
+  "00-path": "Ruta Completa",
+  "01-walkthrough": "Walkthrough",
+  "02-validation": "Tests"
 }

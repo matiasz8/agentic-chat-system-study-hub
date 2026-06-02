@@ -1,0 +1,26 @@
+# Arquitectura de Ask Sage
+
+## Las 4 Capas
+
+```
+┌─────────────────────┐
+│  Frontend (Vercel)  │ ← UI para preguntas
+├─────────────────────┤
+│ Orchestration (LG)  │ ← Flujo del agente
+├─────────────────────┤
+│ Runtime (AWS)       │ ← Ejecución con Identity
+├─────────────────────┤
+│ Data (MCP, DB)      │ ← Medicamentos, auditoría
+└─────────────────────┘
+```
+
+## Componentes
+
+- **Vercel AI SDK**: Streaming y componentes React
+- **LangGraph**: Orquestación del flujo del agente
+- **AWS AgentCore**: Runtime con políticas Cedar
+- **MCP**: Conexión a bases de datos de medicamentos
+
+## Próximo paso
+
+[→ Validación](/ask-sage/03-validacion)

@@ -1,76 +1,170 @@
-# 🚀 Agentic Chat System Study Hub
+# 📚 Agentic Chat System Study Hub
 
-> Guía completa: De principiante a producción en AWS.
-
-## Bienvenido
-
-Este hub te lleva de **"¿Qué es un agente?"** a **"Tengo un sistema en producción"**.
-
-Elige tu ruta:
+> Hub de estudio universitario: Arquitectura de sistemas agentic para Ask Sage.  
+> De conceptos fundamentales a producción en AWS AgentCore.
 
 ---
 
-## 🛣️ Elige Tu Ruta
+## 🎓 ¿Qué es este Hub?
 
-### 🟢 **Ruta Estudio** (8-20 horas)
-"Quiero entender la arquitectura"
+Una **referencia técnica educativa completa** sobre cómo construir sistemas agentic como Ask Sage. Incluye:
 
-- 📚 Lectura profunda
-- 📊 Diagramas y conceptos
-- Ideal para: Arquitectos, Product Owners
+- 📖 **Explicaciones profundas** (por qué, cómo, para qué)
+- 💡 **Ejemplos prácticos** (código real, diagramas)
+- 🧪 **Ejercicios interactivos** (32+ ejercicios con soluciones)
+- 🔬 **Validación y testing** (cómo verificar que funciona)
+- 📋 **Historias y contexto** (por qué Ask Sage existe)
 
-**→ [Ir a Ruta Estudio](/rutas/estudio)**
-
----
-
-### 🟡 **Ruta POC** (16 horas)
-"Quiero código ejecutable"
-
-- 💻 Paso-a-paso
-- 🎯 32+ ejercicios
-- 🐳 Docker local
-
-**→ [Ir a Ruta POC](/rutas/poc)**
+**No es un POC ejecutable**. Es educación → referencia → guía.
 
 ---
 
-### 🔴 **Ruta Producción** (2-3 semanas)
-"Quiero deploy real en AWS"
+## 🎯 Elige Tu Camino
 
-- ☁️ AWS AgentCore
-- 🔐 Identity + Governance
-- 📋 Checklist completo
+### 🟢 **Quiero ENTENDER**
+→ [01. Fundamentos](/fundamentos)
 
-**→ [Ir a Ruta Producción](/rutas/produccion)**
+Conceptos básicos en 15 minutos.  
+Entiende qué es un agente agentic.
+
+### 🧠 **Quiero APRENDER PROFUNDO**
+→ [02. Arquitectura](/arquitectura)
+
+Las 4 capas del sistema (Frontend, Orchestration, Runtime, Data).  
+Con ejemplos, diagramas, explicaciones.
+
+### 🔬 **Quiero EJERCICIOS**
+→ [03. Validación → Ejercicios](/validacion/ejercicios)
+
+32+ ejercicios prácticos de 3 niveles.  
+Con código base y soluciones paso-a-paso.
+
+### 🛣️ **Quiero UNA RUTA CLARA**
+→ [04. Rutas de Aprendizaje](/rutas)
+
+- **Ruta Estudio**: Teoría pura (8-20h)
+- **Ruta POC**: Teoría + código local (16h)
+- **Ruta Producción**: Todo + AWS deploy (2-3 semanas)
+
+### 📖 **Quiero ENTENDER ASK SAGE**
+→ [05. Ask Sage](/ask-sage)
+
+Caso de uso específico: chatbot farmacéutico.  
+Validación, compliance, deployment.
+
+### 🎯 **Quiero PROYECTOS REALES**
+→ [Proyectos](/proyectos)
+
+MVP, Enterprise, AWS Deployment.
+
+### 🆘 **TENGO UN ERROR**
+→ [07. Troubleshooting](/troubleshooting)
+
+100+ errores comunes y soluciones.
 
 ---
 
-## 📖 Contenido Principal
+## 📊 Estructura del Hub
 
-| Sección | Contenido | Tiempo |
-|---------|----------|--------|
-| **Fundamentos** | Conceptos 101 | 15 min |
-| **Arquitectura** | 4 capas del sistema | 5-20h |
-| **Validación** | Testing + ejercicios | 5h |
-| **Ask Sage** | Caso de uso específico | 8h |
-| **Proyectos** | MVP, Enterprise, Deploy | 6h |
+```
+01-fundamentos/           ← Conceptos 101 (15 min)
+   └─ ¿Qué es un agente?
+   └─ Las 4 capas
+   
+02-arquitectura/          ← Aprende profundo (5-20h)
+   ├─ Frontend (Vercel AI SDK)
+   ├─ Orchestration (LangGraph)
+   ├─ Runtime (AWS AgentCore)
+   └─ Data (MCP + Embeddings)
+   
+03-validacion/            ← Testing + Ejercicios (5h)
+   ├─ Estrategias de testing
+   ├─ Testing de prompts
+   ├─ Testing de workflows
+   └─ ejercicios/ (32+ ejercicios)
+       ├─ Basico (3)
+       ├─ Intermedio (3)
+       └─ Avanzado (3)
+   
+04-rutas/                 ← Rutas de aprendizaje (8-3 weeks)
+   ├─ Estudio (8-20h)
+   ├─ POC (16h) [8 módulos paso-a-paso]
+   └─ Producción (2-3 weeks) [AWS + Identity + Deploy]
+   
+05-ask-sage/              ← Caso de uso específico (8h)
+   ├─ Qué es Ask Sage
+   ├─ Arquitectura
+   ├─ Validación farmacéutica
+   └─ Deployment en producción
+   
+proyectos/                ← Proyectos reales
+   ├─ MVP
+   ├─ Enterprise
+   └─ Deployment AWS
+   
+07-troubleshooting/       ← Soporte 24/7
+   ├─ Setup errors
+   ├─ Orchestration errors
+   ├─ Runtime errors
+   └─ Deployment errors
+```
 
 ---
 
-## 🆘 Necesitas Ayuda?
+## ⚡ Quick Start (2 minutos)
 
-- [Troubleshooting](/troubleshooting) - Errores comunes
-- [FAQ](/troubleshooting/faq) - Preguntas frecuentes
-- [Ejercicios](/validacion/ejercicios) - Aprende haciendo
+**Opción A: Soy nuevo**  
+→ Lee [Fundamentos: ¿Qué es un agente?](/fundamentos/que-es-agentic) (5 min)
 
----
+**Opción B: Quiero aprender profundo**  
+→ Ve a [Arquitectura](/arquitectura) (5-20h)
 
-## ⚡ Quick Start (5 minutos)
-
-1. Lee [Fundamentos](/fundamentos/que-es-agentic)
-2. Elige tu ruta arriba
-3. ¡Empecemos!
+**Opción C: Tengo un problema**  
+→ Ve a [Troubleshooting](/troubleshooting)
 
 ---
 
-**¡Bienvenido! 🎉**
+## 📚 Filosofía del Hub
+
+Este hub sigue 5 principios:
+
+1. **Explicación primero**: Entiende el POR QUÉ antes de cómo
+2. **Ejemplos siempre**: Todo concepto tiene ejemplo de código
+3. **Ejercicios prácticos**: Aprende haciendo
+4. **Contexto histórico**: Entiende decisiones arquitectónicas
+5. **Ask Sage específico**: Todos los ejemplos son para Ask Sage o generalizable
+
+---
+
+## 🎓 Para Diferentes Roles
+
+| Rol | Comienza con | Tiempo |
+|-----|--------------|--------|
+| **Arquitecto** | Fundamentos + Arquitectura completa | 20h |
+| **Developer** | Fundamentos + Ruta POC | 16h |
+| **DevOps** | Ruta Producción | 2-3 weeks |
+| **Product Owner** | Fundamentos (rápida) | 8h |
+| **Estudiante** | Todo en orden | 48h |
+
+---
+
+## ✨ Lo Que Está Incluido
+
+✅ 140+ páginas de documentación  
+✅ 50+ ejemplos de código  
+✅ 32+ ejercicios prácticos  
+✅ 100+ soluciones de troubleshooting  
+✅ 4 diagramas arquitectónicos  
+✅ 8 módulos POC paso-a-paso  
+✅ Ask Sage específico  
+✅ Pre-commit validation  
+
+---
+
+## 🚀 Empecemos
+
+**→ [01. Fundamentos](/fundamentos)** (comienza aquí)
+
+---
+
+*Este hub es material de referencia educativa. No es un POC ejecutable ni está completo para producción sin personalización.*
