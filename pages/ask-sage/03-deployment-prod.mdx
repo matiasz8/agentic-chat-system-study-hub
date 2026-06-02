@@ -1,11 +1,283 @@
-# Ask Sage: Deployment en Producción
+# 🚀 Ask Sage: Deployment en Producción
 
-> Guía específica para deployar Ask Sage en AWS AgentCore.
-
-## 🎯 Objetivo
-
-Llevar Ask Sage a producción con compliance farmacéutico.
+> Guía específica para deployar Ask Sage en AWS con AgentCore y compliance farmacéutico.
 
 ---
 
-Ver: [Ruta Producción](/04-rutas/ruta-produccion)
+## 🎯 Objetivos de Producción
+
+- ✅ Cumplimiento **HIPAA** (datos de pacientes)
+- ✅ Cumplimiento **21 CFR Part 11** (FDA regulations)
+- ✅ Auditoría completa (quién accedió qué y cuándo)
+- ✅ Uptime 99.99% (máx 4 min/mes downtime)
+- ✅ Latencia < 1 segundo
+- ✅ Encryption in-transit y at-rest
+
+---
+
+## 🏗️ Stack de Producción
+
+```
+┌──────────────────────────────────────────────┐
+│ CloudFront + WAF (DDoS, SQL Injection)       │
+└─────────────┬────────────────────────────────┘
+              │
+┌─────────────▼────────────────────────────────┐
+│ Application Load Balancer (HTTPS TLS 1.3)    │
+│ - Health checks: /health                      │
+│ - Stickiness: No (stateless)                  │
+└─────────────┬────────────────────────────────┘
+              │
+┌─────────────▼────────────────────────────────┐
+│ ECS Fargate Cluster (Ask Sage API)            │
+│ - Tasks: 2 vCPU, 8 GB RAM                     │
+│ - Min: 3 tasks, Max: 50                       │
+│ - Auto-scaling: CPU > 70% OR Memory > 80%     │
+│ - Container: ask-sage:latest from ECR        │
+└─────────────┬────────────────────────────────┘
+              │
+     ┌────────┼────────┬──────────┐
+     ▼        ▼        ▼          ▼
+ ┌───────┐ ┌────┐ ┌────────┐ ┌──────────────┐
+ │ RDS   │ │ Redis│ │S3 Logs │ │AgentCore    │
+ │ PostgreSQL│ │Cluster│ │(S3)   │ │(governance) │
+ │ Multi-AZ  │ │(cache)│ │       │ └──────────────┘
+ │ Backup:   │ └────┘ └────────┘
+ │ - PITR 35d│
+ │ - Snapshots
+ │ - KMS
+ └───────┘
+```
+
+---
+
+## 🔐 Compliance Farmacéutico
+
+### HIPAA Requirements
+
+```python
+# 1. Encryption in Transit
+SECURESSL = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+
+# 2. Encryption at Rest (KMS)
+{
+  "storageEncryption": {
+    "enabled": true,
+    "keyArn": "arn:aws:kms:us-east-1:account:key/uuid"
+  }
+}
+
+# 3. Access Control (Identity-based)
+# → Solo farmacéuticos pueden ver datos de pacientes
+# → Vendedores solo ven sus propios datos
+
+# 4. Audit Logs (immutable)
+"audit_log": {
+  "timestamp": "2026-06-02T14:30:00Z",
+  "user_id": "pharmacist_001",
+  "action": "READ_PATIENT_DATA",
+  "patient_id": "P12345",
+  "status": "SUCCESS",
+  "ip_address": "203.0.113.42"
+}
+
+# 5. Data Retention (7 años mínimo)
+RETENTION_POLICY = {
+  "patient_data": 7,  # años
+  "audit_logs": 7,
+  "backups": 7
+}
+```
+
+### 21 CFR Part 11 (FDA)
+
+```python
+# 1. System Validation
+# → Documentar diseño, testing, deployment
+# → FDA-approved testing protocols
+
+# 2. Electronic Signatures
+# → Cada acción requiere user_id + timestamp
+# → No se puede repudiar (audit trail)
+
+# 3. Data Integrity
+# → Checksums en todos los registros
+# → Change logs obligatorios
+
+# 4. System Security
+# → Strong authentication (2FA mínimo)
+# → Role-based access control (RBAC)
+# → Segregation of duties
+
+from enum import Enum
+
+class PharmaceuticalRole(Enum):
+    PHARMACIST = "pharmacist"  # Lee/escribe pacientes
+    PHARMACIST_MANAGER = "pharmacist_manager"  # Auditoría
+    COMPLIANCE_OFFICER = "compliance_officer"  # Reportes
+    ADMIN = "admin"  # Sistema
+
+# Cada rol tiene permisos específicos
+ROLE_PERMISSIONS = {
+    "pharmacist": ["read_patient_data", "write_treatment"],
+    "pharmacist_manager": ["read_all_data", "approve_treatments"],
+    "compliance_officer": ["read_audit_logs", "export_reports"],
+}
+```
+
+---
+
+## 📋 Deployment Checklist
+
+### Fase 1: Pre-deployment (2 semanas antes)
+
+- [ ] **Compliance Audit**: 3rd party auditor revisa arquitectura
+- [ ] **Data Migration**: De staging a producción (con backup)
+- [ ] **Security Review**: Penetration testing
+- [ ] **Load Testing**: Simular 1000 usuarios concurrentes
+- [ ] **Disaster Recovery**: Testear restore desde backup
+
+```bash
+# Security scan
+aws ecr start-image-scan \
+  --repository-name ask-sage \
+  --image-id imageTag=latest
+```
+
+### Fase 2: Deployment (día 1)
+
+```bash
+# 1. Backup everything
+aws rds create-db-snapshot \
+  --db-instance-identifier ask-sage-pharma \
+  --db-snapshot-identifier ask-sage-pharma-pre-prod-$(date +%s)
+
+# 2. Deploy to staging first
+aws ecs update-service \
+  --cluster ask-sage-staging \
+  --service ask-sage-api \
+  --force-new-deployment
+
+# 3. Run smoke tests
+pytest tests/smoke_tests.py -v
+
+# 4. Deploy to production (blue-green)
+aws ecs update-service \
+  --cluster ask-sage-prod \
+  --service ask-sage-api \
+  --task-definition ask-sage-prod:NEW_VERSION \
+  --deployment-configuration maximumPercent=200,minimumHealthyPercent=100
+
+# 5. Monitor
+watch -n 1 "aws ecs describe-services --cluster ask-sage-prod --services ask-sage-api"
+```
+
+### Fase 3: Post-deployment (7 días)
+
+- [ ] **Monitoring**: CloudWatch, DataDog alertas OK
+- [ ] **Compliance Validation**: Auditor valida compliance
+- [ ] **User Acceptance Testing**: Farmacéuticos testan
+- [ ] **Performance Validation**: P95 latency < 1s
+
+---
+
+## 🎯 AgentCore Integration
+
+```python
+# Ask Sage se registra en AWS AgentCore
+from aws_agentcore import register_agent
+
+agent_config = {
+    "name": "ask-sage-pharma",
+    "version": "1.0.0",
+    "governance_tags": {
+        "compliance": "HIPAA,21CFR11",
+        "data_classification": "RESTRICTED",
+        "owner": "pharma-team"
+    },
+    "permissions": {
+        "database": ["read", "write"],
+        "llm": ["invoke"],
+        "s3": ["write_logs"]
+    },
+    "audit_required": True,
+    "approval_workflow": "pharmacist_manager"
+}
+
+register_agent(agent_config)
+```
+
+---
+
+## 📊 Rollback Procedure
+
+```bash
+#!/bin/bash
+# rollback.sh - Rollback rápido en emergencia
+
+PREVIOUS_VERSION=$(aws ecs describe-task-definition \
+  --task-definition ask-sage-prod:$(($CURRENT_TASK_DEFINITION-1)) \
+  --query 'taskDefinition.revision' \
+  --output text)
+
+echo "⚠️ Rolling back a versión $PREVIOUS_VERSION"
+
+aws ecs update-service \
+  --cluster ask-sage-prod \
+  --service ask-sage-api \
+  --task-definition ask-sage-prod:$PREVIOUS_VERSION \
+  --force-new-deployment
+
+# Esperar a que health checks pasen
+sleep 30
+aws ecs describe-services --cluster ask-sage-prod --services ask-sage-api \
+  --query 'services[0].deployments[0].status'
+```
+
+---
+
+## 🔔 Alertas Críticas
+
+```python
+# CloudWatch Alarms
+alarms = [
+    {
+        "name": "AskSage-HighErrorRate",
+        "metric": "error_rate",
+        "threshold": 1.0,  # 1%
+        "action": "page_oncall"
+    },
+    {
+        "name": "AskSage-DBConnection-Failed",
+        "metric": "db_connection_errors",
+        "threshold": 5,
+        "action": "page_oncall_dba"
+    },
+    {
+        "name": "AskSage-Audit-Log-Failed",
+        "metric": "audit_log_errors",
+        "threshold": 1,  # CRÍTICO: NO auditar = violación HIPAA
+        "action": "page_compliance_officer"
+    },
+]
+```
+
+---
+
+## 📈 Performance Metrics
+
+| Métrica | Target | Producción |
+|---------|--------|------------|
+| P50 Latency | 200ms | ✅ |
+| P95 Latency | < 1s | ✅ |
+| P99 Latency | < 5s | ✅ |
+| Availability | 99.99% | ✅ |
+| Error Rate | < 0.1% | ✅ |
+| Audit Log Coverage | 100% | ✅ |
+
+---
+
+**Ver:** [AWS AgentCore Governance](/02-arquitectura/runtime/22-agentcore-governance)  
+**Última actualización:** 2026-06-02
