@@ -1,6 +1,6 @@
 {
-  "index": "Proyectos Ejemplo",
-  "40-ask-sage-mvp": "MVP",
-  "41-ask-sage-enterprise": "Enterprise",
-  "42-deployment-aws": "AWS Deploy"
+  "00-contenido": "📖 Contenido",
+  "40-ask-sage-mvp": "🎯 MVP",
+  "41-ask-sage-enterprise": "🏢 Enterprise",
+  "42-deployment-aws": "☁️ AWS Deploy"
 }

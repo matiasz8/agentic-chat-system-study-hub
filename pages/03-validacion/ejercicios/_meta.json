@@ -1,5 +1,6 @@
 {
-  "basico": "Básico",
-  "intermedio": "Intermedio",
-  "avanzado": "Avanzado"
+  "00-contenido": "📖 Contenido",
+  "basico": "🟢 Básico",
+  "intermedio": "🟡 Intermedio",
+  "avanzado": "🔴 Avanzado"
 }

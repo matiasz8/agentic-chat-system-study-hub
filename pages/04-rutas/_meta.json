@@ -1,6 +1,6 @@
 {
-  "index": "Rutas de Estudio",
-  "ruta-estudio": "Estudio (teoría)",
-  "ruta-poc": "POC (hands-on)",
-  "ruta-produccion": "Producción (AWS)"
+  "00-contenido": "📖 Contenido",
+  "ruta-estudio": "📚 Estudio (teoría)",
+  "ruta-poc": "🚀 POC (hands-on)",
+  "ruta-produccion": "⚙️ Producción (AWS)"
 }

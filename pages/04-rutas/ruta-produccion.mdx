@@ -3,13 +3,13 @@ route: 'produccion'
 routeName: 'Ruta Producción'
 modules:
   - title: '01. Pre-requisitos AWS'
-    path: '/ask-sage/deployment-prod'
+    path: '/ask-sage/03-deployment-prod'
     done: false
   - title: '02. Migrar a AWS'
     path: '/02-arquitectura/runtime'
     done: false
   - title: '03. Identity Forwarding'
-    path: '/ask-sage/identity'
+    path: '/ask-sage/04-identity-asksage'
     done: false
   - title: '04. Validación Producción'
     path: '/03-validacion'
@@ -33,13 +33,13 @@ import RouteProgress from '@/components/RouteProgress'
   route="produccion"
   routeName="Ruta Producción"
   modules={[
-    { title: '01. Pre-requisitos AWS', path: '/ask-sage/deployment-prod', done: false },
+    { title: '01. Pre-requisitos AWS', path: '/ask-sage/03-deployment-prod', done: false },
     { title: '02. Migrar a AWS', path: '/02-arquitectura/runtime', done: false },
-    { title: '03. Identity Forwarding', path: '/ask-sage/identity', done: false },
+    { title: '03. Identity Forwarding', path: '/ask-sage/04-identity-asksage', done: false },
     { title: '04. Validación Producción', path: '/03-validacion', done: false },
     { title: '05. Observabilidad', path: '/07-troubleshooting', done: false },
     { title: '06. Auto-scaling', path: '/02-arquitectura/runtime', done: false },
-    { title: '07. Disaster Recovery', path: '/ask-sage/deployment-prod', done: false },
+    { title: '07. Disaster Recovery', path: '/ask-sage/03-deployment-prod', done: false },
   ]}
 />
 
@@ -92,8 +92,8 @@ Para equipos que necesitan deployar sistemas seguros, escalables y auditables.
 
 ## 📚 Referencias
 
-- [Deployment en Ask Sage](/ask-sage/deployment-prod)
-- [Identity & Security](/ask-sage/identity)
+- [Deployment en Ask Sage](/ask-sage/03-deployment-prod)
+- [Identity [Identity & Security](/ask-sage/identity) Security](/ask-sage/04-identity-asksage)
 - [Troubleshooting](/07-troubleshooting)
 
 ## ✅ Checklist Final

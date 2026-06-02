@@ -1,7 +1,8 @@
 {
-  "index": "Arquitectura (4 Capas)",
-  "frontend": "🎨 Frontend",
-  "orchestration": "�� Orchestration",
-  "runtime": "⚙️ Runtime",
-  "data": "💾 Data"
+  "00-contenido": "📖 Contenido",
+  "frontend": "🎨 Frontend & Streaming",
+  "orchestration": "🧠 Orchestration & Grafos",
+  "runtime": "⚙️ Runtime & AWS",
+  "data": "💾 Data Layer",
+  "observability": "📊 Observability"
 }

@@ -1,6 +1,7 @@
 {
-  "00-intro": "Ejercicios Básicos",
-  "01-hola-agente": "01. Hola Agente",
-  "02-state-101": "02. State 101",
-  "03-nodo-simple": "03. Nodo Simple"
+  "00-contenido": "📖 Contenido",
+  "00-intro": "📚 Introducción",
+  "01-hola-agente": "1️⃣ Hola Agente",
+  "02-state-101": "2️⃣ State 101",
+  "03-nodo-simple": "3️⃣ Nodo Simple"
 }

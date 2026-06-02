@@ -1,12 +1,12 @@
 {
-  "index": "Introducción",
-  "00-introduccion": "Concepto",
-  "01-caso-de-uso": "Caso de Uso",
-  "02-arquitectura": "Arquitectura",
-  "03-validacion": "Validación",
-  "03-deployment-prod": "Deployment",
-  "04-identity-asksage": "Identity",
-  "00-path": "Ruta Completa",
-  "01-walkthrough": "Walkthrough",
-  "02-validation": "Tests"
+  "00-contenido": "📖 Contenido",
+  "00-introduccion": "📚 Concepto",
+  "01-caso-de-uso": "🎯 Caso de Uso",
+  "02-arquitectura": "🏗️ Arquitectura",
+  "03-validacion": "✅ Validación",
+  "03-deployment-prod": "🚀 Deployment",
+  "04-identity-asksage": "🔐 Identity",
+  "00-path": "🗺️ Ruta Completa",
+  "01-walkthrough": "👣 Walkthrough",
+  "01-validacion": "🧪 Tests"
 }
