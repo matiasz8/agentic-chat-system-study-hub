@@ -11,17 +11,19 @@ interface CodeBlockProps {
   highlight?: number[];
 }
 
-const SyntaxHighlighter = lazy(() =>
-  import('react-syntax-highlighter').then((mod) => ({
-    default: mod.Prism as any,
-  }))
-);
-
-const atomOneDark = lazy(() =>
-  import('react-syntax-highlighter/dist/esm/styles/hljs').then((mod) => ({
-    default: mod.atomOneDark,
-  }))
-);
+// Lazy load the syntax highlighter component
+const SyntaxHighlighter = lazy(async () => {
+  const [{ Prism }, { atomOneDark }] = await Promise.all([
+    import('react-syntax-highlighter'),
+    import('react-syntax-highlighter/dist/esm/styles/hljs'),
+  ]);
+  
+  return {
+    default: (props: any) => {
+      return <Prism {...props} style={atomOneDark} />;
+    },
+  };
+});
 
 const CodeFallback = ({ code }: { code: string }) => (
   <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
@@ -67,7 +69,11 @@ export function CodeBlock({
 
       <div className="overflow-x-auto">
         <Suspense fallback={<CodeFallback code={code} />}>
-          <SyntaxHighlighter language={language} showLineNumbers={showLineNumbers}>
+          <SyntaxHighlighter
+            language={language}
+            showLineNumbers={showLineNumbers}
+            wrapLines={true}
+          >
             {code}
           </SyntaxHighlighter>
         </Suspense>
