@@ -27,7 +27,7 @@ jobs:
         run: npm run build
       
       - name: Python Syntax Check
-        run: python3 -m compileall python/modulos/ --quiet
+        run: python3 -m compileall python/modulos/
       
   deploy:
     needs: validate
