@@ -11,9 +11,26 @@ export default function RouteProgress({
 }) {
   const router = useRouter()
   const [activeIndex, setActiveIndex] = useState(-1)
+  const [completedModules, setCompletedModules] = useState({})
+  const [isClient, setIsClient] = useState(false)
 
+  // Cargar progreso desde localStorage al montar
   useEffect(() => {
-    // Detectar cuál módulo está activo basado en la URL
+    setIsClient(true)
+    if (typeof window !== 'undefined' && route) {
+      const saved = localStorage.getItem(`route_progress_${route}`)
+      if (saved) {
+        try {
+          setCompletedModules(JSON.parse(saved))
+        } catch (e) {
+          console.error('Error loading progress:', e)
+        }
+      }
+    }
+  }, [route])
+
+  // Detectar cuál módulo está activo basado en la URL
+  useEffect(() => {
     const path = currentPath || router.asPath
     const active = modules.findIndex(m => path.includes(m.path?.replace(/^\//, '')))
     setActiveIndex(active)
@@ -23,8 +40,30 @@ export default function RouteProgress({
     return null
   }
 
-  const completedCount = modules.filter(m => m.done).length
+  // Contar módulos completados (combinar localStorage + props)
+  const completedCount = modules.filter((m, idx) => m.done || completedModules[idx]).length
   const progressPercent = Math.round((completedCount / modules.length) * 100)
+
+  // Toggle para marcar módulo como completado
+  const toggleModule = (idx) => {
+    if (!isClient) return
+    
+    const updated = { ...completedModules }
+    if (updated[idx]) {
+      delete updated[idx]
+    } else {
+      updated[idx] = true
+    }
+    
+    setCompletedModules(updated)
+    
+    // Guardar en localStorage
+    if (typeof window !== 'undefined' && route) {
+      localStorage.setItem(`route_progress_${route}`, JSON.stringify(updated))
+    }
+  }
+
+  const isModuleCompleted = (idx) => completedModules[idx] || modules[idx]?.done
 
   return (
     <div className="route-progress-widget">
@@ -104,7 +143,6 @@ export default function RouteProgress({
           padding: 8px;
           border-radius: 6px;
           font-size: 12px;
-          cursor: pointer;
           transition: all 0.2s ease;
           color: #4a5568;
           text-decoration: none;
@@ -112,6 +150,15 @@ export default function RouteProgress({
 
         .dark .module-item {
           color: #cbd5e0;
+        }
+
+        .module-link {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex: 1;
+          text-decoration: none;
+          color: inherit;
         }
 
         .module-item:hover {
@@ -181,6 +228,52 @@ export default function RouteProgress({
           white-space: nowrap;
         }
 
+        .module-checkbox {
+          background: none;
+          border: 1.5px solid #cbd5e0;
+          color: #718096;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: bold;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+          padding: 0;
+        }
+
+        .module-checkbox:hover {
+          border-color: #667eea;
+          color: #667eea;
+          background: rgba(102, 126, 234, 0.05);
+        }
+
+        .module-checkbox.checked {
+          background: #48bb78;
+          border-color: #48bb78;
+          color: white;
+        }
+
+        .module-checkbox.checked:hover {
+          background: #38a169;
+          border-color: #38a169;
+        }
+
+        .dark .module-checkbox {
+          border-color: #4a5568;
+          color: #a0aec0;
+        }
+
+        .dark .module-checkbox:hover {
+          border-color: #667eea;
+          color: #667eea;
+          background: rgba(102, 126, 234, 0.1);
+        }
+
         .route-footer {
           margin-top: 12px;
           padding-top: 12px;
@@ -207,16 +300,28 @@ export default function RouteProgress({
 
       <div className="modules-list">
         {modules.map((module, idx) => (
-          <a
+          <div
             key={idx}
-            href={module.path}
             className={`module-item ${idx === activeIndex ? 'active' : ''}`}
           >
-            <div className={`module-status ${idx === activeIndex ? 'active' : module.done ? 'done' : 'pending'}`}>
-              {idx === activeIndex ? '▶' : module.done ? '✓' : idx + 1}
-            </div>
-            <div className="module-title">{module.title}</div>
-          </a>
+            <a href={module.path} className="module-link">
+              <div className={`module-status ${idx === activeIndex ? 'active' : isModuleCompleted(idx) ? 'done' : 'pending'}`}>
+                {idx === activeIndex ? '▶' : isModuleCompleted(idx) ? '✓' : idx + 1}
+              </div>
+              <div className="module-title">{module.title}</div>
+            </a>
+            <button
+              className={`module-checkbox ${isModuleCompleted(idx) ? 'checked' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                toggleModule(idx)
+              }}
+              title={isModuleCompleted(idx) ? 'Marcar como incompleto' : 'Marcar como completado'}
+              aria-label={`Marcar módulo ${idx + 1} como ${isModuleCompleted(idx) ? 'incompleto' : 'completado'}`}
+            >
+              {isModuleCompleted(idx) ? '✓' : '○'}
+            </button>
+          </div>
         ))}
       </div>
 
