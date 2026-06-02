@@ -2,8 +2,18 @@
 . "$(dirname "$0")/_/husky.sh"
 
 echo "🔨 Running pre-commit checks..."
-echo "📦 Building project..."
 
+echo "📋 Running linter..."
+npm run lint
+
+if [ $? -ne 0 ]; then
+  echo "❌ Linting failed. Commit aborted."
+  exit 1
+fi
+
+echo "✅ Linter passed!"
+
+echo "📦 Building project..."
 npm run build
 
 if [ $? -ne 0 ]; then
@@ -12,3 +22,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "✅ Build passed!"
+echo "✨ All checks passed! Commit allowed."

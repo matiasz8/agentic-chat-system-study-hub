@@ -71,24 +71,25 @@ export function ModuleNav({
       <div className="grid grid-cols-2 gap-4">
         {/* Previous */}
         {previous ? (
-          <Link href={previous.href}>
-            <a className="group flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors">
-              <ChevronLeft
-                size={20}
-                className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0 mt-0.5"
-              />
-              <div className="text-sm">
-                <div className="text-gray-600 dark:text-gray-400">Anterior</div>
-                <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  {previous.title}
-                </div>
-                {previous.duration && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    ⏱️ {previous.duration}
-                  </div>
-                )}
+          <Link
+            href={previous.href}
+            className="group flex items-start gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+          >
+            <ChevronLeft
+              size={20}
+              className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0 mt-0.5"
+            />
+            <div className="text-sm">
+              <div className="text-gray-600 dark:text-gray-400">Anterior</div>
+              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {previous.title}
               </div>
-            </a>
+              {previous.duration && (
+                <div className="text-xs text-gray-500 mt-1">
+                  ⏱️ {previous.duration}
+                </div>
+              )}
+            </div>
           </Link>
         ) : (
           <div />
@@ -96,24 +97,25 @@ export function ModuleNav({
 
         {/* Next */}
         {next ? (
-          <Link href={next.href}>
-            <a className="group flex items-start justify-end gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors text-right">
-              <div className="text-sm">
-                <div className="text-gray-600 dark:text-gray-400">Siguiente</div>
-                <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  {next.title}
-                </div>
-                {next.duration && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    ⏱️ {next.duration}
-                  </div>
-                )}
+          <Link
+            href={next.href}
+            className="group flex items-start justify-end gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 transition-colors text-right"
+          >
+            <div className="text-sm">
+              <div className="text-gray-600 dark:text-gray-400">Siguiente</div>
+              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {next.title}
               </div>
-              <ChevronRight
-                size={20}
-                className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0 mt-0.5"
-              />
-            </a>
+              {next.duration && (
+                <div className="text-xs text-gray-500 mt-1">
+                  ⏱️ {next.duration}
+                </div>
+              )}
+            </div>
+            <ChevronRight
+              size={20}
+              className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-400 flex-shrink-0 mt-0.5"
+            />
           </Link>
         ) : (
           <div />
@@ -127,28 +129,28 @@ export function ModuleNav({
         </h4>
         <div className="space-y-2">
           {modules.map((module) => (
-            <Link key={module.href} href={module.href}>
-              <a
-                className={`block p-2 rounded text-sm transition-colors ${
-                  module.href === current
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-semibold'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span>{module.title}</span>
-                  {module.completed && (
-                    <span className="text-green-600 dark:text-green-400">
-                      ✓
-                    </span>
-                  )}
-                </div>
-                {module.level && (
-                  <div className={`text-xs mt-1 inline-block px-2 py-0.5 rounded ${getLevelColor(module.level)}`}>
-                    {module.level}
-                  </div>
+            <Link
+              key={module.href}
+              href={module.href}
+              className={`block p-2 rounded text-sm transition-colors ${
+                module.href === current
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-semibold'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span>{module.title}</span>
+                {module.completed && (
+                  <span className="text-green-600 dark:text-green-400">
+                    ✓
+                  </span>
                 )}
-              </a>
+              </div>
+              {module.level && (
+                <div className={`text-xs mt-1 inline-block px-2 py-0.5 rounded ${getLevelColor(module.level)}`}>
+                  {module.level}
+                </div>
+              )}
             </Link>
           ))}
         </div>
