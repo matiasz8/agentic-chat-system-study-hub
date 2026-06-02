@@ -1,38 +1,26 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-venv/
-ENV/
-env/
-.venv
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
 # Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.hypothesis/
+coverage/
+.jest-cache/
+
+# Next.js
+.next/
+out/
+
+# Production
+build/
+dist/
+
+# Misc
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.npmrc
 
 # IDE
 .vscode/
@@ -40,46 +28,10 @@ htmlcov/
 *.swp
 *.swo
 *~
-.DS_Store
 
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Node / Next.js
-node_modules/
-.next/
-out/
-dist/
-build/
-.turbo/
-*.tsbuildinfo
-
-# Temp files
+# Scripts temp
+/tmp/
 *.tmp
-.cache/
-temp/
 
-# Data files
-*.db
-*.sqlite
-*.sqlite3
-data/
-*.csv
-
-# Logs
-*.log
-logs/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Dependencies
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Keep these
-!.gitkeep
-!python/.gitkeep
+# Husky
+.husky/_
