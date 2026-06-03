@@ -12,10 +12,19 @@ help: ## Show this help message
 	@echo "$(GREEN)Available commands:$(NC)"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-15s$(NC) %s\n", $$1, $$2}'
 
-# Install targets
-install: install-node install-python ## Install all dependencies
+check-requirements: ## Check if Node.js and Python are installed
+	@echo "$(BLUE)Checking requirements...$(NC)"
+	@command -v node >/dev/null 2>&1 || { echo "$(YELLOW)✗ Node.js not found$(NC). Install from: https://nodejs.org/"; exit 1; }
+	@command -v npm >/dev/null 2>&1 || { echo "$(YELLOW)✗ npm not found$(NC). Install Node.js from: https://nodejs.org/"; exit 1; }
+	@command -v python3 >/dev/null 2>&1 || { echo "$(YELLOW)✗ Python 3 not found$(NC). Install from: https://www.python.org/"; exit 1; }
+	@echo "$(GREEN)✓ Node.js: $$(node --version)$(NC)"
+	@echo "$(GREEN)✓ npm: $$(npm --version)$(NC)"
+	@echo "$(GREEN)✓ Python: $$(python3 --version)$(NC)"
 
-install-node: ## Install Node.js dependencies
+# Install targets
+install: check-requirements install-node install-python ## Install all dependencies
+
+install-node: check-requirements ## Install Node.js dependencies
 	@echo "$(BLUE)Installing Node.js dependencies...$(NC)"
 	npm install
 	@echo "$(GREEN)✓ Node.js dependencies installed$(NC)"
@@ -32,40 +41,40 @@ install-husky: ## Install Husky git hooks
 	@echo "$(GREEN)✓ Husky hooks installed$(NC)"
 
 # Development targets
-dev: ## Start development server (http://localhost:3000)
+dev: check-requirements ## Start development server (http://localhost:3000)
 	@echo "$(BLUE)Starting development server...$(NC)"
 	npm run dev
 
 run: dev ## Alias for 'dev' - Start development server
 
-build: ## Build for production
+build: check-requirements ## Build for production
 	@echo "$(BLUE)Building for production...$(NC)"
 	npm run build
 	@echo "$(GREEN)✓ Production build complete$(NC)"
 
-start: ## Start production server
+start: check-requirements ## Start production server
 	@echo "$(BLUE)Starting production server...$(NC)"
 	npm start
 
 # Validation targets
-lint: ## Run linter (ESLint)
+lint: check-requirements ## Run linter (ESLint)
 	@echo "$(BLUE)Running linter...$(NC)"
 	npm run lint
 
-validate: ## Run all validation checks (routes, links, build)
+validate: check-requirements ## Run all validation checks (routes, links, build)
 	@echo "$(BLUE)Running all validation checks...$(NC)"
 	npm run validate
 	@echo "$(GREEN)✓ All validations passed$(NC)"
 
-validate-routes: ## Validate routes
+validate-routes: check-requirements ## Validate routes
 	@echo "$(BLUE)Validating routes...$(NC)"
 	npm run validate:routes
 
-validate-links: ## Validate all links
+validate-links: check-requirements ## Validate all links
 	@echo "$(BLUE)Validating links...$(NC)"
 	npm run validate:links
 
-validate-build: ## Validate build integrity
+validate-build: check-requirements ## Validate build integrity
 	@echo "$(BLUE)Validating build...$(NC)"
 	npm run validate:build
 
@@ -98,7 +107,7 @@ clean-python: ## Clean Python artifacts
 	@echo "$(GREEN)✓ Python artifacts cleaned$(NC)"
 
 # Setup targets
-setup: install install-husky validate ## Complete setup (install all + validate)
+setup: check-requirements install install-husky validate ## Complete setup (install all + validate)
 	@echo "$(GREEN)✓ Project setup complete$(NC)"
 
 # Info targets
