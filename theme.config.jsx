@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router'
+import { SidebarToggles } from './components/SidebarToggles'
 
 export default {
   logo: <span>🤖 Agentic Chat System</span>,
@@ -9,6 +10,9 @@ export default {
     link: 'https://github.com/matiasz8/agentic-chat-system-study-hub/discussions',
   },
   docsRepositoryBase: 'https://github.com/matiasz8/agentic-chat-system-study-hub/blob/main',
+  navbar: {
+    extraContent: <SidebarToggles />,
+  },
   footer: {
     text: '© 2026 NaN Labs - Hub de Estudio | Repo Privado',
   },
@@ -36,5 +40,11 @@ export default {
   sidebar: {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
+    autoCollapse: true,
+  },
+  toc: {
+    float: true,
+    backToTop: true,
+    title: 'En esta página',
   },
 }
