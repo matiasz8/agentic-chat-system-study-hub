@@ -66,7 +66,7 @@
 
 ### Módulos (README.md con Teoría)
 
-| Módulo | Tema | Páginas | Estado | Para Tu Jefe |
+| Módulo | Tema | Páginas | Estado | Pedido |
 |--------|------|---------|--------|-------------|
 | **00** | Fundamentos Grafos | 8 | ✅ | - |
 | **05** | AWS Bedrock | 9 | ✅ | ⭐ |

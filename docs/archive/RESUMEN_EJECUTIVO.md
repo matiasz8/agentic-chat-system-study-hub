@@ -41,12 +41,12 @@
     ├── 04_checkpoints/           ← (Por completar ejemplos)
     │
     ├── 05_aws_bedrock/           ✅ HECHO (Serverless)
-    ├── 06_aws_agentcore/         ✅ HECHO (Tu jefe lo pidió)
+    ├── 06_aws_agentcore/         ✅ HECHO (Pedido)
     │
     ├── 07_mcp/                   ← (Por completar ejemplos)
     ├── 08_multimodal/            ← (Por completar ejemplos)
     │
-    ├── 09_vercel_ai_sdk/         ✅ HECHO (Tu jefe lo pidió)
+    ├── 09_vercel_ai_sdk/         ✅ HECHO (Pedido)
     ├── 10_frontend_streaming/    ✅ HECHO (Generative UI)
     │
     └── 11_proyecto_integrado/    ← (Proyecto final)
@@ -66,7 +66,7 @@
 
 ### Módulos (README.md con Teoría)
 
-| Módulo | Tema | Páginas | Estado | Para Tu Jefe |
+| Módulo | Tema | Páginas | Estado | Pedido |
 |--------|------|---------|--------|-------------|
 | **00** | Fundamentos Grafos | 8 | ✅ | - |
 | **05** | AWS Bedrock | 9 | ✅ | ⭐ |
@@ -166,7 +166,7 @@ cat README.md
 # ~5 horas totales
 ```
 
-### TU JEFE TE PIDIÓ (Priority)
+### PEDIDO (Priority)
 ```bash
 # Módulo 5-6: AWS AgentCore
 cd modulos/05_aws_bedrock/ && cat README.md
@@ -177,9 +177,9 @@ cd modulos/09_vercel_ai_sdk/ && cat README.md
 
 ---
 
-## 🎯 Para Tu Jefe
+## 🎯 Para compartir
 
-**Le dijiste que ibas a estudiar:**
+**Estudio prioritario:**
 - ✅ **AWS AgentCore** → Módulos 5-6 **ENTREGADO**
 - ✅ **Vercel AI SDK** → Módulos 9-10 **ENTREGADO**
 
@@ -354,5 +354,4 @@ cd ~/Documents/projects/NanLabs/agentic-chat-system-study-hub && cat README.md
 
 **Creado:** Mayo 2026  
 **Versión:** 1.0 (MVP con Pilares + Prioridades)  
-**Próxima Versión:** Completar todos los módulos con ejemplos  
-**Dedicado a:** Tu jefe, que es un genio pidiendo que aprendas esto
+**Próxima Versión:** Completar todos los módulos con ejemplos

@@ -194,7 +194,7 @@ cat README.md
 
 ---
 
-## 🎯 TU JEFE TE PIDIÓ APRENDER
+## 🎯 PEDIDO
 
 ### **Vercel AI SDK**
 - [x] Módulo 00: Intro a Vercel

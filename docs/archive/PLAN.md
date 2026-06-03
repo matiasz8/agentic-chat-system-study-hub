@@ -286,13 +286,13 @@ langgraph-study-hub/
 │   ├── 03_aristas/
 │   ├── 04_checkpoints/
 │   │
-│   ├── 05_aws_bedrock/                   # ⭐ Tu jefe te pidió AWS
+│   ├── 05_aws_bedrock/                   # ⭐ Peticion sobre AWS
 │   ├── 06_aws_agentcore/
 │   │
 │   ├── 07_mcp/
 │   ├── 08_multimodal/
 │   │
-│   ├── 09_vercel_ai_sdk/                 # ⭐ Tu jefe te pidió Vercel
+│   ├── 09_vercel_ai_sdk/                 # ⭐ Peticion sobre Vercel
 │   ├── 10_frontend_streaming/
 │   │
 │   └── 11_proyecto_integrado/

@@ -76,7 +76,7 @@
 
 ## ⏱️ Timeline Recomendado
 
-### 🟢 Ruta Rápida (Tu Jefe Pidió AWS + Vercel) - **10 horas**
+### 🟢 Ruta Rápida (AWS + Vercel) - **10 horas**
 
 ```
 LUNES       MARTES        MIÉRCOLES     JUEVES        VIERNES
