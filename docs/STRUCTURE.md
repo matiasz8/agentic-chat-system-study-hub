@@ -1,0 +1,42 @@
+# Documentation Structure
+
+This directory contains all project documentation organized by purpose.
+
+## Active Documentation
+
+- **PROJECT_STATUS.md** - Latest project evaluation and metrics
+- **PLAN.md** - Current architecture plan and roadmap
+
+## Historical Archive
+
+- **archived/** - Historical documents (read-only reference)
+  - ANALISIS_REESTRUCTURACION.md - Analysis of structural changes
+  - AUDIT_FINAL.md - Final audit of completed work
+  - DEPLOY.md - Deployment notes
+  - INDEX.md - Index of learning modules
+  - PLAN.md - Original planning document
+  - QUICKSTART.md - Quick start guide (archived)
+  - README.md - Original README (archived)
+  - RESUMEN_EJECUTIVO.md - Executive summary (archived)
+  - ROADMAP.md - Project roadmap (archived)
+
+## Live Website Content
+
+- **../pages/** - MDX pages served by Nextra
+- **../public/** - Static assets (favicon, etc)
+
+## Single Source of Truth
+
+All documentation uses `/docs/archived/` as the single archive location. No duplication exists between different folders.
+
+### Guidelines
+
+1. Active work → `/docs/PROJECT_STATUS.md` or `/docs/PLAN.md`
+2. Historical reference → `/docs/archived/`
+3. Website content → `/pages/`
+4. Do NOT create new folders for documentation
+5. Consolidate to existing structure
+
+---
+
+**Last updated**: 2026-06-03

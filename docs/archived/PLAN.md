@@ -286,13 +286,13 @@ langgraph-study-hub/
 │   ├── 03_aristas/
 │   ├── 04_checkpoints/
 │   │
-│   ├── 05_aws_bedrock/                   # ⭐ La arquitectura requiere AWS
+│   ├── 05_aws_bedrock/                   # ⭐ Priority: AWS
 │   ├── 06_aws_agentcore/
 │   │
 │   ├── 07_mcp/
 │   ├── 08_multimodal/
 │   │
-│   ├── 09_vercel_ai_sdk/                 # ⭐ La arquitectura requiere Vercel
+│   ├── 09_vercel_ai_sdk/                 # ⭐ Priority: Vercel
 │   ├── 10_frontend_streaming/
 │   │
 │   └── 11_proyecto_integrado/
