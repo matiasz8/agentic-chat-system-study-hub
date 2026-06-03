@@ -48,7 +48,7 @@ Cada **módulo** sigue el mismo patrón de aprendizaje:
 | **3** | [Aristas: El Enrutamiento Inteligente](/orchestration/13-aristas) | 90 min | 🟡 Intermedia | Módulo 2 |
 | **4** | [Checkpoints: Memoria y Persistencia](/orchestration/14-checkpoints) | 75 min | 🟡 Intermedia | Módulo 3 |
 
-#### ☁️ **BLOQUE 2: AWS Bedrock AgentCore (La Infraestructura)** ⭐ *Tu jefe te pidió esto*
+#### ☁️ **BLOQUE 2: AWS Bedrock AgentCore (La Infraestructura)** ⭐ *La arquitectura requiere esto*
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
 | **5** | [Serverless y Runtime en AWS](/runtime/20-serverless-basics) | 60 min | 🟡 Intermedia | Módulos 0-4 |
@@ -60,7 +60,7 @@ Cada **módulo** sigue el mismo patrón de aprendizaje:
 | **7** | [Model Context Protocol (MCP)](/data/30-mcp-protocol) | 75 min | 🟡 Intermedia | Módulos 1-4 |
 | **8** | [Embeddings Multimodales](/data/31-multimodal-embeddings) | 90 min | 🔴 Avanzada | Módulo 7 |
 
-#### 🎨 **BLOQUE 4: Frontend y UX con Vercel AI SDK** ⭐ *Tu jefe te pidió esto*
+#### 🎨 **BLOQUE 4: Frontend y UX con Vercel AI SDK** ⭐ *La arquitectura requiere esto*
 | # | Módulo | Duración | Dificultad | Requisitos |
 |---|--------|----------|-----------|-----------|
 | **9** | [Vercel AI SDK: Streaming Básico](/frontend/00-vercel-intro) | 75 min | 🟡 Intermedia | Node.js, React |
@@ -75,7 +75,7 @@ Cada **módulo** sigue el mismo patrón de aprendizaje:
 
 ## 🎯 Tu Camino de Aprendizaje (Personalizado para tu Rol)
 
-Tu jefe te pidió que estudies **Vercel AI SDK** y **AWS AgentCore**. Aquí está el camino recomendado:
+La arquitectura requiere que estudies **Vercel AI SDK** y **AWS AgentCore**. Aquí está el camino recomendado:
 
 ### 📍 Ruta Rápida (Si solo quieres esos dos)
 1. Módulo 0-4: LangGraph (entiende el backend)

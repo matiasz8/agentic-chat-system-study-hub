@@ -59,13 +59,13 @@ Módulo 20: Serverless Basics
 Módulo 21: Identity Forwarding ⭐⭐⭐
 └─ Credenciales del usuario
 └─ Sin hardcodear contraseñas
-└─ Tu jefe pidió esto
+└─ Los requisitos incluyen esto
 
 Módulo 22: AgentCore Governance ⭐⭐⭐
 └─ Políticas de seguridad
 └─ Qué puede hacer cada usuario
 └─ Cedar policies
-└─ Tu jefe pidió esto
+└─ Los requisitos incluyen esto
 ```
 
 ---
@@ -213,7 +213,7 @@ cd ../22_agentcore_governance   # PRIORITY
 **P: ¿Qué priorizo?**
 - Módulo 21: Identity Forwarding
 - Módulo 22: Governance
-- Tu jefe pidió estos dos
+- Los requisitos incluyen estos dos
 
 **P: ¿Es difícil?**
 - Capas 1-2: Intermedio

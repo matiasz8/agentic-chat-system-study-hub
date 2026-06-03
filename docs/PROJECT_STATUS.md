@@ -33,7 +33,7 @@ Hub educativo de **62 páginas**, completamente alineado con Ask Sage (chatbot f
 
 ### 2. Depersonalización (9/10)
 
-- ✅ Removidas referencias personales: "mi jefe" → "Recibí la solicitud"
+- ✅ Removidas referencias personales"Recibí la solicitud"
 - ✅ Archivados 7 documentos personales en `/archived/`:
   - RESUMEN_EJECUTIVO.md
   - ROADMAP.md

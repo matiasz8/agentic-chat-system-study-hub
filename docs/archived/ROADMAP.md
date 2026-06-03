@@ -91,9 +91,9 @@ Módulos:    Módulos:      Módulos:      Módulos:     Módulo:
 
 **Orden:**
 1. Entiende LangGraph (Módulos 0-4) - **NO puedes saltarte**
-2. Entiende AWS (Módulos 5-6) - **Tu jefe lo pidió**
+2. Entiende AWS (Módulos 5-6) - **Es prioritario**
 3. Conoce MCP (Módulos 7-8) - **Mejor arquitectura**
-4. Frontend (Módulos 9-10) - **Tu jefe lo pidió**
+4. Frontend (Módulos 9-10) - **Es prioritario**
 5. Integra todo (Módulo 11) - **Verifica que funciona**
 
 ---
