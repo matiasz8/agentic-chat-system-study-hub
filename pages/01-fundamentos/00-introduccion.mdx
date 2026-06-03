@@ -46,37 +46,37 @@ Un sistema agentic típico tiene estos componentes:
 
 ```
 ┌──────────────────────────────────────────────────┐
-│ 1. FRONTEND (Usuario escribe mensaje)             │
+│ 1. FRONTEND (Usuario escribe mensaje)            │
 │    Vercel AI + React                             │
-└─────────────┬──────────────────────────────────────┘
+└─────────────┬────────────────────────────────────┘
               │
               ├─→ POST /api/chat
               │
-┌─────────────▼──────────────────────────────────────┐
-│ 2. BACKEND (Orquestación de lógica)               │
+┌─────────────▼────────────────────────────────────┐
+│ 2. BACKEND (Orquestación de lógica)              │
 │    LangGraph + Python                            │
 │    - Lee entrada                                 │
 │    - LLM decide "¿qué hacer?"                    │
 │    - Ejecuta herramientas                        │
 │    - Retorna respuesta                           │
-└─────────────┬──────────────────────────────────────┘
+└─────────────┬────────────────────────────────────┘
               │
               ├─→ Usa herramientas (tools)
               │
-┌─────────────▼──────────────────────────────────────┐
-│ 3. RUNTIME (Ejecución segura)                     │
+┌─────────────▼────────────────────────────────────┐
+│ 3. RUNTIME (Ejecución segura)                    │
 │    AWS AgentCore                                 │
 │    - Valida permisos (identity)                  │
 │    - Ejecuta herramientas de forma segura        │
-└─────────────┬──────────────────────────────────────┘
+└─────────────┬────────────────────────────────────┘
               │
               ├─→ Accede a datos (BD, APIs)
               │
-┌─────────────▼──────────────────────────────────────┐
-│ 4. DATOS (Información)                            │
+┌─────────────▼────────────────────────────────────┐
+│ 4. DATOS (Información)                           │
 │    MCP + Bases de Datos                          │
 │    - Devuelve datos relevantes                   │
-└──────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────┘
 ```
 
 **Lo importante**: Cada capa tiene responsabilidades claras.
