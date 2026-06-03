@@ -1,0 +1,383 @@
+# 🏋️ Ejercicio: State Management 101
+
+> **Objetivo**: Dominar React state patterns progresivamente, desde `useState` básico hasta patrones avanzados con context y reducers.
+
+---
+
+## 📚 Pre-requisitos
+
+- ✅ React Hooks fundamentales
+- ✅ Entender `useState` básico
+- ✅ Conocer callbacks en JavaScript
+
+---
+
+## 🎯 5 Niveles de Dominio
+
+### Nivel 1: useState Básico (20 minutos)
+
+**Concepto**: Un contador simple que actualiza state local.
+
+```typescript
+import React, { useState } from 'react';
+
+export function CounterLevel1() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Sumar</button>
+      <button onClick={() => setCount(count - 1)}>Restar</button>
+    </div>
+  );
+}
+```
+
+**Test**:
+```typescript
+test('Level 1: contador incrementa', () => {
+  render(<CounterLevel1 />);
+  
+  const button = screen.getByText('Sumar');
+  fireEvent.click(button);
+  
+  expect(screen.getByText('Contador: 1')).toBeInTheDocument();
+});
+```
+
+**Ejercicio**: 
+- ✏️ Crea un contador con límite máximo (no puede pasar de 10)
+- ✏️ Agrega un botón "Reset" que vuelva a 0
+- ✏️ Muestra "¡Máximo alcanzado!" cuando llegues a 10
+
+---
+
+### Nivel 2: useState con Objetos (30 minutos)
+
+**Concepto**: Manejar state complejo (usuario con múltiples propiedades).
+
+```typescript
+interface UserProfile {
+  name: string;
+  email: string;
+  age: number;
+  isActive: boolean;
+}
+
+export function ProfileLevel2() {
+  const [user, setUser] = useState<UserProfile>({
+    name: 'Juan',
+    email: 'juan@example.com',
+    age: 30,
+    isActive: true,
+  });
+
+  const updateName = (newName: string) => {
+    setUser({ ...user, name: newName });
+  };
+
+  const toggleActive = () => {
+    setUser({ ...user, isActive: !user.isActive });
+  };
+
+  return (
+    <div>
+      <p>Nombre: {user.name}</p>
+      <p>Email: {user.email}</p>
+      <input 
+        value={user.name} 
+        onChange={(e) => updateName(e.target.value)}
+      />
+      <button onClick={toggleActive}>
+        Estado: {user.isActive ? 'Activo' : 'Inactivo'}
+      </button>
+    </div>
+  );
+}
+```
+
+**Ejercicio**:
+- ✏️ Crea un componente FormProfile que maneje 5 campos
+- ✏️ Valida que email tenga formato correcto
+- ✏️ Muestra errores en tiempo real
+
+---
+
+### Nivel 3: useState con Arrays (40 minutos)
+
+**Concepto**: Gestionar listas dinámicas (agregar, eliminar, actualizar items).
+
+```typescript
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+export function TodoListLevel3() {
+  const [todos, setTodos] = useState<Todo[]>([
+    { id: 1, text: 'Aprender React', completed: false },
+    { id: 2, text: 'Dominar State', completed: true },
+  ]);
+
+  const addTodo = (text: string) => {
+    const newTodo: Todo = {
+      id: Math.max(...todos.map(t => t.id), 0) + 1,
+      text,
+      completed: false,
+    };
+    setTodos([...todos, newTodo]);
+  };
+
+  const toggleTodo = (id: number) => {
+    setTodos(todos.map(t =>
+      t.id === id ? { ...t, completed: !t.completed } : t
+    ));
+  };
+
+  const removeTodo = (id: number) => {
+    setTodos(todos.filter(t => t.id !== id));
+  };
+
+  return (
+    <div>
+      {todos.map(todo => (
+        <div key={todo.id}>
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => toggleTodo(todo.id)}
+          />
+          <span style={{ 
+            textDecoration: todo.completed ? 'line-through' : 'none' 
+          }}>
+            {todo.text}
+          </span>
+          <button onClick={() => removeTodo(todo.id)}>Eliminar</button>
+        </div>
+      ))}
+      <input
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            addTodo((e.target as HTMLInputElement).value);
+            (e.target as HTMLInputElement).value = '';
+          }
+        }}
+        placeholder="Nuevo TODO"
+      />
+    </div>
+  );
+}
+```
+
+**Ejercicio**:
+- ✏️ Implementa un filtro: Mostrar solo "Activos", "Completados", "Todos"
+- ✏️ Cuenta cuántos TODOs completados hay
+- ✏️ Agrega edición inline (click para editar, Enter para guardar)
+
+---
+
+### Nivel 4: useReducer para Lógica Compleja (45 minutos)
+
+**Concepto**: Para state con múltiples actualizaciones relacionadas.
+
+```typescript
+interface AuthState {
+  isAuthenticated: boolean;
+  user: { name: string; role: string } | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+type AuthAction =
+  | { type: 'LOGIN_START' }
+  | { type: 'LOGIN_SUCCESS'; payload: { name: string; role: string } }
+  | { type: 'LOGIN_ERROR'; payload: string }
+  | { type: 'LOGOUT' }
+  | { type: 'CLEAR_ERROR' };
+
+function authReducer(state: AuthState, action: AuthAction): AuthState {
+  switch (action.type) {
+    case 'LOGIN_START':
+      return { ...state, isLoading: true, error: null };
+    case 'LOGIN_SUCCESS':
+      return {
+        ...state,
+        isAuthenticated: true,
+        user: action.payload,
+        isLoading: false,
+      };
+    case 'LOGIN_ERROR':
+      return { ...state, error: action.payload, isLoading: false };
+    case 'LOGOUT':
+      return { isAuthenticated: false, user: null, isLoading: false, error: null };
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    default:
+      return state;
+  }
+}
+
+export function AuthLevel4() {
+  const [state, dispatch] = useReducer(authReducer, {
+    isAuthenticated: false,
+    user: null,
+    isLoading: false,
+    error: null,
+  });
+
+  const handleLogin = async (email: string, password: string) => {
+    dispatch({ type: 'LOGIN_START' });
+    try {
+      // Simular API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: { name: 'Juan', role: 'admin' },
+      });
+    } catch (error) {
+      dispatch({ type: 'LOGIN_ERROR', payload: 'Login fallido' });
+    }
+  };
+
+  return (
+    <div>
+      {state.isLoading && <p>Cargando...</p>}
+      {state.error && (
+        <div>
+          <p style={{ color: 'red' }}>{state.error}</p>
+          <button onClick={() => dispatch({ type: 'CLEAR_ERROR' })}>
+            Cerrar error
+          </button>
+        </div>
+      )}
+      {state.isAuthenticated ? (
+        <div>
+          <p>Bienvenido, {state.user?.name}</p>
+          <button onClick={() => dispatch({ type: 'LOGOUT' })}>
+            Logout
+          </button>
+        </div>
+      ) : (
+        <button onClick={() => handleLogin('user@example.com', 'password')}>
+          Login
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+**Ejercicio**:
+- ✏️ Maneja 3 estados: idle, loading, success, error
+- ✏️ Implementa retry logic
+- ✏️ Agrega timeout (si tarda >5s, muestra error)
+
+---
+
+### Nivel 5: Context + useReducer (Avanzado, 60 minutos)
+
+**Concepto**: Compartir state global sin prop drilling.
+
+```typescript
+interface AppContextType {
+  state: AuthState;
+  dispatch: React.Dispatch<AuthAction>;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(authReducer, {
+    isAuthenticated: false,
+    user: null,
+    isLoading: false,
+    error: null,
+  });
+
+  return (
+    <AppContext.Provider value={{ state, dispatch }}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+export function useAppContext() {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error('useAppContext debe usarse dentro de AppProvider');
+  }
+  return context;
+}
+
+// Componentes consumen context sin recibir props
+export function UserProfile() {
+  const { state } = useAppContext();
+
+  if (!state.isAuthenticated) {
+    return <p>No autenticado</p>;
+  }
+
+  return <p>Usuario: {state.user?.name}</p>;
+}
+
+export function App() {
+  return (
+    <AppProvider>
+      <UserProfile />
+    </AppProvider>
+  );
+}
+```
+
+**Ejercicio**:
+- ✏️ Implementa un carrito de compras global
+- ✏️ Agregar/quitar productos sin prop drilling
+- ✏️ Persistir estado en localStorage
+
+---
+
+## ✅ Checklist de Dominio
+
+| Nivel | Concepto | ¿Comprendido? |
+|-------|----------|--------------|
+| 1 | `useState` básico | ☐ |
+| 2 | Objetos complejos | ☐ |
+| 3 | Arrays y listas | ☐ |
+| 4 | `useReducer` | ☐ |
+| 5 | Context API | ☐ |
+
+---
+
+## 🚀 Siguiente Paso
+
+Una vez domines estos 5 niveles, estás listo para:
+- ✅ [MobX](https://mobx.js.org/) para state reactivo
+- ✅ [Redux](https://redux.js.org/) para state predecible
+- ✅ [Zustand](https://github.com/pmndrs/zustand) para state minimalista
+
+---
+
+## 💡 Tips de Testing
+
+**Siempre testa el state, no la UI:**
+```typescript
+test('state actualiza correctamente', () => {
+  const { result } = renderHook(() => useState(0));
+  
+  act(() => {
+    const setState = result.current[1];
+    setState(1);
+  });
+  
+  expect(result.current[0]).toBe(1);
+});
+```
+
+---
+
+**Última actualización:** 2026-06-02  
+**Dificultad:** ⭐⭐ Intermedio  
+**Tiempo total:** ~2.5 horas  
+**Completar antes de:** [Validación de Prompts](/03-validacion/00-contenido)
