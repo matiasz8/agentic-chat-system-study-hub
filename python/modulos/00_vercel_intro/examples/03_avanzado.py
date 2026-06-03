@@ -9,14 +9,14 @@ Muestra:
   - Selección de proveedor en tiempo de ejecución
 """
 
-import time
 import random
+import time
 from typing import Iterator
-
 
 # ---------------------------------------------------------------------------
 # Simulación de streaming (Server-Sent Events)
 # ---------------------------------------------------------------------------
+
 
 def _tokenizar(texto: str) -> list[str]:
     """Divide un texto en tokens aproximados (palabras + puntuación)."""
@@ -35,9 +35,9 @@ def stream_texto(modelo: str, prompt: str) -> Iterator[str]:
         for await (const chunk of textStream) { ... }
     """
     respuestas = {
-        "gpt-4o": f"El stock actual del medicamento solicitado es de 1.500 unidades. Hay bajo stock en dos sucursales del norte.",
-        "claude-3-5-sonnet": f"Según el inventario actualizado, dispone de 1.500 unidades disponibles. Alerta: sede norte y sede sur con stock crítico.",
-        "gemini-1.5-pro": f"Inventario consultado: 1.500 unidades totales. Recomendación: iniciar requisición para sedes norte y sur.",
+        "gpt-4o": "El stock actual del medicamento solicitado es de 1.500 unidades. Hay bajo stock en dos sucursales del norte.",
+        "claude-3-5-sonnet": "Según el inventario actualizado, dispone de 1.500 unidades disponibles. Alerta: sede norte y sede sur con stock crítico.",
+        "gemini-1.5-pro": "Inventario consultado: 1.500 unidades totales. Recomendación: iniciar requisición para sedes norte y sur.",
     }
     texto = respuestas.get(modelo, f"[{modelo}] Respuesta no disponible.")
     tokens = _tokenizar(texto)
@@ -51,6 +51,7 @@ def stream_texto(modelo: str, prompt: str) -> Iterator[str]:
 # Registro de proveedores (Provider Registry)
 # ---------------------------------------------------------------------------
 
+
 class RegistroProveedores:
     """
     Centraliza los proveedores disponibles.
@@ -60,7 +61,9 @@ class RegistroProveedores:
     def __init__(self):
         self._proveedores: dict[str, dict] = {}
 
-    def registrar(self, id_proveedor: str, modelos: list[str], region: str = "us-east-1"):
+    def registrar(
+        self, id_proveedor: str, modelos: list[str], region: str = "us-east-1"
+    ):
         self._proveedores[id_proveedor] = {"modelos": modelos, "region": region}
         print(f"  [REGISTRY] Registrado: {id_proveedor} ({', '.join(modelos)})")
 
@@ -81,6 +84,7 @@ class RegistroProveedores:
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 00 – Ejemplo 03: Streaming y multi-proveedor")
@@ -89,9 +93,9 @@ def main():
     # 1. Registrar proveedores
     print("\n1. Configurando registro de proveedores…")
     registro = RegistroProveedores()
-    registro.registrar("openai",    ["gpt-4o", "gpt-4o-mini"])
+    registro.registrar("openai", ["gpt-4o", "gpt-4o-mini"])
     registro.registrar("anthropic", ["claude-3-5-sonnet", "claude-3-haiku"])
-    registro.registrar("google",    ["gemini-1.5-pro", "gemini-1.5-flash"])
+    registro.registrar("google", ["gemini-1.5-pro", "gemini-1.5-flash"])
 
     # 2. Seleccionar proveedor en tiempo de ejecución
     proveedor_elegido = "anthropic"

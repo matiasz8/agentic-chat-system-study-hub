@@ -232,7 +232,7 @@ cat README.md
 ### 🎯 Si tienes tiempo limitado:
 1. Ve directo a [QUICKSTART.md](./QUICKSTART.md)
 2. Sigue la "Ruta Rápida"
-3. Enfócate en módulos 21 y 22 (tu jefe lo pidió)
+3. Enfócate en módulos 21 y 22 (Prioridades principales)
 
 ### 🔄 Si vuelves después de un descanso:
 1. Lee [ARQUITECTURA.md](./ARQUITECTURA.md) para contexto
@@ -286,7 +286,7 @@ Esta semana:
    → Sigue [README.md](./README.md) recomendaciones
 
 4. **¿Cuál es mi prioridad?**
-   → Módulos 21 (Identity) y 22 (Governance) - tu jefe lo pidió
+   → Módulos 21 (Identity) y 22 (Governance) - Arquitectura crítica
 
 5. **¿Cuánto tiempo es?**
    → Ruta rápida: 12-15h | Ruta completa: 23.5h
@@ -299,7 +299,7 @@ Esta semana:
 - [QUICKSTART.md](./QUICKSTART.md) - 10 minutos
 - [ARQUITECTURA.md](./ARQUITECTURA.md) - 15 minutos
 
-**Tu prioridad (tu jefe te pidió):**
+**Prioridades principales (arquitectura crítica):**
 - [modulos/21_identity_forwarding/](/runtime/21-identity-forwarding/) - Identity
 - [modulos/22_agentcore_governance/](/runtime/22-agentcore-governance/) - Governance
 

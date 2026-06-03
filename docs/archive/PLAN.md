@@ -67,7 +67,7 @@ Este hub cubre todo lo necesario para construir **Ask Sage**, un agente farmacé
 - **Cedar Policies**: Control de seguridad integrado
 - Deployment con `agentcore deploy`
 
-**Por qué importa (tu jefe te lo pidió):**
+**Por qué importa (es prioritario):**
 - Esto es la REALIDAD: LangGraph local es solo desarrollo
 - AWS es donde vive en PRODUCCIÓN
 - Security = Identity Forwarding = Tu trabajo
@@ -105,7 +105,7 @@ Este hub cubre todo lo necesario para construir **Ask Sage**, un agente farmacé
 - **Generative UI**: Backend envía componentes React
 - Serialización de RSC (React Server Components)
 
-**Por qué importa (tu jefe te lo pidió):**
+**Por qué importa (es prioritario):**
 - Es donde el usuario VE el agente
 - Diferencia entre UX mediocre y excelente
 - Vercel AI SDK es el estándar moderno
@@ -259,7 +259,7 @@ Al terminar este hub, serás capaz de:
 1. **HOY:** Lee este documento (este que estás leyendo)
 2. **Mañana:** Comienza Módulo 0 (45 minutos)
 3. **Semana 1:** Módulos 0-4 (Backend LangGraph)
-4. **Semana 2:** Módulos 5-6 (AWS - tu jefe te lo pidió)
+4. **Semana 2:** Módulos 5-6 (AWS - es prioritario)
 5. **Semana 2-3:** Módulos 7-10 (Datos + Frontend)
 6. **Final:** Módulo 11 (Proyecto integrado)
 
@@ -333,7 +333,7 @@ langgraph-study-hub/
 
 ---
 
-**Creado con ❤️ para tu jefe, que es un genio pidiendo que estudies esto.**
+**Creado con ❤️ para el estudio integral de sistemas agentic.**
 
 **Versión:** 1.0  
 **Última actualización:** Mayo 2026

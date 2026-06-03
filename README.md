@@ -130,12 +130,12 @@ Foco en arquitectura para Ask Sage:
 
 ---
 
-## 📝 Usar en tu Jefe
+## 📝 Casos de Uso
 
-Este hub es perfecto para que tu jefe **entienda arquitectura agentic** antes de:
-- Firmar contratos con Access Inc.
+Este hub es perfecto para **entender arquitectura agentic** antes de:
+- Evaluar plataformas de chatbot agentic
 - Empezar implementación de Ask Sage
-- Asignar arquitecto + dev
+- Asignar recursos para arquitectura + desarrollo
 
 **Tiempo recomendado**: 1 semana (ruta completa) o 2 días (ruta rápida)
 

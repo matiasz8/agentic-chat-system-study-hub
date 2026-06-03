@@ -12,14 +12,14 @@
 > - En español
 > - Opinionado
 > - Con los 4 Deep Dives integrados
-> - Focusado en lo que tu jefe te pidió (AWS AgentCore + Vercel AI SDK)
+> - Focusado en arquitectura agentic (AWS AgentCore + Vercel AI SDK)
 
 **Lo que se entregó:**
 ✅ **11 módulos** organizados en 4 bloques temáticos  
 ✅ **5 README.md** completamente escritos (LOs arquitecturales clave)  
 ✅ **100% español puro** (sin mezclas, opinionado)  
 ✅ **Estructura universitaria**: Concepto → Para qué → Historia → Ejemplos → Ejercicios  
-✅ **Prioridades claras** para tu jefe  
+✅ **Prioridades claras** en arquitectura  
 ✅ **~16 horas de contenido** (puede reducirse a 10 saltando modules)
 
 ---
@@ -329,7 +329,7 @@ Si necesitas:
 │ ✅ 11 módulos estructurados                        │
 │ ✅ 4 Deep Dives integrados                         │
 │ ✅ 5 README.md completos (~65 págs)                │
-│ ✅ Priorizadas las demandas de tu jefe             │
+│ ✅ Arquitectura enfocada en prioridades             │
 │ ✅ 100% español, opinionado, ejecutable            │
 │ ✅ Listo para estudiar de a poco                   │
 │                                                     │

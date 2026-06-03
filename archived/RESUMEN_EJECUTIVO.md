@@ -6,20 +6,20 @@
 
 ## ✅ Misión Cumplida
 
-**Lo que pediste:**
+**Lo que se solicitó:**
 > Crear un hub de estudio universitario sobre LangGraph que sea:
 > - Auto-explicativo
 > - En español
 > - Opinionado
 > - Con los 4 Deep Dives integrados
-> - Focusado en lo que tu jefe te pidió (AWS AgentCore + Vercel AI SDK)
+> - Focusado en arquitectura agentic (AWS AgentCore + Vercel AI SDK)
 
 **Lo que se entregó:**
 ✅ **11 módulos** organizados en 4 bloques temáticos  
 ✅ **5 README.md** completamente escritos (LOs arquitecturales clave)  
 ✅ **100% español puro** (sin mezclas, opinionado)  
 ✅ **Estructura universitaria**: Concepto → Para qué → Historia → Ejemplos → Ejercicios  
-✅ **Prioridades claras** para tu jefe  
+✅ **Prioridades claras** en arquitectura  
 ✅ **~16 horas de contenido** (puede reducirse a 10 saltando modules)
 
 ---
@@ -41,12 +41,12 @@
     ├── 04_checkpoints/           ← (Por completar ejemplos)
     │
     ├── 05_aws_bedrock/           ✅ HECHO (Serverless)
-    ├── 06_aws_agentcore/         ✅ HECHO (Tu jefe lo pidió)
+    ├── 06_aws_agentcore/         ✅ HECHO (Runtime)
     │
     ├── 07_mcp/                   ← (Por completar ejemplos)
     ├── 08_multimodal/            ← (Por completar ejemplos)
     │
-    ├── 09_vercel_ai_sdk/         ✅ HECHO (Tu jefe lo pidió)
+    ├── 09_vercel_ai_sdk/         ✅ HECHO (Frontend)
     ├── 10_frontend_streaming/    ✅ HECHO (Generative UI)
     │
     └── 11_proyecto_integrado/    ← (Proyecto final)
@@ -70,9 +70,9 @@
 |--------|------|---------|--------|-------------|
 | **00** | Fundamentos Grafos | 8 | ✅ | - |
 | **05** | AWS Bedrock | 9 | ✅ | ⭐ |
-| **06** | AWS AgentCore | 13 | ✅ | ⭐ |
-| **09** | Vercel AI SDK | 10 | ✅ | ⭐ |
-| **10** | Generative UI | 13 | ✅ | ⭐ |
+| **06** | AWS AgentCore | 13 | ✅ | Core |
+| **09** | Vercel AI SDK | 10 | ✅ | Frontend |
+| **10** | Generative UI | 13 | ✅ | Frontend |
 
 **Total:** ~65 páginas de contenido educativo
 
@@ -166,7 +166,7 @@ cat README.md
 # ~5 horas totales
 ```
 
-### TU JEFE TE PIDIÓ (Priority)
+### TU PRIORIDAD (Priority)
 ```bash
 # Módulo 5-6: AWS AgentCore
 cd modulos/05_aws_bedrock/ && cat README.md
@@ -177,13 +177,13 @@ cd modulos/09_vercel_ai_sdk/ && cat README.md
 
 ---
 
-## 🎯 Para Tu Jefe
+## 🎯 Prioridades Principales
 
-**Le dijiste que ibas a estudiar:**
+**Se solicitó estudiar:**
 - ✅ **AWS AgentCore** → Módulos 5-6 **ENTREGADO**
 - ✅ **Vercel AI SDK** → Módulos 9-10 **ENTREGADO**
 
-**Bonus que también estudiaste:**
+**Bonus que también se studiaron:**
 - ✅ **LangGraph** (necesario) → Módulos 0-4
 - ✅ **MCP & Multimodal** (arquitectura) → Módulos 7-8
 
@@ -329,7 +329,7 @@ Si necesitas:
 │ ✅ 11 módulos estructurados                        │
 │ ✅ 4 Deep Dives integrados                         │
 │ ✅ 5 README.md completos (~65 págs)                │
-│ ✅ Priorizadas las demandas de tu jefe             │
+│ ✅ Arquitectura enfocada en prioridades             │
 │ ✅ 100% español, opinionado, ejecutable            │
 │ ✅ Listo para estudiar de a poco                   │
 │                                                     │
@@ -355,4 +355,4 @@ cd ~/Documents/projects/NanLabs/agentic-chat-system-study-hub && cat README.md
 **Creado:** Mayo 2026  
 **Versión:** 1.0 (MVP con Pilares + Prioridades)  
 **Próxima Versión:** Completar todos los módulos con ejemplos  
-**Dedicado a:** Tu jefe, que es un genio pidiendo que aprendas esto
+**Dedicado a:** el estudio integral de sistemas agentic
