@@ -127,6 +127,3 @@ export function TOCHeader() {
 
   return null
 }
-
-  return null
-}
