@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Tuple
+from typing import Any
 
-
-TYPE_MAP: Dict[str, Tuple[type, ...]] = {
+TYPE_MAP: dict[str, tuple[type, ...]] = {
     "string": (str,),
     "integer": (int,),
 }
@@ -14,23 +14,23 @@ TYPE_MAP: Dict[str, Tuple[type, ...]] = {
 @dataclass
 class Tool:
     name: str
-    schema: Dict[str, Any]
+    schema: dict[str, Any]
     func: Callable[..., Any]
 
 
 class ToolRegistry:
     def __init__(self) -> None:
-        self.tools: Dict[str, Tool] = {}
+        self.tools: dict[str, Tool] = {}
 
     def register(self, tool: Tool) -> None:
         self.tools[tool.name] = tool
 
-    def invoke(self, name: str, payload: Dict[str, Any]) -> Any:
+    def invoke(self, name: str, payload: dict[str, Any]) -> Any:
         tool = self.tools[name]
         self._validate(payload, tool.schema)
         return tool.func(**payload)
 
-    def _validate(self, payload: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate(self, payload: dict[str, Any], schema: dict[str, Any]) -> None:
         for field in schema.get("required", []):
             if field not in payload:
                 raise ValueError(f"Falta {field}")
@@ -54,7 +54,10 @@ def main() -> None:
             "repeat_text",
             {
                 "required": ["text", "times"],
-                "properties": {"text": {"type": "string"}, "times": {"type": "integer", "minimum": 1}},
+                "properties": {
+                    "text": {"type": "string"},
+                    "times": {"type": "integer", "minimum": 1},
+                },
             },
             repeat_text,
         )

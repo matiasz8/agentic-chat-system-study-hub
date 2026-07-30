@@ -13,7 +13,6 @@ de cualquier función serverless bien escrita.
 import time
 import uuid
 
-
 # ---------------------------------------------------------------------------
 # Inicialización fuera del handler (se ejecuta en cold start, una sola vez)
 # ---------------------------------------------------------------------------
@@ -40,6 +39,7 @@ def obtener_conexion() -> dict:
 # ---------------------------------------------------------------------------
 # Handler (equivale a lambda_handler en AWS Lambda)
 # ---------------------------------------------------------------------------
+
 
 def handler(evento: dict, contexto: dict) -> dict:
     """
@@ -81,6 +81,7 @@ def handler(evento: dict, contexto: dict) -> dict:
 # Flujo principal: simula invocaciones consecutivas
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 20 – Ejemplo 01: Ciclo de vida serverless")
@@ -98,7 +99,7 @@ def main():
     contexto_base["aws_request_id"] = "req-def456"
     r2 = handler({"accion": "consultar", "medicamento_id": "MED-002"}, contexto_base)
     print(f"  Resultado: {r2}")
-    print(f"  ✅ La conexión a BD NO se re-inicializó (warm start)")
+    print("  ✅ La conexión a BD NO se re-inicializó (warm start)")
 
     uptime = (time.perf_counter() - _INICIO_MODULO) * 1000
     print(f"\n  Tiempo total de vida de la instancia: {uptime:.1f} ms")

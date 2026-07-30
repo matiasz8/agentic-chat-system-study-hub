@@ -9,8 +9,6 @@ y cómo validarlos antes de renderizar el componente.
 
 import json
 from dataclasses import dataclass, field
-from typing import Any
-
 
 # ---------------------------------------------------------------------------
 # Schema de validación (simulado sin Pydantic/zod)
@@ -61,6 +59,7 @@ def validar_payload(tipo: str, datos: dict) -> list[str]:
 # ---------------------------------------------------------------------------
 # Generador de payload estructurado
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class PayloadUI:
@@ -117,6 +116,7 @@ def construir_payload_desde_agente(intencion: str, contexto: dict) -> PayloadUI:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

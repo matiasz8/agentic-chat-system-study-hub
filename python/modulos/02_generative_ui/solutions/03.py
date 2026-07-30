@@ -5,8 +5,8 @@ Módulo 02: Generative UI
 """
 
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Iterator
 
 REGISTRO: dict[str, type] = {}
 
@@ -15,6 +15,7 @@ def componente(nombre: str):
     def decorador(cls):
         REGISTRO[nombre] = cls
         return cls
+
     return decorador
 
 
@@ -41,8 +42,14 @@ class Alerta:
 
 def _tool_calls_simulados(mensaje: str) -> list[dict]:
     return [
-        {"componente": "Grafico", "props": {"titulo": "Stock por sede", "valores": [1500, 120, 85]}},
-        {"componente": "Alerta", "props": {"mensaje": "Sede Sur con stock crítico.", "nivel": "error"}},
+        {
+            "componente": "Grafico",
+            "props": {"titulo": "Stock por sede", "valores": [1500, 120, 85]},
+        },
+        {
+            "componente": "Alerta",
+            "props": {"mensaje": "Sede Sur con stock crítico.", "nivel": "error"},
+        },
         {"componente": "Desconocido", "props": {}},
     ]
 

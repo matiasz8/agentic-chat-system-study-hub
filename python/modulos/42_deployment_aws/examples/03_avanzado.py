@@ -25,7 +25,9 @@ class DeploymentOrchestrator:
             self.run_stage("test", True, "Pruebas automatizadas aprobadas"),
             self.run_stage("push-ecr", True, "Imagen publicada en ECR"),
             self.run_stage("deploy-green", True, "Nueva versión desplegada en green"),
-            self.run_stage("smoke-test", smoke_test_success, "Validación de /health y flujo principal"),
+            self.run_stage(
+                "smoke-test", smoke_test_success, "Validación de /health y flujo principal"
+            ),
         ]
         if smoke_test_success:
             self.active_color = "green"

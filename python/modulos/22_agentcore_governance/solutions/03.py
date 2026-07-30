@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from collections import defaultdict, deque
-from dataclasses import dataclass
-from typing import Any, Callable, Deque, Dict, List
 import time
+from collections import defaultdict, deque
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -16,14 +17,16 @@ class AuditEntry:
 
 
 class GovernanceEngine:
-    def __init__(self, policies: Dict[str, set[str]], limit: int, window_seconds: int) -> None:
+    def __init__(self, policies: dict[str, set[str]], limit: int, window_seconds: int) -> None:
         self.policies = policies
         self.limit = limit
         self.window_seconds = window_seconds
-        self.calls: Dict[str, Deque[float]] = defaultdict(deque)
-        self.audit: List[AuditEntry] = []
+        self.calls: dict[str, deque[float]] = defaultdict(deque)
+        self.audit: list[AuditEntry] = []
 
-    def invoke(self, agent_id: str, tool_name: str, func: Callable[..., Any], **payload: Any) -> Any:
+    def invoke(
+        self, agent_id: str, tool_name: str, func: Callable[..., Any], **payload: Any
+    ) -> Any:
         if tool_name not in self.policies.get(agent_id, set()):
             self.audit.append(AuditEntry(agent_id, tool_name, "deny", "política"))
             return {"status": "denied", "reason": "política"}

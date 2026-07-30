@@ -15,7 +15,9 @@ class Proveedor:
 
 def llamar_proveedor(proveedor: Proveedor, mensaje_usuario: str) -> dict:
     """Simula generateText() del Vercel AI SDK."""
-    mensajes = [
+    # Built to show the shape of a provider call; this example stops short of
+    # sending it.
+    mensajes = [  # noqa: F841
         {"rol": "sistema", "content": "Asistente farmacéutico de Ask Sage."},
         {"rol": "usuario", "content": mensaje_usuario},
     ]

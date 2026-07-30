@@ -9,10 +9,10 @@ en la estructura de los datos devueltos por el agente.
 
 from dataclasses import dataclass
 
-
 # ---------------------------------------------------------------------------
 # Definición de componentes UI (en React serían JSX; aquí son dataclasses)
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ComponenteTexto:
@@ -41,15 +41,14 @@ class ComponenteTabla:
     def renderizar(self) -> str:
         encabezado = " | ".join(f"{c:<12}" for c in self.columnas)
         separador = "-" * len(encabezado)
-        filas_str = "\n".join(
-            " | ".join(f"{str(v):<12}" for v in fila) for fila in self.filas
-        )
+        filas_str = "\n".join(" | ".join(f"{str(v):<12}" for v in fila) for fila in self.filas)
         return f"[TABLA]\n{encabezado}\n{separador}\n{filas_str}"
 
 
 # ---------------------------------------------------------------------------
 # Selector de componente (lógica Generative UI)
 # ---------------------------------------------------------------------------
+
 
 def seleccionar_componente(datos: dict):
     """
@@ -79,6 +78,7 @@ def seleccionar_componente(datos: dict):
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 02 – Ejemplo 01: Selección de componente UI")
@@ -89,8 +89,8 @@ def main():
             "tipo": "stock_tabla",
             "filas": [
                 ["Sede Central", "Medicamento X", 1500],
-                ["Sede Norte",   "Medicamento X", 120],
-                ["Sede Sur",     "Medicamento X", 85],
+                ["Sede Norte", "Medicamento X", 120],
+                ["Sede Sur", "Medicamento X", 85],
             ],
         },
         {

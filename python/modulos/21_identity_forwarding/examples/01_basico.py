@@ -9,15 +9,14 @@ del backend hasta los servicios downstream (BD, APIs internas).
 En AWS AgentCore esto se implementa con Identity Forwarding nativo.
 """
 
-import time
-import uuid
 import base64
 import json
-
+import time
 
 # ---------------------------------------------------------------------------
 # Token de identidad (simulado)
 # ---------------------------------------------------------------------------
+
 
 def crear_token_usuario(usuario_id: str, rol: str, permisos: list[str]) -> str:
     """
@@ -48,6 +47,7 @@ def decodificar_token(token: str) -> dict:
 # ---------------------------------------------------------------------------
 # Servicios simulados
 # ---------------------------------------------------------------------------
+
 
 def servicio_api_gateway(solicitud: dict) -> dict:
     """
@@ -105,6 +105,7 @@ def servicio_bd(accion: str, datos: dict, usuario_id: str) -> dict:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

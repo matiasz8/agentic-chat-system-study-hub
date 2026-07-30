@@ -12,18 +12,17 @@ En AWS AgentCore esto se implementa con IAM Roles y Cedar policies.
 
 import time
 import uuid
-import base64
-import json
 from dataclasses import dataclass, field
-
 
 # ---------------------------------------------------------------------------
 # Gestión de tokens
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ContextoIdentidad:
     """Identidad del usuario durante toda la sesión del agente."""
+
     usuario_id: str
     rol: str
     permisos_globales: list[str]
@@ -38,18 +37,21 @@ class TokenAlcanceReducido:
     Equivale a un 'scoped credential' en AWS STS:
         sts.assume_role(RoleArn=..., Policy=limited_policy, DurationSeconds=900)
     """
+
     usuario_id: str
-    operacion: str          # p.ej. "leer:stock"
-    recurso: str            # p.ej. "inventario/MED-001"
-    expira_en: float        # timestamp Unix
+    operacion: str  # p.ej. "leer:stock"
+    recurso: str  # p.ej. "inventario/MED-001"
+    expira_en: float  # timestamp Unix
     token_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
 
     def esta_vigente(self) -> bool:
         return time.time() < self.expira_en
 
     def __str__(self) -> str:
-        return (f"ScopedToken(id={self.token_id}, op={self.operacion!r}, "
-                f"recurso={self.recurso!r}, vigente={self.esta_vigente()})")
+        return (
+            f"ScopedToken(id={self.token_id}, op={self.operacion!r}, "
+            f"recurso={self.recurso!r}, vigente={self.esta_vigente()})"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -58,9 +60,9 @@ class TokenAlcanceReducido:
 
 # Tabla de operaciones permitidas por rol
 POLITICA_ROLES = {
-    "farmaceutico":   ["leer:stock", "leer:reportes"],
-    "supervisor":     ["leer:stock", "leer:reportes", "escribir:requisicion"],
-    "administrador":  ["leer:stock", "leer:reportes", "escribir:requisicion", "cancelar:orden"],
+    "farmaceutico": ["leer:stock", "leer:reportes"],
+    "supervisor": ["leer:stock", "leer:reportes", "escribir:requisicion"],
+    "administrador": ["leer:stock", "leer:reportes", "escribir:requisicion", "cancelar:orden"],
 }
 
 
@@ -95,12 +97,15 @@ def generar_token_alcance(
 # Servicio downstream que valida el token de alcance
 # ---------------------------------------------------------------------------
 
+
 def llamar_servicio_inventario(token: TokenAlcanceReducido, medicamento_id: str) -> dict:
     """Solo acepta tokens con la operación correcta y vigentes."""
     if not token.esta_vigente():
         raise RuntimeError(f"Token {token.token_id!r} expirado")
     if token.operacion != "leer:stock":
-        raise PermissionError(f"Operación incorrecta: se requiere 'leer:stock', recibido {token.operacion!r}")
+        raise PermissionError(
+            f"Operación incorrecta: se requiere 'leer:stock', recibido {token.operacion!r}"
+        )
 
     print(f"  [INVENTARIO] Consulta autorizada por token {token.token_id!r}")
     return {"medicamento_id": medicamento_id, "stock": 1500, "autorizado_por": token.usuario_id}
@@ -119,6 +124,7 @@ def llamar_servicio_requisicion(token: TokenAlcanceReducido, datos: dict) -> dic
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)
@@ -143,7 +149,9 @@ def main():
     # Generar token para crear requisición
     print("\n3. Solicitando token para 'escribir:requisicion'…")
     t_escribir = generar_token_alcance(supervisor, "escribir:requisicion", "requisiciones/*")
-    resultado2 = llamar_servicio_requisicion(t_escribir, {"medicamento": "MED-001", "cantidad": 200})
+    resultado2 = llamar_servicio_requisicion(
+        t_escribir, {"medicamento": "MED-001", "cantidad": 200}
+    )
     print(f"   Resultado: {resultado2}")
 
     # Farmacéutico intentando crear requisición (sin permiso)

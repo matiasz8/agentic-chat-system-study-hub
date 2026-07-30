@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
 import operator
+from collections.abc import Callable
 from typing import Annotated, TypedDict
 
 
@@ -25,42 +25,42 @@ class StreamingNode:
         self.on_finish = on_finish
 
     async def invoke(self, state: StreamState) -> dict[str, object]:
-        self.on_start(state['incoming_text'])
+        self.on_start(state["incoming_text"])
         chunks: list[str] = []
-        for word in state['incoming_text'].split():
+        for word in state["incoming_text"].split():
             await asyncio.sleep(0.02)
             token = word.upper()
             self.on_chunk(token)
             chunks.append(token)
-        result = ' | '.join(chunks)
+        result = " | ".join(chunks)
         self.on_finish(result)
         return {
-            'chunks': chunks,
-            'events': [f'chunks={len(chunks)}', 'stream_completed'],
-            'result': result,
+            "chunks": chunks,
+            "events": [f"chunks={len(chunks)}", "stream_completed"],
+            "result": result,
         }
 
 
 async def main() -> None:
     events: list[str] = []
     node = StreamingNode(
-        on_start=lambda text: events.append(f'start:{text}'),
-        on_chunk=lambda chunk: events.append(f'chunk:{chunk}'),
-        on_finish=lambda result: events.append(f'finish:{result}'),
+        on_start=lambda text: events.append(f"start:{text}"),
+        on_chunk=lambda chunk: events.append(f"chunk:{chunk}"),
+        on_finish=lambda result: events.append(f"finish:{result}"),
     )
     state: StreamState = {
-        'incoming_text': 'streaming response ready',
-        'chunks': [],
-        'events': [],
-        'result': '',
+        "incoming_text": "streaming response ready",
+        "chunks": [],
+        "events": [],
+        "result": "",
     }
     update = await node.invoke(state)
-    state['chunks'] += update['chunks']  # type: ignore[operator]
-    state['events'] += update['events']  # type: ignore[operator]
-    state['result'] = update['result']  # type: ignore[assignment]
-    print('State:', state)
-    print('Callbacks:', events)
+    state["chunks"] += update["chunks"]  # type: ignore[operator]
+    state["events"] += update["events"]  # type: ignore[operator]
+    state["result"] = update["result"]  # type: ignore[assignment]
+    print("State:", state)
+    print("Callbacks:", events)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

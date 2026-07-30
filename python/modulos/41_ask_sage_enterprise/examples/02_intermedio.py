@@ -3,7 +3,6 @@
 
 from dataclasses import dataclass
 
-
 ROLE_PERMISSIONS = {
     "admin": {"read_public", "read_restricted", "audit"},
     "editor": {"read_public", "read_restricted"},
@@ -37,7 +36,12 @@ def main() -> None:
     admin = User("leo", "acme", "admin")
     documents = [
         Document("acme", "FAQ interna", "Horarios y feriados del tenant.", "read_public"),
-        Document("acme", "Informe M&A", "Documento sensible sobre adquisiciones futuras.", "read_restricted"),
+        Document(
+            "acme",
+            "Informe M&A",
+            "Documento sensible sobre adquisiciones futuras.",
+            "read_restricted",
+        ),
     ]
 
     print("=== Ask Sage Enterprise · Intermedio ===")

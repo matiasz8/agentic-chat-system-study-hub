@@ -4,8 +4,8 @@ Solución 03 – Máquina de estados con aristas condicionales
 Módulo 10: Fundamentos de Grafos
 """
 
-from dataclasses import dataclass, field
-from typing import Callable
+from collections.abc import Callable
+from dataclasses import dataclass
 
 
 @dataclass
@@ -52,13 +52,16 @@ def clasificar(e: Estado) -> Estado:
     e.intencion = "consulta" if "stock" in e.mensaje.lower() else "accion"
     return e
 
+
 def consultar(e: Estado) -> Estado:
     e.resultado = "stock=1500"
     return e
 
+
 def ejecutar_accion(e: Estado) -> Estado:
     e.resultado = "requisicion_creada"
     return e
+
 
 def responder(e: Estado) -> Estado:
     e.respuesta = f"Resultado: {e.resultado}"
@@ -67,13 +70,15 @@ def responder(e: Estado) -> Estado:
 
 def main():
     maq = MaquinaEstados("clasificar", "responder")
-    maq.agregar_nodo("clasificar",    clasificar)
-    maq.agregar_nodo("consultar",     consultar)
-    maq.agregar_nodo("ejecutar",      ejecutar_accion)
-    maq.agregar_nodo("responder",     responder)
-    maq.agregar_arista_condicional("clasificar", lambda e: "consultar" if e.intencion == "consulta" else "ejecutar")
+    maq.agregar_nodo("clasificar", clasificar)
+    maq.agregar_nodo("consultar", consultar)
+    maq.agregar_nodo("ejecutar", ejecutar_accion)
+    maq.agregar_nodo("responder", responder)
+    maq.agregar_arista_condicional(
+        "clasificar", lambda e: "consultar" if e.intencion == "consulta" else "ejecutar"
+    )
     maq.agregar_arista("consultar", "responder")
-    maq.agregar_arista("ejecutar",  "responder")
+    maq.agregar_arista("ejecutar", "responder")
 
     print("--- Ruta consulta ---")
     r1 = maq.ejecutar(Estado(mensaje="¿Cuánto stock hay?"))

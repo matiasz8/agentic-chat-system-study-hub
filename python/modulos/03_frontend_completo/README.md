@@ -168,6 +168,6 @@ class TurnState(Enum):
 
 ---
 
-**Última actualización:** 2026-05-31  
-**Dificultad:** ⭐⭐⭐ Intermedia/Avanzada  
+**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐⭐ Intermedia/Avanzada
 **Duración estimada:** 90-120 minutos

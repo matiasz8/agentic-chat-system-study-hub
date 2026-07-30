@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Solución del ejercicio 3 del módulo Deployment AWS."""
 
-from dataclasses import dataclass
 import time
+from dataclasses import dataclass
 
 
 @dataclass

@@ -1,0 +1,79 @@
+# Governance: Control y Auditoría de Agentes
+
+> Governance en AgentCore
+Control, auditoría, restricciones.
+
+El **governance** es la "ley" de tu agente. Define qué puede hacer, qué no, y deja rastro de todo.
+
+Sin governance = Agente caótico sin restricciones 🤖 (¡peligroso!)
+Con governance = Agente auditable, controlado, seguro ✅
+
+---
+
+## 🔐 ¿Por Qué Governance Importa?
+
+```
+ESCENARIOS SIN GOVERNANCE:
+❌ Agente gasta $10,000 en 1 llamada a API (sin límites)
+❌ Agente ejecuta herramienta peligrosa sin verificación
+❌ No hay rastro de decisiones (auditoría imposible)
+❌ Usuario no sabe qué hizo el agente
+❌ Violación de compliance/regulaciones
+
+CON GOVERNANCE:
+✅ Límite presupuestario: máximo $100 por día
+✅ Whitelist de herramientas permitidas
+✅ Cada acción queda registrada (audit log)
+✅ Transparencia total
+✅ Compliance automático
+```
+
+---
+
+## 💻 Nivel 1: Auditoría Básica
+
+**Qué quedó registrado**:
+```json
+{
+  "timestamp": "2026-05-31T15:20:00",
+  "action": "search",
+  "tool": "database",
+  "parameters": {"query": "SELECT * FROM users"},
+  "result": "3 users found",
+  "user_id": "user_123"
+}
+```
+
+---
+
+## 💻 Nivel 2: Control de Presupuesto
+
+**Protecciones**:
+- ✅ Límite diario ($100)
+- ✅ Rate limiting (10 llamadas/min)
+- ✅ Rechazo automático si excede
+
+---
+
+## 💻 Nivel 3: AWS AgentCore Governance
+
+---
+
+## 🏗️ Alternativas
+
+| Sistema | Tipo | Mejor para |
+|---------|------|-----------|
+| **AWS AgentCore** ⭐ | Policy-based | AWS agents |
+| Cedar | Policy language | Authorization |
+| OPA | General policies | Multi-cloud |
+| Custom | Manual | Requisitos específicos |
+
+---
+
+## 🏋️ Ejercicios
+
+---
+
+**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐ Intermedia
+**Duración:** 75 minutos

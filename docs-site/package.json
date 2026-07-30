@@ -1,0 +1,32 @@
+{
+  "name": "agentic-chat-study-hub-docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Study hub documentation site",
+  "_overridesReason": "DO NOT REMOVE the zod override. nextra-theme-docs 4.6.1 declares zod ^4.1.12, but its Layout destructures children out of its props then validates the remainder against a schema that still requires children. zod 4.4.3 rejects an absent z.custom key where <= 4.1 accepted it, so every page fails to prerender. Keys inside overrides must be package names only -- npm rejects anything else.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "15.5.22",
+    "nextra": "4.6.1",
+    "nextra-theme-docs": "4.6.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "lucide-react": "0.469.0",
+    "react-syntax-highlighter": "15.6.1"
+  },
+  "devDependencies": {
+    "pagefind": "1.5.2",
+    "typescript": "5.7.3",
+    "@types/node": "22.10.5",
+    "@types/react": "19.0.7",
+    "@types/react-syntax-highlighter": "15.5.13"
+  },
+  "overrides": {
+    "zod": "4.1.12"
+  }
+}

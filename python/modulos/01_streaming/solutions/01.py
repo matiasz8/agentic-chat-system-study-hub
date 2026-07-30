@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import sys
 import time
-from typing import Iterator
+from collections.abc import Iterator
 
 
 def stream_fake_response(texto: str, delay: float = 0.1) -> Iterator[str]:

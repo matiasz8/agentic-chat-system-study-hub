@@ -9,15 +9,14 @@ Muestra:
   - Idempotencia: procesar el mismo evento dos veces da el mismo resultado.
 """
 
-import time
 import hashlib
 import json
-from functools import lru_cache
-
+import time
 
 # ---------------------------------------------------------------------------
 # Simulación de cold start vs warm start
 # ---------------------------------------------------------------------------
+
 
 class MetricasTiempo:
     def __init__(self):
@@ -110,6 +109,7 @@ def handler_idempotente(evento: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

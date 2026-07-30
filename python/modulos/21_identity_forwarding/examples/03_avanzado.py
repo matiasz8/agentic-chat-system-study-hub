@@ -11,14 +11,13 @@ Muestra:
 
 import time
 import uuid
-import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
-
 
 # ---------------------------------------------------------------------------
 # Contexto de auditoría
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ContextoAuditoria:
@@ -26,11 +25,12 @@ class ContextoAuditoria:
     Contexto que viaja con cada operación.
     En AWS se implementa con X-Ray y CloudTrail.
     """
+
     trace_id: str = field(default_factory=lambda: str(uuid.uuid4())[:12])
     usuario_id: str = ""
     rol: str = ""
     ip_origen: str = ""
-    accion_raiz: str = ""   # la acción del usuario que desencadenó todo
+    accion_raiz: str = ""  # la acción del usuario que desencadenó todo
 
     def enriquecer(self, **kwargs) -> "ContextoAuditoria":
         """Crea una copia con campos adicionales (inmutabilidad)."""
@@ -50,6 +50,7 @@ class ContextoAuditoria:
 # Registro de auditoría (inmutable)
 # ---------------------------------------------------------------------------
 
+
 class RegistroAuditoria:
     def __init__(self):
         self._entradas: list[dict] = []
@@ -68,7 +69,9 @@ class RegistroAuditoria:
         }
         self._entradas.append(entrada)
         icono = "✅" if resultado == "ok" else "❌"
-        print(f"  [AUDIT {icono}] trace={ctx.trace_id} op={operacion!r} user={ctx.usuario_id!r} → {resultado}")
+        print(
+            f"  [AUDIT {icono}] trace={ctx.trace_id} op={operacion!r} user={ctx.usuario_id!r} → {resultado}"
+        )
 
     def exportar(self) -> list[dict]:
         return list(self._entradas)
@@ -83,12 +86,12 @@ auditoria = RegistroAuditoria()
 
 # Políticas: (rol, accion, recurso) → permitido
 POLITICAS: list[tuple[str, str, str]] = [
-    ("farmaceutico",   "leer",     "stock"),
-    ("farmaceutico",   "leer",     "reportes"),
-    ("supervisor",     "leer",     "stock"),
-    ("supervisor",     "leer",     "reportes"),
-    ("supervisor",     "escribir", "requisicion"),
-    ("administrador",  "*",        "*"),
+    ("farmaceutico", "leer", "stock"),
+    ("farmaceutico", "leer", "reportes"),
+    ("supervisor", "leer", "stock"),
+    ("supervisor", "leer", "reportes"),
+    ("supervisor", "escribir", "requisicion"),
+    ("administrador", "*", "*"),
 ]
 
 
@@ -98,9 +101,9 @@ def esta_autorizado(rol: str, accion: str, recurso: str) -> bool:
     El administrador tiene acceso total ("*").
     """
     for p_rol, p_accion, p_recurso in POLITICAS:
-        rol_ok = (p_rol == rol or p_rol == "*")
-        accion_ok = (p_accion == accion or p_accion == "*")
-        recurso_ok = (p_recurso == recurso or p_recurso == "*")
+        rol_ok = p_rol == rol or p_rol == "*"
+        accion_ok = p_accion == accion or p_accion == "*"
+        recurso_ok = p_recurso == recurso or p_recurso == "*"
         if rol_ok and accion_ok and recurso_ok:
             return True
     return False
@@ -110,6 +113,7 @@ def esta_autorizado(rol: str, accion: str, recurso: str) -> bool:
 # Decorador: inyectar verificación de autorización + auditoría
 # ---------------------------------------------------------------------------
 
+
 def autorizar(accion: str, recurso: str) -> Callable:
     """
     Decorador que aplica la política de autorización y registra la auditoría.
@@ -118,6 +122,7 @@ def autorizar(accion: str, recurso: str) -> Callable:
         @autorizar("escribir", "requisicion")
         def crear_requisicion(ctx, datos): ...
     """
+
     def decorador(func: Callable) -> Callable:
         def wrapper(ctx: ContextoAuditoria, *args, **kwargs):
             if not esta_autorizado(ctx.rol, accion, recurso):
@@ -128,13 +133,16 @@ def autorizar(accion: str, recurso: str) -> Callable:
             resultado = func(ctx, *args, **kwargs)
             auditoria.registrar(ctx, f"{accion}:{recurso}", "ok", datos=kwargs)
             return resultado
+
         return wrapper
+
     return decorador
 
 
 # ---------------------------------------------------------------------------
 # Operaciones de negocio con autorización declarativa
 # ---------------------------------------------------------------------------
+
 
 @autorizar("leer", "stock")
 def leer_stock(ctx: ContextoAuditoria, medicamento_id: str = "") -> dict:
@@ -154,6 +162,7 @@ def generar_reporte(ctx: ContextoAuditoria, tipo: str = "diario") -> dict:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

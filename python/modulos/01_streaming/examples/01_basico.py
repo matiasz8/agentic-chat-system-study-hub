@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import sys
 import time
-from typing import Iterator
+from collections.abc import Iterator
 
 DELAY_SECONDS = 0.12
 

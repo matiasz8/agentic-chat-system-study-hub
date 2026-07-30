@@ -4,8 +4,9 @@ Ejemplo 2: Mock LLM - Test sin gastar dinero
 Cómo mockear respuestas de Claude para testing sin llamar a API real.
 """
 
-from validation.mock_llm import MockAnthropic, get_test_response
 import json
+
+from validation.mock_llm import MockAnthropic, get_test_response
 
 
 def test_with_mock_llm():
@@ -25,12 +26,7 @@ def test_with_mock_llm():
         model="claude-3-opus",
         max_tokens=100,
         system="Eres un agente farmacéutico. Responde siempre en JSON.",
-        messages=[
-            {
-                "role": "user",
-                "content": "¿Cuál es el stock del Paracetamol?"
-            }
-        ]
+        messages=[{"role": "user", "content": "¿Cuál es el stock del Paracetamol?"}],
     )
 
     # Procesar respuesta
@@ -42,7 +38,7 @@ def test_with_mock_llm():
     print(f"Parsed: {data}")
     assert "medication" in data
     assert "stock" in data
-    print(f"✅ Test 1 pasó!\n")
+    print("✅ Test 1 pasó!\n")
 
 
 def test_with_helper_function():
@@ -60,7 +56,7 @@ def test_with_helper_function():
 
     # Validar
     assert "stock" in response or "150" in response
-    print(f"✅ Test 2 pasó!\n")
+    print("✅ Test 2 pasó!\n")
 
 
 def test_call_tracking():
@@ -80,13 +76,13 @@ def test_call_tracking():
         mock_llm.create_message(
             model="claude-3",
             max_tokens=100,
-            messages=[{"role": "user", "content": f"Pregunta {i}"}]
+            messages=[{"role": "user", "content": f"Pregunta {i}"}],
         )
-        print(f"  Llamada {i+1}...")
+        print(f"  Llamada {i + 1}...")
 
     print(f"Call count final: {mock_llm.call_count}")
     assert mock_llm.call_count == 3
-    print(f"✅ Test 3 pasó!\n")
+    print("✅ Test 3 pasó!\n")
 
 
 def test_no_cost():
@@ -113,12 +109,10 @@ def test_no_cost():
     mock_llm = MockAnthropic()
     for _ in range(100):  # 100 llamadas sin costo
         mock_llm.create_message(
-            model="claude-3",
-            max_tokens=100,
-            messages=[{"role": "user", "content": "test"}]
+            model="claude-3", max_tokens=100, messages=[{"role": "user", "content": "test"}]
         )
 
-    print(f"✅ Hicimos 100 llamadas sin gastar dinero!")
+    print("✅ Hicimos 100 llamadas sin gastar dinero!")
     print(f"   Call count: {mock_llm.call_count}\n")
 
 

@@ -168,10 +168,10 @@ def lambda_handler(event, context):
     context = info sobre la ejecución
     """
     user_message = event["body"]
-    
+
     # Procesa
     response = llm.invoke(user_message)
-    
+
     return {
         "statusCode": 200,
         "body": response
@@ -194,10 +194,10 @@ memory = {}  # Variable global
 
 def lambda_handler(event, context):
     user_id = event["user_id"]
-    
+
     # Guardas en memoria
     memory[user_id] = {"last_question": "..."}
-    
+
     # Próxima ejecución (nueva instancia)
     # memory está VACÍO
     # El usuario perdió su contexto
@@ -213,21 +213,21 @@ table = dynamodb.Table("UserContexts")
 
 def lambda_handler(event, context):
     user_id = event["user_id"]
-    
+
     # Carga del último Checkpoint
     response = table.get_item(Key={"user_id": user_id})
     last_state = response.get("Item", {})
-    
+
     # Procesa con el estado anterior
     new_state = process_with_llm(last_state)
-    
+
     # Guarda para próxima ejecución
     table.put_item(Item={"user_id": user_id, "state": new_state})
-    
+
     return {"response": new_state}
 ```
 
-**La regla de oro:** 
+**La regla de oro:**
 > En Serverless, **TODO lo que necesites después debe estar en una BD**, no en memoria.
 
 ---
@@ -345,18 +345,18 @@ user_memory = {}  # ❌ ERROR?
 
 def lambda_handler(event, context):
     user_id = event["user_id"]
-    
+
     if user_id in user_memory:
         context = user_memory[user_id]
     else:
         context = {"history": []}
-    
+
     # Procesa
     response = llm.invoke("Hola", context)
-    
+
     # Guarda en memoria
     user_memory[user_id] = {"history": [...]}
-    
+
     return response
 ```
 
@@ -419,5 +419,5 @@ Aquí es donde:
 
 ---
 
-**Versión:** 1.0  
+**Versión:** 1.0
 **Duración estimada:** 60 minutos

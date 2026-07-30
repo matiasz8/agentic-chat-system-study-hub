@@ -1,4 +1,6 @@
 from typing import Any
+
+
 class AdvancedValidator:
     def validate(self, obj: Any, schema: dict) -> bool:
         for key, expected_type in schema.items():
@@ -7,6 +9,7 @@ class AdvancedValidator:
             if not isinstance(obj[key], expected_type):
                 return False
         return True
+
 
 v = AdvancedValidator()
 schema = {"name": str, "age": int}

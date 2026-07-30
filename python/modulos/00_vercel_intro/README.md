@@ -162,7 +162,7 @@ const bedrock = new Bedrock({
 export async function POST(req: Request) {
   // 1. Recibir el mensaje del usuario
   const { message } = await req.json();
-  
+
   // 2. Preparar el stream
   const result = await streamText({
     model: bedrock,
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
       { role: 'user', content: message }
     ]
   });
-  
+
   // 3. Retornar el stream
   return result.toDataStream();
   // ^ Esto retorna Server-Sent Events (SSE)
@@ -196,7 +196,7 @@ import { useChat } from 'ai/react';
 
 export default function ChatComponent() {
   // 1. Hook que maneja TODO
-  const { 
+  const {
     messages,        // Array de mensajes
     input,          // Texto en el input
     handleInputChange, // Cuando usuario escribe
@@ -204,7 +204,7 @@ export default function ChatComponent() {
   } = useChat({
     api: '/api/chat' // Tu endpoint de streaming
   });
-  
+
   return (
     <div className="chat-container">
       {/* 2. Mostrar mensajes */}
@@ -217,7 +217,7 @@ export default function ChatComponent() {
           </div>
         ))}
       </div>
-      
+
       {/* 3. Input */}
       <form onSubmit={handleSubmit}>
         <input
@@ -263,16 +263,16 @@ import { Bedrock } from '@anthropic-ai/sdk';
 
 export async function POST(req: Request) {
   const { message } = await req.json();
-  
+
   // 1. Obtener el user_token (Identity Forwarding)
   const userToken = req.headers.get('x-user-token');
-  
+
   // 2. Preparar variables para AWS AgentCore
   const agentState = {
     user_token: userToken,
     messages: [{ role: 'user', content: message }],
   };
-  
+
   // 3. Stream desde tu agente
   const result = await streamText({
     model: bedrock,
@@ -301,7 +301,7 @@ export async function POST(req: Request) {
       },
     },
   });
-  
+
   return result.toDataStream();
 }
 ```
@@ -319,7 +319,7 @@ export default function ChatComponent() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
   });
-  
+
   return (
     <div>
       <div className="messages">
@@ -328,7 +328,7 @@ export default function ChatComponent() {
             {msg.content}
           </div>
         ))}
-        
+
         {/* ✨ Mostrar que está generando */}
         {isLoading && (
           <div className="thinking">
@@ -336,7 +336,7 @@ export default function ChatComponent() {
           </div>
         )}
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         <input
           value={input}
@@ -381,7 +381,7 @@ import type { Message } from 'ai';
 
 export default function ChatComponent() {
   // ✅ Tipos explícitos
-  const { 
+  const {
     messages,
     input,
     handleInputChange,
@@ -396,7 +396,7 @@ export default function ChatComponent() {
   } = useChat({
     api: '/api/chat',
   });
-  
+
   return (
     // Tu JSX aquí
   );
@@ -454,7 +454,7 @@ Aquí aprendes a:
 
 ---
 
-**Versión:** 1.0  
-**Duración estimada:** 75 minutos  
-**Dificultad:** 🟡 Intermedia  
+**Versión:** 1.0
+**Duración estimada:** 75 minutos
+**Dificultad:** 🟡 Intermedia
 **Requisitos:** Node.js, React, Next.js

@@ -4,8 +4,7 @@ import re
 from collections import Counter
 from dataclasses import dataclass
 
-
-TOKEN_PATTERN = re.compile(r'[a-záéíóúñ0-9]+', re.IGNORECASE)
+TOKEN_PATTERN = re.compile(r"[a-záéíóúñ0-9]+", re.IGNORECASE)
 
 
 def tokenize(text: str) -> list[str]:
@@ -29,16 +28,32 @@ class Item:
 class MultimodalRetriever:
     def __init__(self) -> None:
         self.items: list[Item] = []
-        self.vocabulary = sorted({
-            'gato', 'perro', 'playa', 'ciudad', 'café', 'libro', 'persona', 'montaña',
-            'mar', 'noche', 'bosque', 'oficina', 'arte', 'correr', 'leer', 'comida'
-        })
+        self.vocabulary = sorted(
+            {
+                "gato",
+                "perro",
+                "playa",
+                "ciudad",
+                "café",
+                "libro",
+                "persona",
+                "montaña",
+                "mar",
+                "noche",
+                "bosque",
+                "oficina",
+                "arte",
+                "correr",
+                "leer",
+                "comida",
+            }
+        )
 
     def add_text(self, item_id: str, text: str) -> None:
-        self.items.append(Item(item_id=item_id, modality='text', description=text))
+        self.items.append(Item(item_id=item_id, modality="text", description=text))
 
     def add_image(self, item_id: str, description: str) -> None:
-        self.items.append(Item(item_id=item_id, modality='image', description=description))
+        self.items.append(Item(item_id=item_id, modality="image", description=description))
 
     def embed(self, text: str) -> list[float]:
         counts = Counter(tokenize(text))
@@ -46,7 +61,9 @@ class MultimodalRetriever:
         total = sum(values) or 1.0
         return [value / total for value in values]
 
-    def search(self, query: str, target_modality: str | None = None, top_k: int = 3) -> list[tuple[float, Item]]:
+    def search(
+        self, query: str, target_modality: str | None = None, top_k: int = 3
+    ) -> list[tuple[float, Item]]:
         query_vector = self.embed(query)
         scored = []
         for item in self.items:
@@ -59,15 +76,15 @@ class MultimodalRetriever:
 
 def main() -> None:
     retriever = MultimodalRetriever()
-    retriever.add_text('txt-1', 'explicación sobre perro y playa para una guía de viaje')
-    retriever.add_text('txt-2', 'reseña de libros y café en espacios tranquilos')
-    retriever.add_image('img-1', 'perro corriendo con mar en la playa')
-    retriever.add_image('img-2', 'persona leyendo un libro con café en oficina')
+    retriever.add_text("txt-1", "explicación sobre perro y playa para una guía de viaje")
+    retriever.add_text("txt-2", "reseña de libros y café en espacios tranquilos")
+    retriever.add_image("img-1", "perro corriendo con mar en la playa")
+    retriever.add_image("img-2", "persona leyendo un libro con café en oficina")
 
-    print('=== Solución 03: Retriever multimodal ===')
-    for score, item in retriever.search('perro en la playa', target_modality='image'):
-        print(f'{item.item_id} | {item.modality} | {score:.3f} | {item.description}')
+    print("=== Solución 03: Retriever multimodal ===")
+    for score, item in retriever.search("perro en la playa", target_modality="image"):
+        print(f"{item.item_id} | {item.modality} | {score:.3f} | {item.description}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

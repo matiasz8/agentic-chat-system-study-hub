@@ -187,6 +187,6 @@ def consumir():
 
 ---
 
-**Última actualización:** 2026-05-31  
-**Dificultad:** ⭐⭐ Intermedia  
+**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐ Intermedia
 **Duración estimada:** 90 minutos

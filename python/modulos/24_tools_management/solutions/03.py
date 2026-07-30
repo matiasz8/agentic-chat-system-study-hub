@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-from dataclasses import dataclass
-from typing import Any, Callable, List
 import time
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
+from dataclasses import dataclass
+from typing import Any
 
 
 class TransientToolError(RuntimeError):
@@ -29,7 +31,7 @@ class Tool:
 class ToolExecutor:
     def __init__(self, retries: int = 2) -> None:
         self.retries = retries
-        self.logs: List[LogEntry] = []
+        self.logs: list[LogEntry] = []
 
     def invoke(self, tool: Tool, **payload: Any) -> Any:
         for attempt in range(1, self.retries + 2):

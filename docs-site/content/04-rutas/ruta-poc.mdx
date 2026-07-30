@@ -1,0 +1,101 @@
+---
+route: 'poc'
+routeName: 'Ruta POC'
+modules:
+  - title: '01. Setup Ambiente'
+    path: '/04-rutas/ruta-poc#paso-1-setup-ambiente'
+    done: false
+  - title: '02. Aprender LangGraph'
+    path: '/02-arquitectura/orchestration/00-contenido'
+    done: false
+  - title: '03. Implementar Grafo'
+    path: '/02-arquitectura/orchestration/fundamentos-grafos'
+    done: false
+  - title: '04. Frontend Streaming'
+    path: '/02-arquitectura/frontend/00-contenido'
+    done: false
+  - title: '05. Testing Local'
+    path: '/03-validacion/00-contenido'
+    done: false
+  - title: '06. Deploy Local'
+    path: '/04-rutas/ruta-poc#paso-6-deploy-local'
+    done: false
+  - title: '07. Validación Final'
+    path: '/04-rutas/ruta-poc#paso-7-validación-final'
+    done: false
+---
+
+import RouteProgress from '@/components/RouteProgress'
+
+# Ruta POC: Aprender Haciendo
+
+<RouteProgress
+  route="poc"
+  routeName="Ruta POC"
+  modules={[
+    { title: '01. Setup Ambiente', path: '/04-rutas/ruta-poc#paso-1-setup-ambiente', done: false },
+    { title: '02. Aprender LangGraph', path: '/02-arquitectura/orchestration/00-contenido', done: false },
+    { title: '03. Implementar Grafo', path: '/02-arquitectura/orchestration/fundamentos-grafos', done: false },
+    { title: '04. Frontend Streaming', path: '/02-arquitectura/frontend/00-contenido', done: false },
+    { title: '05. Testing Local', path: '/03-validacion/00-contenido', done: false },
+    { title: '06. Deploy Local', path: '/ask-sage/03-deployment-prod', done: false },
+    { title: '07. Validación Final', path: '/ask-sage/00-contenido', done: false },
+  ]}
+/>
+
+**Duración:** 16 horas | **Requisitos:** Node.js, básico de React | **Formato:** Tutorial paso-a-paso
+
+Para desarrolladores que quieren construir un agente funcional de principio a fin.
+
+## 🛠️ Proyecto
+
+Construirás una **versión simplificada de Ask Sage** que:
+- ✓ Toma consultas en natural language
+- ✓ Usa LangGraph para orquestar
+- ✓ Streamea respuestas en tiempo real
+- ✓ Pasa validaciones automáticas
+
+## 📋 Pasos
+
+1. **Setup ambiente** (1h)
+   - Node.js, npm, editor
+   - Clonar y entender estructura
+
+2. **Aprender LangGraph** (2h)
+   - Conceptos de grafos
+   - State management
+   - Nodos y aristas
+
+3. **Implementar tu primer grafo** (2h)
+   - Crear nodos simples
+   - Conectarlos en un grafo
+   - Pruebas locales
+
+4. **Frontend con streaming** (2h)
+   - Vercel AI SDK
+   - Componentes React
+   - Streaming de respuestas
+
+5. **Testing local** (2h)
+   - Unit tests para nodos
+   - Integration tests
+   - E2E tests
+
+6. **Deploy local** (2h)
+   - Docker o similar
+   - Verificar en navegador
+   - Simular requests
+
+7. **Validación final** (2h)
+   - Checklist completitud
+   - Performance básico
+   - Documentación
+
+## ✅ Al finalizar
+
+Tendrás:
+- ✓ Un agente funcionando en tu máquina
+- ✓ Código que entiendes completamente
+- ✓ Base para productivizar
+
+**Próximo paso:** [Ruta Producción](/04-rutas/ruta-produccion) para AWS

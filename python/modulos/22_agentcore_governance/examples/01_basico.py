@@ -2,39 +2,38 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List
 
 
 @dataclass
 class AgentMetadata:
     agent_id: str
     name: str
-    capabilities: List[str]
+    capabilities: list[str]
     owner: str
     status: str = "active"
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
 
 class AgentRegistry:
     def __init__(self) -> None:
-        self._agents: Dict[str, AgentMetadata] = {}
+        self._agents: dict[str, AgentMetadata] = {}
 
     def register(self, agent: AgentMetadata) -> None:
         if agent.agent_id in self._agents:
             raise ValueError(f"El agente {agent.agent_id} ya existe")
         self._agents[agent.agent_id] = agent
 
-    def capabilities_of(self, agent_id: str) -> List[str]:
+    def capabilities_of(self, agent_id: str) -> list[str]:
         return list(self._agents[agent_id].capabilities)
 
-    def agents_for_capability(self, capability: str) -> List[AgentMetadata]:
+    def agents_for_capability(self, capability: str) -> list[AgentMetadata]:
         return [
             agent
             for agent in self._agents.values()
             if capability in agent.capabilities and agent.status == "active"
         ]
 
-    def summary(self) -> List[str]:
+    def summary(self) -> list[str]:
         rows = []
         for agent in self._agents.values():
             rows.append(

@@ -6,7 +6,6 @@ Módulo 02: Generative UI
 
 from dataclasses import dataclass, field
 
-
 ESQUEMAS = {
     "grafico_barras": {
         "campos_requeridos": ["titulo", "etiquetas", "valores"],
@@ -29,7 +28,9 @@ def validar_payload(tipo: str, datos: dict) -> list[str]:
             errores.append(f"Campo requerido ausente: {campo!r}")
     for campo, tipo_esp in esquema["tipos"].items():
         if campo in datos and not isinstance(datos[campo], tipo_esp):
-            errores.append(f"{campo!r}: se esperaba {tipo_esp.__name__}, se recibió {type(datos[campo]).__name__}")
+            errores.append(
+                f"{campo!r}: se esperaba {tipo_esp.__name__}, se recibió {type(datos[campo]).__name__}"
+            )
     return errores
 
 
@@ -47,7 +48,9 @@ class PayloadUI:
 
 def main():
     # Válido
-    p1 = PayloadUI("grafico_barras", {"titulo": "Stock", "etiquetas": ["A", "B"], "valores": [100, 200]})
+    p1 = PayloadUI(
+        "grafico_barras", {"titulo": "Stock", "etiquetas": ["A", "B"], "valores": [100, 200]}
+    )
     print(f"Payload 1 válido: {p1.valido}")
 
     # Inválido – campo faltante

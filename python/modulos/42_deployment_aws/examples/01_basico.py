@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Simulación básica del patrón AWS Lambda handler."""
 
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 
 
 @dataclass
@@ -38,8 +38,18 @@ def lambda_handler(event: dict, context: FakeContext) -> dict:
 def main() -> None:
     context = FakeContext("req-123", "ask-sage-lambda")
     print("=== Deployment AWS · Básico ===")
-    print(json.dumps(lambda_handler({"action": "run-agent", "payload": {"agent": "triage"}}, context), indent=2, ensure_ascii=False))
-    print(json.dumps(lambda_handler({"action": "delete-production"}, context), indent=2, ensure_ascii=False))
+    print(
+        json.dumps(
+            lambda_handler({"action": "run-agent", "payload": {"agent": "triage"}}, context),
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
+    print(
+        json.dumps(
+            lambda_handler({"action": "delete-production"}, context), indent=2, ensure_ascii=False
+        )
+    )
 
 
 if __name__ == "__main__":

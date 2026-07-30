@@ -6,12 +6,12 @@ from __future__ import annotations
 import queue
 import threading
 import time
-from typing import Iterator
+from collections.abc import Iterator
 
 END = object()
 
 
-def token_producer(text: str, outbox: "queue.Queue[object]") -> None:
+def token_producer(text: str, outbox: queue.Queue[object]) -> None:
     tokens = text.split()
     for index, token in enumerate(tokens, start=1):
         time.sleep(0.1)
@@ -30,7 +30,7 @@ def encode_sse(message: dict[str, object]) -> str:
     return "\n".join(lines) + "\n\n"
 
 
-def sse_stream(inbox: "queue.Queue[object]") -> Iterator[str]:
+def sse_stream(inbox: queue.Queue[object]) -> Iterator[str]:
     while True:
         item = inbox.get()
         if item is END:
@@ -40,7 +40,7 @@ def sse_stream(inbox: "queue.Queue[object]") -> Iterator[str]:
 
 def main() -> None:
     payload = "SSE envía eventos en una sola dirección usando una respuesta HTTP abierta."
-    inbox: "queue.Queue[object]" = queue.Queue()
+    inbox: queue.Queue[object] = queue.Queue()
     producer = threading.Thread(target=token_producer, args=(payload, inbox), daemon=True)
     producer.start()
 

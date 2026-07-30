@@ -144,7 +144,7 @@ import { z } from 'zod';
 
 export async function POST(req: Request) {
   const { message } = await req.json();
-  
+
   const result = await streamUI({
     model: bedrock,
     prompt: message,
@@ -154,7 +154,7 @@ export async function POST(req: Request) {
     },
     tools: {
       // Las herramientas que el LLM puede invocar
-      
+
       showStockComparison: {
         description: 'Muestra un gráfico comparativo de stock',
         parameters: z.object({
@@ -165,17 +165,17 @@ export async function POST(req: Request) {
           // 1. Backend obtiene los datos
           const dataA = await getStockData(drugA);
           const dataB = await getStockData(drugB);
-          
+
           // 2. Retorna un componente React
           return (
-            <StockComparisonChart 
+            <StockComparisonChart
               medicineA={{ name: drugA, data: dataA }}
               medicineB={{ name: drugB, data: dataB }}
             />
           );
         },
       },
-      
+
       showOrderForm: {
         description: 'Muestra formulario para hacer una orden',
         parameters: z.object({
@@ -184,9 +184,9 @@ export async function POST(req: Request) {
         }),
         generate: async ({ medicineId, quantity }) => {
           const price = await getPrice(medicineId);
-          
+
           return (
-            <OrderForm 
+            <OrderForm
               medicineId={medicineId}
               recommendedQty={quantity}
               pricePerUnit={price}
@@ -196,7 +196,7 @@ export async function POST(req: Request) {
       },
     },
   });
-  
+
   return result.toDataStream();
 }
 ```
@@ -237,11 +237,11 @@ export function StockComparisonChart({
       (locB) => locB.location === locA.location
     )?.quantity || 0,
   }));
-  
+
   return (
     <div className="chart-container">
       <h3>Comparación: {medicineA.name} vs {medicineB.name}</h3>
-      
+
       <BarChart width={500} height={300} data={chartData}>
         <XAxis dataKey="location" />
         <YAxis />
@@ -249,7 +249,7 @@ export function StockComparisonChart({
         <Bar dataKey={medicineA.name} fill="#8884d8" />
         <Bar dataKey={medicineB.name} fill="#82ca9d" />
       </BarChart>
-      
+
       <div className="summary">
         <p>
           <strong>{medicineA.name}</strong> tiene {
@@ -289,7 +289,7 @@ export default function ChatComponent() {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: '/api/chat',
   });
-  
+
   return (
     <div className="chat">
       <div className="messages">
@@ -300,7 +300,7 @@ export default function ChatComponent() {
           </div>
         ))}
       </div>
-      
+
       <form onSubmit={handleSubmit}>
         <input
           value={input}
@@ -354,9 +354,9 @@ export function OrderForm({
 }: OrderFormProps) {
   const [quantity, setQuantity] = useState(recommendedQty);
   const { pending } = useFormStatus();
-  
+
   const total = quantity * pricePerUnit;
-  
+
   async function handleOrder() {
     const response = await fetch('/api/orders', {
       method: 'POST',
@@ -365,16 +365,16 @@ export function OrderForm({
         quantity,
       }),
     });
-    
+
     if (response.ok) {
       alert('Orden creada!');
     }
   }
-  
+
   return (
     <div className="order-form">
       <h4>Crear Orden</h4>
-      
+
       <div className="form-group">
         <label>Cantidad</label>
         <input
@@ -384,13 +384,13 @@ export function OrderForm({
           min="1"
         />
       </div>
-      
+
       <div className="summary">
         <p>Precio unitario: ${pricePerUnit}</p>
         <p><strong>Total: ${total}</strong></p>
       </div>
-      
-      <button 
+
+      <button
         onClick={handleOrder}
         disabled={pending}
       >
@@ -574,7 +574,7 @@ npm run dev
 
 ---
 
-**Versión:** 1.0  
-**Duración estimada:** 90 minutos  
-**Dificultad:** 🔴 Avanzada  
+**Versión:** 1.0
+**Duración estimada:** 90 minutos
+**Dificultad:** 🔴 Avanzada
 **Requisitos:** React, TypeScript, Recharts

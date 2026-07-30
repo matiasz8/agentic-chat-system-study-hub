@@ -1,0 +1,40 @@
+# CI calls the same entry points a human calls.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: make check
+        run: make check
+
+  docs:
+    # The only job that needs Node.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install docs-site dependencies
+        working-directory: docs-site
+        run: npm install --no-audit --no-fund
+      - name: Build the docs site and its search index
+        working-directory: docs-site
+        run: npm run build

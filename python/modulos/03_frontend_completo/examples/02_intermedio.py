@@ -3,8 +3,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 ToolHandler = Callable[[dict[str, str]], dict[str, str]]
 
@@ -38,8 +38,7 @@ def run_agent_turn(user_message: str, registry: dict[str, ToolHandler]) -> str:
     tool_result = registry[call.name](call.payload)
     print(f"Herramienta respondió: {tool_result}")
     return (
-        f"Respuesta final del agente: usé {tool_result['tool']} y obtuve -> "
-        f"{tool_result['result']}"
+        f"Respuesta final del agente: usé {tool_result['tool']} y obtuve -> {tool_result['result']}"
     )
 
 

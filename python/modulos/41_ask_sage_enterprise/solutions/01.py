@@ -33,7 +33,9 @@ class TenantIsolationStore:
 def main() -> None:
     store = TenantIsolationStore()
     store.add_document(Document("acme", "Ventas", "Las cuotas se revisan cada trimestre."))
-    store.add_document(Document("globex", "Compliance", "El comité valida transacciones sensibles."))
+    store.add_document(
+        Document("globex", "Compliance", "El comité valida transacciones sensibles.")
+    )
     print("=== Solución 1 ===")
     print([doc.title for doc in store.search("acme", "¿Cómo se revisan las cuotas?")])
     print([doc.title for doc in store.search("globex", "¿Cómo se revisan las cuotas?")])

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Simulación avanzada del flujo completo de Ask Sage MVP."""
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
 import time
 import uuid
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
 
 @dataclass
@@ -37,11 +37,11 @@ class DocumentManager:
     def ingest(self, doc_id: str, text: str, tags: tuple[str, ...]) -> None:
         words = text.split()
         for index, start in enumerate(range(0, len(words), 12), start=1):
-            piece = " ".join(words[start:start + 12])
+            piece = " ".join(words[start : start + 12])
             self.chunks.append(Chunk(doc_id, f"{doc_id}-{index}", piece, tags))
 
     def retrieve(self, question: str, limit: int = 3) -> list[Chunk]:
-        tokens = {token.lower().strip('¿?.,') for token in question.split() if len(token) > 3}
+        tokens = {token.lower().strip("¿?.,") for token in question.split() if len(token) > 3}
         scored: list[tuple[int, Chunk]] = []
         for chunk in self.chunks:
             haystack = f"{' '.join(chunk.tags)} {chunk.text}".lower()
@@ -70,7 +70,9 @@ class MockLLM:
         if not chunks:
             response = "No tengo suficiente contexto para responder con confianza."
         else:
-            response = f"Respuesta guiada para '{question}': {'; '.join(chunk.text for chunk in chunks)}"
+            response = (
+                f"Respuesta guiada para '{question}': {'; '.join(chunk.text for chunk in chunks)}"
+            )
         print("Streaming:", end=" ")
         for token in response.split():
             print(token, end=" ", flush=True)
@@ -85,8 +87,16 @@ def main() -> None:
         raise SystemExit("API key inválida")
 
     docs = DocumentManager()
-    docs.ingest("policies", "La política de onboarding exige completar seguridad, acceso a herramientas y lectura de manuales durante la primera semana.", ("rrhh", "onboarding"))
-    docs.ingest("security", "La política de seguridad pide MFA, rotación de secretos y revisión trimestral de permisos privilegiados.", ("seguridad", "identidad"))
+    docs.ingest(
+        "policies",
+        "La política de onboarding exige completar seguridad, acceso a herramientas y lectura de manuales durante la primera semana.",
+        ("rrhh", "onboarding"),
+    )
+    docs.ingest(
+        "security",
+        "La política de seguridad pide MFA, rotación de secretos y revisión trimestral de permisos privilegiados.",
+        ("seguridad", "identidad"),
+    )
 
     sessions = SessionManager()
     session = sessions.start(user_id="ana")
@@ -99,7 +109,7 @@ def main() -> None:
 
     print("=== Ask Sage MVP · Avanzado ===")
     print(f"Sesión: {session.session_id}")
-    print(f"Timestamp: {datetime.now(timezone.utc).isoformat()}")
+    print(f"Timestamp: {datetime.now(UTC).isoformat()}")
     print("Chunks recuperados:")
     for chunk in retrieved:
         print(f"- {chunk.chunk_id} ({', '.join(chunk.tags)}): {chunk.text}")

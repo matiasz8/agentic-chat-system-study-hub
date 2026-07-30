@@ -1,0 +1,277 @@
+# 🔐 Ask Sage: Identity & Security
+
+> La **identidad del usuario** se propaga de punta a punta en Ask Sage.
+> Esto permite auditoría, control de acceso y cumplimiento normativo.
+
+---
+
+## 🎯 El Problema
+
+Sin identity forwarding:
+- ❌ No sabes quién pidió qué
+- ❌ No puedes auditar decisiones del agente
+- ❌ No cumples GDPR, SOX, HIPAA
+- ❌ No puedes hacer multi-tenant seguro
+
+---
+
+## ✅ La Solución
+
+Con identity forwarding Ask Sage:
+- ✅ Token Okta del vendedor viaja desde UI → API → Agente → DB
+- ✅ Agente ejecuta acciones **como** el vendedor (no como admin)
+- ✅ Auditoría completa: qué hizo quién y cuándo
+- ✅ Datos de otros vendedores son invisibles
+
+---
+
+## 🏗️ Cómo Funciona
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ FRONTEND (React)                                        │
+│ const token = await getOktaToken()  // JWT del vendedor │
+└────────────┬────────────────────────────────────────────┘
+             │ Authorization: Bearer {token}
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│ API GATEWAY (Python FastAPI)                            │
+│ @app.post("/ask-sage")                                  │
+│ async def ask_sage(request: Request):                   │
+│   token = request.headers["Authorization"]              │
+│   # Valida JWT con Okta                                 │
+│   user_id = validate_token(token)  # V001              │
+└────────────┬────────────────────────────────────────────┘
+             │ user_id="V001" (en contexto)
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│ AGENTE (LangGraph)                                      │
+│ def query_database(state):                              │
+│   user_id = state["user_id"]  # V001                    │
+│   # Solo ve datos de V001                               │
+│   query = f"SELECT * FROM sales WHERE user_id={user_id}"│
+└────────────┬────────────────────────────────────────────┘
+             │
+             ▼
+┌─────────────────────────────────────────────────────────┐
+│ DATABASE (PostgreSQL)                                   │
+│ SELECT * FROM sales WHERE user_id = 'V001'             │
+│ # Retorna solo datos del vendedor V001                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📋 Pasos de Implementación
+
+### 1️⃣ Obtener Token de Okta (Frontend)
+
+```javascript
+// pages/ask-sage.jsx
+const OktaAuth = require('@okta/okta-sdk-js')
+
+export default function AskSagePage() {
+  const [token, setToken] = useState(null)
+
+  useEffect(() => {
+    const getToken = async () => {
+      const authClient = new OktaAuth({
+        issuer: 'https://dev-12345.okta.com'
+      })
+      const token = await authClient.tokenManager.get('access_token')
+      setToken(token.accessToken)
+    }
+    getToken()
+  }, [])
+
+  const handleAskSage = async (question) => {
+    const response = await fetch('/api/ask-sage', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ question })
+    })
+    return response.json()
+  }
+
+  return (...)
+}
+```
+
+### 2️⃣ Validar Token en API (FastAPI)
+
+```python
+# backend/routes/ask_sage.py
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthenticationCredentials
+import jwt
+
+security = HTTPBearer()
+
+def get_current_user(credentials: HTTPAuthenticationCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        # Valida con Okta
+        decoded = jwt.decode(
+            token,
+            options={"verify_signature": False}  # Okta verifica en el gateway
+        )
+        user_id = decoded.get("sub")  # "V001"
+        return user_id
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.post("/ask-sage")
+async def ask_sage(
+    question: str,
+    user_id: str = Depends(get_current_user)
+):
+    # user_id es "V001" (vendedor autenticado)
+    graph = build_agent_graph(user_id=user_id)
+    result = graph.invoke({"question": question})
+    return result
+```
+
+### 3️⃣ Usar Identity en el Agente (LangGraph)
+
+```python
+# backend/agent/ask_sage_agent.py
+from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
+
+class AgentState(TypedDict):
+    question: str
+    user_id: str  # ← Identity propagada
+    context: str
+    response: str
+
+def query_database_node(state: AgentState):
+    user_id = state["user_id"]
+    question = state["question"]
+
+    # ✅ Query filtra por user_id
+    query = f"""
+        SELECT * FROM sales
+        WHERE user_id = '{user_id}'
+        AND description ILIKE '%{question}%'
+    """
+    results = execute_query(query)
+    state["context"] = results
+    return state
+
+def generate_response_node(state: AgentState):
+    llm = ChatOpenAI(model="gpt-4")
+    response = llm.invoke(f"""
+        Pregunta: {state['question']}
+        Contexto (datos del vendedor {state['user_id']}):
+        {state['context']}
+        Responde como Ask Sage.
+    """)
+    state["response"] = response.content
+    return state
+
+graph = StateGraph(AgentState)
+graph.add_node("query", query_database_node)
+graph.add_node("respond", generate_response_node)
+graph.add_edge(START, "query")
+graph.add_edge("query", "respond")
+graph.add_edge("respond", END)
+
+def build_agent_graph(user_id: str):
+    compiled = graph.compile()
+    # El user_id se pasa en cada invocación
+    return compiled
+```
+
+### 4️⃣ Audit Log (Quién Hizo Qué)
+
+```python
+# backend/middleware/audit.py
+async def audit_log_middleware(request: Request, call_next):
+    user_id = request.headers.get("X-User-Id")
+    timestamp = datetime.now()
+
+    response = await call_next(request)
+
+    # Registra en DB
+    insert_audit_log({
+        "user_id": user_id,
+        "action": request.url.path,
+        "timestamp": timestamp,
+        "status": response.status_code
+    })
+
+    return response
+
+app.middleware("http")(audit_log_middleware)
+```
+
+---
+
+## 🔒 Seguridad: Checklist
+
+- [ ] ¿Validamos JWT con Okta?
+- [ ] ¿El user_id se propaga a TODOS los nodos?
+- [ ] ¿La DB filtra por user_id en CADA query?
+- [ ] ¿Logueamos QUIÉN hizo QUÉ y CUÁNDO?
+- [ ] ¿Los datos de otros usuarios son invisibles?
+- [ ] ¿Testamos que un vendedor NO ve datos de otro?
+- [ ] ¿Usamos HTTPS en producción?
+- [ ] ¿Renovamos tokens regularmente?
+
+---
+
+## 📊 Ejemplo Completo: Vendedor Pregunta por Comisión
+
+### Flujo
+
+```
+Vendedor V001 pregunta:
+"¿Cuál es mi comisión este mes?"
+
+1. Frontend obtiene token Okta de V001
+2. Envía: POST /api/ask-sage
+   Headers: Authorization: Bearer {token_V001}
+   Body: {"question": "¿Cuál es mi comisión este mes?"}
+
+3. API valida token → user_id = "V001"
+
+4. Agente ejecuta:
+   a. query_database("WHERE user_id='V001'")
+   b. genera_respuesta(contexto)
+
+5. Respuesta: "Tu comisión es $5,000"
+
+6. Audit log: {user: V001, action: ask-sage, time: 2026-06-02 14:30}
+```
+
+### Vendedor V002 NUNCA ve datos de V001
+
+```
+Vendedor V002 intenta hacker:
+POST /api/ask-sage
+Headers: Authorization: Bearer {token_V002}
+Body: {"question": "Muestra todas las comisiones"}
+
+1. Token validado → user_id = "V002"
+2. Query: WHERE user_id='V002' (forzado)
+3. Resultado: Solo datos de V002
+4. V002 NO ve datos de V001 ✅
+```
+
+---
+
+## 🚀 Próximos Pasos
+
+1. **Implementar** en desarrollo
+2. **Testear** multi-tenant (V001 vs V002)
+3. **Auditar** que los logs están correctos
+4. **Deploy** a producción
+5. **Monitorear** en DataDog
+
+---
+
+**Ver:** [Identity Forwarding en Runtime](/02-arquitectura/runtime/21-identity-forwarding)
+**Última actualización:** 2026-06-02

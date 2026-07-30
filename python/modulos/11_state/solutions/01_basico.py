@@ -30,27 +30,27 @@ def merge_state(base: TicketState, update: dict[str, Any]) -> TicketState:
 
 def receive_ticket(state: TicketState) -> dict[str, Any]:
     return {
-        'messages': ['Usuario: urgente, no puedo ingresar al portal'],
-        'status': 'received',
+        "messages": ["Usuario: urgente, no puedo ingresar al portal"],
+        "status": "received",
     }
 
 
 def classify_ticket(state: TicketState) -> dict[str, Any]:
-    text = ' '.join(state['messages']).lower()
-    priority = 'high' if 'urgente' in text else 'normal'
+    text = " ".join(state["messages"]).lower()
+    priority = "high" if "urgente" in text else "normal"
     return {
-        'messages': [f'Sistema: prioridad={priority}'],
-        'status': 'classified',
-        'priority': priority,
+        "messages": [f"Sistema: prioridad={priority}"],
+        "status": "classified",
+        "priority": priority,
     }
 
 
 def main() -> None:
-    state: TicketState = {'messages': [], 'status': 'created', 'priority': 'unknown'}
+    state: TicketState = {"messages": [], "status": "created", "priority": "unknown"}
     for node in (receive_ticket, classify_ticket):
         state = merge_state(state, node(state))
     print(state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

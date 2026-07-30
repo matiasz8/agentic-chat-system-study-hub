@@ -3,7 +3,7 @@
 
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 @dataclass
@@ -20,7 +20,7 @@ class AuditLogger:
         self.events: list[AuditEvent] = []
 
     def record(self, tenant_id: str, user_id: str, question: str, outcome: str) -> None:
-        timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        timestamp = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         self.events.append(AuditEvent(tenant_id, user_id, question, outcome, timestamp))
 
 

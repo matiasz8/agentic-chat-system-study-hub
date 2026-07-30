@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from ipaddress import ip_address, ip_network
-from typing import Dict, List
 
 
 @dataclass
@@ -14,17 +13,19 @@ class Policy:
     principal: str
     action: str
     resource: str
-    conditions: Dict[str, object]
+    conditions: dict[str, object]
 
 
 class AuthorizationService:
-    def __init__(self, policies: List[Policy], groups: Dict[str, List[str]], parents: Dict[str, str]) -> None:
+    def __init__(
+        self, policies: list[Policy], groups: dict[str, list[str]], parents: dict[str, str]
+    ) -> None:
         self.policies = policies
         self.groups = groups
         self.parents = parents
-        self.audit: List[str] = []
+        self.audit: list[str] = []
 
-    def evaluate(self, principal: str, action: str, resource: str, context: Dict[str, str]) -> str:
+    def evaluate(self, principal: str, action: str, resource: str, context: dict[str, str]) -> str:
         principal_scope = {principal, *self.groups.get(principal, [])}
         resource_scope = {resource}
         current = resource
@@ -51,10 +52,12 @@ class AuthorizationService:
         else:
             decision = "DENY"
 
-        self.audit.append(f"{principal}:{action}:{resource} -> {decision} ({[p.policy_id for p in matched]})")
+        self.audit.append(
+            f"{principal}:{action}:{resource} -> {decision} ({[p.policy_id for p in matched]})"
+        )
         return decision
 
-    def _check_conditions(self, conditions: Dict[str, object], context: Dict[str, str]) -> bool:
+    def _check_conditions(self, conditions: dict[str, object], context: dict[str, str]) -> bool:
         if "tenant" in conditions and context.get("tenant") != conditions["tenant"]:
             return False
         if "ip_in" in conditions:
@@ -64,7 +67,11 @@ class AuthorizationService:
         if "time_between" in conditions:
             start, end = conditions["time_between"]
             current = datetime.strptime(context["time"], "%H:%M").time()
-            if not (datetime.strptime(start, "%H:%M").time() <= current <= datetime.strptime(end, "%H:%M").time()):
+            if not (
+                datetime.strptime(start, "%H:%M").time()
+                <= current
+                <= datetime.strptime(end, "%H:%M").time()
+            ):
                 return False
         return True
 
@@ -72,15 +79,33 @@ class AuthorizationService:
 def main() -> None:
     service = AuthorizationService(
         policies=[
-            Policy("p1", "permit", "group:analysts", "read", "folder:finance", {"tenant": "acme", "ip_in": ["10.0.0.0/24"], "time_between": ["08:00", "18:00"]}),
+            Policy(
+                "p1",
+                "permit",
+                "group:analysts",
+                "read",
+                "folder:finance",
+                {"tenant": "acme", "ip_in": ["10.0.0.0/24"], "time_between": ["08:00", "18:00"]},
+            ),
             Policy("p2", "forbid", "group:contractors", "read", "folder:finance", {}),
         ],
-        groups={"user:ana": ["group:analysts"], "user:bob": ["group:analysts", "group:contractors"]},
+        groups={
+            "user:ana": ["group:analysts"],
+            "user:bob": ["group:analysts", "group:contractors"],
+        },
         parents={"doc:q2": "folder:finance"},
     )
 
-    print(service.evaluate("user:ana", "read", "doc:q2", {"tenant": "acme", "ip": "10.0.0.3", "time": "09:00"}))
-    print(service.evaluate("user:bob", "read", "doc:q2", {"tenant": "acme", "ip": "10.0.0.4", "time": "09:00"}))
+    print(
+        service.evaluate(
+            "user:ana", "read", "doc:q2", {"tenant": "acme", "ip": "10.0.0.3", "time": "09:00"}
+        )
+    )
+    print(
+        service.evaluate(
+            "user:bob", "read", "doc:q2", {"tenant": "acme", "ip": "10.0.0.4", "time": "09:00"}
+        )
+    )
     print("\n".join(service.audit))
 
 

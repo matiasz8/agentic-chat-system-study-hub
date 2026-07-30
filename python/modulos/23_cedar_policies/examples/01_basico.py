@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fnmatch import fnmatch
-from typing import List
 
 
 @dataclass
@@ -15,7 +14,7 @@ class Policy:
 
 
 class CedarLikeEvaluator:
-    def __init__(self, policies: List[Policy]) -> None:
+    def __init__(self, policies: list[Policy]) -> None:
         self.policies = policies
 
     def evaluate(self, principal: str, action: str, resource: str) -> str:

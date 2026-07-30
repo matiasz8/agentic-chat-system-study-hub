@@ -33,8 +33,12 @@ def main():
     for nodo in ["inicio", "clasificar", "consultar", "responder", "fin"]:
         g.agregar_nodo(nodo)
 
-    for u, v in [("inicio", "clasificar"), ("clasificar", "consultar"),
-                 ("consultar", "responder"), ("responder", "fin")]:
+    for u, v in [
+        ("inicio", "clasificar"),
+        ("clasificar", "consultar"),
+        ("consultar", "responder"),
+        ("responder", "fin"),
+    ]:
         g.agregar_arista(u, v)
 
     print("Estructura del grafo:")

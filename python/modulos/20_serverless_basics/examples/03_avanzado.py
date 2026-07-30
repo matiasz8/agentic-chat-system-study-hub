@@ -9,16 +9,16 @@ Muestra los patrones avanzados de serverless:
   - Dead-Letter Queue (DLQ): mensajes que fallaron demasiadas veces.
 """
 
-import time
 import random
+import time
 import uuid
 from collections import deque
 from dataclasses import dataclass, field
 
-
 # ---------------------------------------------------------------------------
 # Modelos de mensajes
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class Mensaje:
@@ -32,6 +32,7 @@ class Mensaje:
 @dataclass
 class ColaDeTrabajo:
     """Simula una cola SQS con DLQ."""
+
     nombre: str
     _cola: deque = field(default_factory=deque, init=False)
     _dlq: list = field(default_factory=list, init=False)
@@ -67,6 +68,7 @@ class ColaDeTrabajo:
 # Worker con backoff exponencial
 # ---------------------------------------------------------------------------
 
+
 def _procesar_mensaje(mensaje: Mensaje) -> bool:
     """
     Simula el procesamiento. Falla ~40% del tiempo para demostrar reintentos.
@@ -81,7 +83,7 @@ def backoff_exponencial(intento: int, base_seg: float = 0.05) -> float:
     Calcula el tiempo de espera con jitter aleatorio.
     En AWS Lambda real, el backoff lo gestiona el servicio de cola.
     """
-    return base_seg * (2 ** intento) + random.uniform(0, 0.01)
+    return base_seg * (2**intento) + random.uniform(0, 0.01)
 
 
 def worker(cola: ColaDeTrabajo, max_mensajes: int = 10):
@@ -98,13 +100,15 @@ def worker(cola: ColaDeTrabajo, max_mensajes: int = 10):
             cola.marcar_procesado(msg)
             print(f"  [WORKER] ✅ {msg.id!r} procesado en intento {msg.intentos}")
             procesados += 1
-        except RuntimeError as exc:
+        except RuntimeError:
             if msg.intentos >= msg.max_intentos:
                 cola.enviar_dlq(msg)
             else:
                 espera = backoff_exponencial(msg.intentos)
-                print(f"  [WORKER] ⚠️  {msg.id!r} error (intento {msg.intentos}), "
-                      f"reintentando en {espera*1000:.0f} ms")
+                print(
+                    f"  [WORKER] ⚠️  {msg.id!r} error (intento {msg.intentos}), "
+                    f"reintentando en {espera * 1000:.0f} ms"
+                )
                 time.sleep(espera)
                 cola.reencolar(msg)
 
@@ -112,6 +116,7 @@ def worker(cola: ColaDeTrabajo, max_mensajes: int = 10):
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

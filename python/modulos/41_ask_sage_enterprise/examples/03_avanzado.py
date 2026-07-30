@@ -3,8 +3,7 @@
 
 from collections import Counter, deque
 from dataclasses import dataclass
-from datetime import datetime, timezone
-
+from datetime import UTC, datetime
 
 ROLE_PERMISSIONS = {
     "admin": {"read_public", "read_restricted", "audit"},
@@ -32,13 +31,15 @@ class AuditLogger:
         self.events: list[dict[str, str]] = []
 
     def record(self, tenant_id: str, user_id: str, question: str, outcome: str) -> None:
-        self.events.append({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "tenant_id": tenant_id,
-            "user_id": user_id,
-            "question": question,
-            "outcome": outcome,
-        })
+        self.events.append(
+            {
+                "timestamp": datetime.now(UTC).isoformat(),
+                "tenant_id": tenant_id,
+                "user_id": user_id,
+                "question": question,
+                "outcome": outcome,
+            }
+        )
 
 
 class UsageAnalytics:
@@ -71,7 +72,9 @@ class CircuitBreaker:
 
 
 def can_access(user: User, document: Document) -> bool:
-    return user.tenant_id == document.tenant_id and document.permission in ROLE_PERMISSIONS.get(user.role, set())
+    return user.tenant_id == document.tenant_id and document.permission in ROLE_PERMISSIONS.get(
+        user.role, set()
+    )
 
 
 def retrieve(question: str, user: User, documents: list[Document]) -> list[Document]:
@@ -88,17 +91,26 @@ def retrieve(question: str, user: User, documents: list[Document]) -> list[Docum
 
 def main() -> None:
     documents = [
-        Document("acme", "Guía pública", "El soporte se atiende por portal interno.", "read_public"),
-        Document("acme", "Plan de auditoría", "Las revisiones trimestrales cubren accesos privilegiados y proveedores.", "read_restricted"),
+        Document(
+            "acme", "Guía pública", "El soporte se atiende por portal interno.", "read_public"
+        ),
+        Document(
+            "acme",
+            "Plan de auditoría",
+            "Las revisiones trimestrales cubren accesos privilegiados y proveedores.",
+            "read_restricted",
+        ),
     ]
     user = User("sofia", "acme", "admin")
     audit = AuditLogger()
     breaker = CircuitBreaker(threshold=2)
-    questions = deque([
-        ("¿Qué cubren las revisiones trimestrales?", False),
-        ("¿Qué cubren las revisiones trimestrales?", True),
-        ("¿Qué cubren las revisiones trimestrales?", True),
-    ])
+    questions = deque(
+        [
+            ("¿Qué cubren las revisiones trimestrales?", False),
+            ("¿Qué cubren las revisiones trimestrales?", True),
+            ("¿Qué cubren las revisiones trimestrales?", True),
+        ]
+    )
 
     print("=== Ask Sage Enterprise · Avanzado ===")
     while questions:

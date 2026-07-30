@@ -4,14 +4,14 @@ Solución 02 – Middleware de logging y límite de tokens
 Módulo 00: Introducción al Vercel AI SDK
 """
 
-import time
 import functools
-from typing import Callable
-
+import time
+from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # Decoradores (middleware)
 # ---------------------------------------------------------------------------
+
 
 def registrar_llamada(func: Callable) -> Callable:
     @functools.wraps(func)
@@ -27,6 +27,7 @@ def registrar_llamada(func: Callable) -> Callable:
             ms = (time.perf_counter() - ts) * 1000
             print(f"← ERROR en {ms:.1f} ms: {exc}")
             raise
+
     return wrapper
 
 
@@ -36,17 +37,18 @@ def limitar_tokens(max_tokens: int) -> Callable:
         def wrapper(proveedor, mensaje: str, *args, **kwargs):
             tokens = len(mensaje.split())
             if tokens > max_tokens:
-                raise ValueError(
-                    f"Mensaje demasiado largo: {tokens} tokens > máximo {max_tokens}"
-                )
+                raise ValueError(f"Mensaje demasiado largo: {tokens} tokens > máximo {max_tokens}")
             return func(proveedor, mensaje, *args, **kwargs)
+
         return wrapper
+
     return decorador
 
 
 # ---------------------------------------------------------------------------
 # Función principal con decoradores aplicados
 # ---------------------------------------------------------------------------
+
 
 class Proveedor:
     def __init__(self, nombre: str, modelo: str):

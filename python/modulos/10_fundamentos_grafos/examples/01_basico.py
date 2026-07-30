@@ -12,10 +12,10 @@ los nodos son funciones y las aristas son transiciones.
 
 from collections import defaultdict
 
-
 # ---------------------------------------------------------------------------
 # Representación de un grafo dirigido simple
 # ---------------------------------------------------------------------------
+
 
 class GrafoDirigido:
     """
@@ -65,6 +65,7 @@ class GrafoDirigido:
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 10 – Ejemplo 01: Grafo dirigido básico")
@@ -73,15 +74,15 @@ def main():
     # Crear el grafo (equivalente a un StateGraph de LangGraph)
     print("\n1. Definiendo nodos del grafo de agente farmacéutico:")
     g = GrafoDirigido()
-    g.agregar_nodo("inicio",       "punto de entrada del flujo")
-    g.agregar_nodo("clasificar",   "clasifica la intención del usuario")
+    g.agregar_nodo("inicio", "punto de entrada del flujo")
+    g.agregar_nodo("clasificar", "clasifica la intención del usuario")
     g.agregar_nodo("consultar_bd", "consulta el inventario en BD")
     g.agregar_nodo("generar_resp", "genera la respuesta final")
-    g.agregar_nodo("fin",          "nodo terminal")
+    g.agregar_nodo("fin", "nodo terminal")
 
     print("\n2. Conectando nodos con aristas:")
-    g.agregar_arista("inicio",       "clasificar")
-    g.agregar_arista("clasificar",   "consultar_bd")
+    g.agregar_arista("inicio", "clasificar")
+    g.agregar_arista("clasificar", "consultar_bd")
     g.agregar_arista("consultar_bd", "generar_resp")
     g.agregar_arista("generar_resp", "fin")
 

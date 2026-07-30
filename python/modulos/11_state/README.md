@@ -139,7 +139,7 @@ def merge_context(existing: dict, update: dict) -> dict:
 def filter_sensitive_logs(logs: list, new_logs: list) -> list:
     """Acumula logs pero sin datos sensibles"""
     return logs + [
-        log for log in new_logs 
+        log for log in new_logs
         if "password" not in str(log).lower()
     ]
 
@@ -224,7 +224,7 @@ class ValidationState(TypedDict):
     input_data: dict
     validation_errors: Annotated[list, add]  # Errores acumulados
     step: str  # "receive" → "validate" → "process" → "done"
-    
+
 # Si hay 3 errores en paso 1 y 2 en paso 2:
 # validation_errors = [error1, error2, error3, error4, error5]
 ```
@@ -274,7 +274,7 @@ def deduplicate_errors(existing: list, new_errors: list) -> list:
 class LoggingState(TypedDict):
     data: dict
     # TODO: Agrega campos de logging
-    
+
 # Cuando el state se actualice, debe:
 # - Registrar timestamp
 # - Registrar quién cambió qué
@@ -304,7 +304,7 @@ class LoggingState(TypedDict):
 
 ---
 
-**Última actualización:** 2026-05-31  
-**Dificultad:** ⭐⭐ Intermedia  
-**Duración estimada:** 90 minutos  
+**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐ Intermedia
+**Duración estimada:** 90 minutos
 **Prerequisitos:** Módulos 00-02 (Frontend) completados

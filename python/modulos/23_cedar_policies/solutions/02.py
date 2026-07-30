@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
@@ -14,7 +13,9 @@ class Policy:
 
 
 class GroupPolicyStore:
-    def __init__(self, policies: List[Policy], groups: Dict[str, List[str]], parents: Dict[str, str]) -> None:
+    def __init__(
+        self, policies: list[Policy], groups: dict[str, list[str]], parents: dict[str, str]
+    ) -> None:
         self.policies = policies
         self.groups = groups
         self.parents = parents
@@ -30,7 +31,9 @@ class GroupPolicyStore:
         matched = [
             policy
             for policy in self.policies
-            if policy.principal in principal_scope and policy.action == action and policy.resource in resource_scope
+            if policy.principal in principal_scope
+            and policy.action == action
+            and policy.resource in resource_scope
         ]
         if any(policy.effect == "forbid" for policy in matched):
             return "DENY"

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from collections import defaultdict, deque
-from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
-from typing import Any, Callable, Deque, Dict, List
 import json
 import time
+from collections import defaultdict, deque
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from typing import Any
 
 
 @dataclass
@@ -20,7 +21,7 @@ class AuditEvent:
 
 class AuditTrail:
     def __init__(self) -> None:
-        self.events: List[AuditEvent] = []
+        self.events: list[AuditEvent] = []
 
     def log(self, agent_id: str, tool_name: str, decision: str, detail: str) -> None:
         self.events.append(
@@ -38,7 +39,7 @@ class RateLimiter:
     def __init__(self, max_calls: int, window_seconds: int) -> None:
         self.max_calls = max_calls
         self.window_seconds = window_seconds
-        self.calls: Dict[str, Deque[float]] = defaultdict(deque)
+        self.calls: dict[str, deque[float]] = defaultdict(deque)
 
     def allow(self, agent_id: str) -> bool:
         now = time.time()
@@ -54,8 +55,8 @@ class RateLimiter:
 class GovernanceEngine:
     def __init__(
         self,
-        tools: Dict[str, Callable[..., Any]],
-        allowed_tools: Dict[str, set[str]],
+        tools: dict[str, Callable[..., Any]],
+        allowed_tools: dict[str, set[str]],
         max_calls: int,
         window_seconds: int,
         alert_threshold: int = 2,
@@ -65,10 +66,10 @@ class GovernanceEngine:
         self.rate_limiter = RateLimiter(max_calls=max_calls, window_seconds=window_seconds)
         self.audit = AuditTrail()
         self.alert_threshold = alert_threshold
-        self.denials: Dict[str, int] = defaultdict(int)
-        self.alerts: List[str] = []
+        self.denials: dict[str, int] = defaultdict(int)
+        self.alerts: list[str] = []
 
-    def invoke(self, agent_id: str, tool_name: str, **payload: Any) -> Dict[str, Any]:
+    def invoke(self, agent_id: str, tool_name: str, **payload: Any) -> dict[str, Any]:
         if tool_name not in self.allowed_tools.get(agent_id, set()):
             return self._deny(agent_id, tool_name, "deny", "Bloqueado por política")
 
@@ -83,7 +84,7 @@ class GovernanceEngine:
             self.audit.log(agent_id, tool_name, "error", str(exc))
             return {"status": "error", "error": str(exc)}
 
-    def _deny(self, agent_id: str, tool_name: str, decision: str, detail: str) -> Dict[str, Any]:
+    def _deny(self, agent_id: str, tool_name: str, decision: str, detail: str) -> dict[str, Any]:
         self.denials[agent_id] += 1
         self.audit.log(agent_id, tool_name, decision, detail)
         if self.denials[agent_id] >= self.alert_threshold:
@@ -96,7 +97,7 @@ class GovernanceEngine:
         return {"status": "denied", "reason": detail}
 
 
-def search_kb(query: str) -> List[str]:
+def search_kb(query: str) -> list[str]:
     return [f"Documento relevante sobre '{query}'", "Checklist de seguridad"]
 
 

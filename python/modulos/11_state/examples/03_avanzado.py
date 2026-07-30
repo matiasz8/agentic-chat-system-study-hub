@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated, Any, TypedDict, get_args, get_origin, get_type_hints
 
 
@@ -31,7 +31,7 @@ def merge_state(
 ) -> AuditState:
     merged = dict(base)
     hints = get_type_hints(AuditState, include_extras=True)
-    before_snapshot = dict(base['values'])
+    before_snapshot = dict(base["values"])
     for key, value in update.items():
         reducer = None
         annotation = hints.get(key)
@@ -46,26 +46,26 @@ def merge_state(
             merged[key] = value
     observer.on_update(
         {
-            'step': merged['current_step'],
-            'before': str(before_snapshot),
-            'after': str(merged['values']),
+            "step": merged["current_step"],
+            "before": str(before_snapshot),
+            "after": str(merged["values"]),
         }
     )
     return merged  # type: ignore[return-value]
 
 
 def enrich_customer(state: AuditState) -> dict[str, Any]:
-    new_values = dict(state['values'])
-    new_values['segment'] = 'vip' if state['values']['spend'] == 'high' else 'standard'
+    new_values = dict(state["values"])
+    new_values["segment"] = "vip" if state["values"]["spend"] == "high" else "standard"
     return {
-        'values': new_values,
-        'audit_log': [
+        "values": new_values,
+        "audit_log": [
             {
-                'timestamp': datetime.now(timezone.utc).isoformat(),
-                'change': 'segment calculated',
+                "timestamp": datetime.now(UTC).isoformat(),
+                "change": "segment calculated",
             }
         ],
-        'current_step': 'enriched',
+        "current_step": "enriched",
     }
 
 
@@ -73,14 +73,14 @@ def main() -> None:
     events: list[dict[str, str]] = []
     observer = StateObserver(on_update=events.append)
     state: AuditState = {
-        'values': {'customer_id': 'C-1', 'spend': 'high'},
-        'audit_log': [],
-        'current_step': 'created',
+        "values": {"customer_id": "C-1", "spend": "high"},
+        "audit_log": [],
+        "current_step": "created",
     }
     state = merge_state(state, enrich_customer(state), observer)
-    print('State final:', state)
-    print('Eventos observados:', events)
+    print("State final:", state)
+    print("Eventos observados:", events)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

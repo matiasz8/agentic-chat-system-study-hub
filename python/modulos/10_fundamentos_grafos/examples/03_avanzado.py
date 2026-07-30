@@ -11,18 +11,18 @@ Esta es la intuición detrás de LangGraph: un StateGraph donde el
 StateSchema define la memoria compartida y los nodos la modifican.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
-
 
 # ---------------------------------------------------------------------------
 # Estado compartido del agente (simula TypedDict / BaseModel de LangGraph)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class EstadoAgente:
     mensaje_usuario: str = ""
-    intencion: str = ""           # "consulta" | "accion" | "desconocida"
+    intencion: str = ""  # "consulta" | "accion" | "desconocida"
     resultado_bd: dict = field(default_factory=dict)
     respuesta_final: str = ""
     intentos: int = 0
@@ -32,6 +32,7 @@ class EstadoAgente:
 # ---------------------------------------------------------------------------
 # Funciones de nodo (cada una recibe y modifica el estado)
 # ---------------------------------------------------------------------------
+
 
 def nodo_clasificar(estado: EstadoAgente) -> EstadoAgente:
     """Clasifica la intención del usuario."""
@@ -70,8 +71,7 @@ def nodo_generar_respuesta(estado: EstadoAgente) -> EstadoAgente:
         )
     elif "accion" in estado.resultado_bd:
         estado.respuesta_final = (
-            f"Acción completada: {estado.resultado_bd['accion']} "
-            f"(ID: {estado.resultado_bd['id']})"
+            f"Acción completada: {estado.resultado_bd['accion']} (ID: {estado.resultado_bd['id']})"
         )
     else:
         estado.respuesta_final = "No pude entender tu solicitud. ¿Puedes reformularla?"
@@ -82,6 +82,7 @@ def nodo_generar_respuesta(estado: EstadoAgente) -> EstadoAgente:
 # ---------------------------------------------------------------------------
 # Máquina de estados (StateGraph minimalista)
 # ---------------------------------------------------------------------------
+
 
 class MaquinaEstados:
     def __init__(self, nodo_inicio: str, nodo_fin: str):
@@ -136,6 +137,7 @@ class MaquinaEstados:
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 10 – Ejemplo 03: Máquina de estados (StateGraph)")
@@ -143,9 +145,9 @@ def main():
 
     # Construir la máquina de estados
     grafo = MaquinaEstados(nodo_inicio="clasificar", nodo_fin="generar_respuesta")
-    grafo.agregar_nodo("clasificar",        nodo_clasificar)
-    grafo.agregar_nodo("consultar_bd",      nodo_consultar_bd)
-    grafo.agregar_nodo("accion",            nodo_accion)
+    grafo.agregar_nodo("clasificar", nodo_clasificar)
+    grafo.agregar_nodo("consultar_bd", nodo_consultar_bd)
+    grafo.agregar_nodo("accion", nodo_accion)
     grafo.agregar_nodo("generar_respuesta", nodo_generar_respuesta)
 
     # Arista condicional después de clasificar
@@ -158,9 +160,9 @@ def main():
             return "clasificar"  # reintentar
         return "generar_respuesta"
 
-    grafo.agregar_arista_condicional("clasificar",   router_clasificar)
+    grafo.agregar_arista_condicional("clasificar", router_clasificar)
     grafo.agregar_arista("consultar_bd", "generar_respuesta")
-    grafo.agregar_arista("accion",       "generar_respuesta")
+    grafo.agregar_arista("accion", "generar_respuesta")
 
     # Caso 1: consulta de stock
     print("\n--- Caso 1: Consulta de stock ---")

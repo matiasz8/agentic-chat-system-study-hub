@@ -4,13 +4,13 @@ Ejemplo 3: Validación de Workflows - E2E Testing
 Cómo testear un workflow completo de principio a fin.
 """
 
-from validation.mock_llm import MockAnthropic, get_test_response
+from validation.mock_llm import MockAnthropic
 
 
 class SimpleWorkflow:
     """
     Workflow simplificado que simula un agente farmacéutico.
-    
+
     Flujo:
     1. Usuario pregunta
     2. Agente consulta BD
@@ -72,7 +72,7 @@ def test_workflow_happy_path():
     workflow = SimpleWorkflow()
     result = workflow.run("¿Cuál es el stock del Paracetamol?")
 
-    print(f"Input: '¿Cuál es el stock del Paracetamol?'")
+    print("Input: '¿Cuál es el stock del Paracetamol?'")
     print(f"Output: {result}")
     print(f"Status: {result['status']}")
 
@@ -93,7 +93,7 @@ def test_workflow_invalid_input():
     workflow = SimpleWorkflow()
     result = workflow.run("X")
 
-    print(f"Input: 'X'")
+    print("Input: 'X'")
     print(f"Output: {result}")
 
     assert result["status"] == "error", "Should fail"
@@ -178,9 +178,9 @@ def test_workflow_performance():
     avg_time = elapsed / 10
 
     print(f"10 llamadas en {elapsed:.2f}s")
-    print(f"Promedio: {avg_time*1000:.1f}ms por llamada")
+    print(f"Promedio: {avg_time * 1000:.1f}ms por llamada")
 
-    assert avg_time < 0.5, f"Should be < 500ms, was {avg_time*1000:.1f}ms"
+    assert avg_time < 0.5, f"Should be < 500ms, was {avg_time * 1000:.1f}ms"
     print("✅ Test 5 pasó!\n")
 
 

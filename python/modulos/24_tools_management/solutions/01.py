@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict
+from typing import Any
 
 
 @dataclass
 class Tool:
     name: str
     description: str
-    schema: Dict[str, Any]
+    schema: dict[str, Any]
     func: Callable[..., Any]
 
 
 class ToolRegistry:
     def __init__(self) -> None:
-        self.tools: Dict[str, Tool] = {}
+        self.tools: dict[str, Tool] = {}
 
     def register(self, tool: Tool) -> None:
         self.tools[tool.name] = tool
 
-    def invoke(self, name: str, payload: Dict[str, Any]) -> Any:
+    def invoke(self, name: str, payload: dict[str, Any]) -> Any:
         return self.tools[name].func(**payload)
 
 

@@ -35,3 +35,17 @@ dist/
 
 # Husky
 .husky/_
+
+# Local virtualenvs -- use uv, which manages .venv
+venv/
+.venv/
+
+# Secrets
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Node (docs-site only)
+docs-site/public/_pagefind/

@@ -1,8 +1,0 @@
-{
-  "00-contenido": "📖 Contenido",
-  "frontend": "🎨 Frontend & Streaming",
-  "orchestration": "🧠 Orchestration & Grafos",
-  "runtime": "⚙️ Runtime & AWS",
-  "data": "💾 Data Layer",
-  "observability": "📊 Observability"
-}

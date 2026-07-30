@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from fnmatch import fnmatch
 from ipaddress import ip_address, ip_network
-from typing import Dict, List
-import json
 
 
 @dataclass
@@ -16,7 +15,7 @@ class Policy:
     principal: str
     action: str
     resource: str
-    conditions: Dict[str, object] = field(default_factory=dict)
+    conditions: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -25,14 +24,14 @@ class Decision:
     action: str
     resource: str
     allow: bool
-    matched_policies: List[str]
+    matched_policies: list[str]
     reason: str
 
 
 class EntityGraph:
     def __init__(self) -> None:
-        self.principal_parents: Dict[str, List[str]] = {}
-        self.resource_parents: Dict[str, str] = {}
+        self.principal_parents: dict[str, list[str]] = {}
+        self.resource_parents: dict[str, str] = {}
 
     def add_principal_parent(self, principal: str, parent: str) -> None:
         self.principal_parents.setdefault(principal, []).append(parent)
@@ -61,23 +60,27 @@ class EntityGraph:
 
 
 class AuthorizationService:
-    def __init__(self, policies: List[Policy], entity_graph: EntityGraph) -> None:
+    def __init__(self, policies: list[Policy], entity_graph: EntityGraph) -> None:
         self.policies = policies
         self.entity_graph = entity_graph
-        self.audit_log: List[Decision] = []
+        self.audit_log: list[Decision] = []
 
-    def evaluate(self, principal: str, action: str, resource: str, context: Dict[str, str]) -> Decision:
+    def evaluate(
+        self, principal: str, action: str, resource: str, context: dict[str, str]
+    ) -> Decision:
         principal_scope = self.entity_graph.principal_scope(principal)
         resource_scope = self.entity_graph.resource_scope(resource)
-        matched: List[Policy] = []
+        matched: list[Policy] = []
 
         for policy in self.policies:
             if policy.principal != "*" and policy.principal not in principal_scope:
                 continue
             if not (policy.action == "*" or fnmatch(action, policy.action)):
                 continue
-            if policy.resource != "*" and policy.resource not in resource_scope and not any(
-                fnmatch(candidate, policy.resource) for candidate in resource_scope
+            if (
+                policy.resource != "*"
+                and policy.resource not in resource_scope
+                and not any(fnmatch(candidate, policy.resource) for candidate in resource_scope)
             ):
                 continue
             if not self._check_conditions(policy.conditions, context):
@@ -85,16 +88,30 @@ class AuthorizationService:
             matched.append(policy)
 
         if any(policy.effect == "forbid" for policy in matched):
-            decision = Decision(principal, action, resource, False, [p.policy_id for p in matched], "forbid explícito")
+            decision = Decision(
+                principal,
+                action,
+                resource,
+                False,
+                [p.policy_id for p in matched],
+                "forbid explícito",
+            )
         elif any(policy.effect == "permit" for policy in matched):
-            decision = Decision(principal, action, resource, True, [p.policy_id for p in matched], "permit encontrado")
+            decision = Decision(
+                principal,
+                action,
+                resource,
+                True,
+                [p.policy_id for p in matched],
+                "permit encontrado",
+            )
         else:
             decision = Decision(principal, action, resource, False, [], "default deny")
 
         self.audit_log.append(decision)
         return decision
 
-    def _check_conditions(self, conditions: Dict[str, object], context: Dict[str, str]) -> bool:
+    def _check_conditions(self, conditions: dict[str, object], context: dict[str, str]) -> bool:
         equals = conditions.get("equals", {})
         if isinstance(equals, dict):
             for key, expected in equals.items():
@@ -111,7 +128,11 @@ class AuthorizationService:
         if time_between:
             start, end = time_between
             current = datetime.strptime(context["time"], "%H:%M").time()
-            if not (datetime.strptime(start, "%H:%M").time() <= current <= datetime.strptime(end, "%H:%M").time()):
+            if not (
+                datetime.strptime(start, "%H:%M").time()
+                <= current
+                <= datetime.strptime(end, "%H:%M").time()
+            ):
                 return False
 
         return True
@@ -134,7 +155,11 @@ def main() -> None:
                 "group:analysts",
                 "read",
                 "folder:finance",
-                {"equals": {"tenant": "acme"}, "ip_in": ["10.0.0.0/24"], "time_between": ["08:00", "18:00"]},
+                {
+                    "equals": {"tenant": "acme"},
+                    "ip_in": ["10.0.0.0/24"],
+                    "time_between": ["08:00", "18:00"],
+                },
             ),
             Policy("forbid-contractors", "forbid", "group:contractors", "read", "folder:finance"),
             Policy("permit-admin-delete", "permit", "group:admins", "delete", "*"),

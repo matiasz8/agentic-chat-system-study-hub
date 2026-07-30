@@ -1,0 +1,334 @@
+# ⚙️ State 101: Manejo Básico de Estado
+
+> Aprende a manejar estado en aplicaciones con IA. Este ejercicio es el punto de partida para entender cómo guardar, validar y sincronizar estado en agentes.
+
+---
+
+## 🎯 Objetivo
+
+Construir un contador interactivo que:
+- ✅ Guarda estado en memoria
+- ✅ Persiste estado en localStorage
+- ✅ Sincroniza con servidor
+- ✅ Maneja errores de conexión
+- ✅ Valida cambios de estado
+
+---
+
+## 📋 Requisitos
+
+- Node.js 18+
+- React 18+
+- TypeScript (opcional pero recomendado)
+
+---
+
+## 🚀 Ejercicio Paso a Paso
+
+### Paso 1: Estado Local en Memoria
+
+```jsx
+import { useState } from 'react';
+
+export default function CounterV1() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+      <button onClick={() => setCount(count - 1)}>-1</button>
+    </div>
+  );
+}
+```
+
+**Problema:** Si recargamos la página, el contador se reinicia.
+
+---
+
+### Paso 2: Persistencia en localStorage
+
+```jsx
+import { useState, useEffect } from 'react';
+
+export default function CounterV2() {
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar estado desde localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('count');
+    if (saved) {
+      setCount(JSON.parse(saved));
+    }
+    setLoading(false);
+  }, []);
+
+  // Guardar estado a localStorage
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem('count', JSON.stringify(count));
+    }
+  }, [count, loading]);
+
+  if (loading) return <p>Cargando...</p>;
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+      <button onClick={() => setCount(count - 1)}>-1</button>
+      <button onClick={() => {
+        setCount(0);
+        localStorage.removeItem('count');
+      }}>Reset</button>
+    </div>
+  );
+}
+```
+
+**Mejora:** El estado persiste entre recargas.
+**Problema:** No sincroniza con otros usuarios o dispositivos.
+
+---
+
+### Paso 3: Sincronización con Servidor
+
+```jsx
+import { useState, useEffect } from 'react';
+
+export default function CounterV3() {
+  const [count, setCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Cargar estado del servidor
+  useEffect(() => {
+    async function fetchCount() {
+      try {
+        const res = await fetch('/api/count');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const { value } = await res.json();
+        setCount(value);
+      } catch (err) {
+        setError(err.message);
+        // Fallback a localStorage
+        const saved = localStorage.getItem('count');
+        if (saved) setCount(JSON.parse(saved));
+      }
+    }
+    fetchCount();
+  }, []);
+
+  // Sincronizar cambios al servidor
+  const handleIncrement = async () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    setSyncing(true);
+
+    try {
+      const res = await fetch('/api/count', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: newCount })
+      });
+      if (!res.ok) throw new Error('Failed to sync');
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      // Revertir en caso de error
+      setCount(count);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <button onClick={handleIncrement} disabled={syncing}>
+        {syncing ? 'Sincronizando...' : '+1'}
+      </button>
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+    </div>
+  );
+}
+```
+
+**Mejora:** Sincroniza con servidor.
+**Problema:** Si otros usuarios cambian el contador, no lo vemos en tiempo real.
+
+---
+
+### Paso 4: Validación de Estado
+
+```jsx
+// types.ts
+export interface CounterState {
+  value: number;
+  lastUpdated: Date;
+  userId: string;
+}
+
+// validator.ts
+export const validateCounterChange = (oldCount, newCount) => {
+  // Validaciones
+  const errors = [];
+
+  if (newCount < 0) errors.push('Count cannot be negative');
+  if (newCount > 1000) errors.push('Count cannot exceed 1000');
+  if (Math.abs(newCount - oldCount) > 10) {
+    errors.push('Change too large in single update');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+};
+
+// Counter.jsx
+import { validateCounterChange } from './validator';
+
+export default function CounterV4() {
+  const [count, setCount] = useState(0);
+  const [error, setError] = useState(null);
+
+  const handleChange = (newCount) => {
+    const validation = validateCounterChange(count, newCount);
+
+    if (!validation.valid) {
+      setError(validation.errors.join(', '));
+      return;
+    }
+
+    setCount(newCount);
+    setError(null);
+  };
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <button onClick={() => handleChange(count + 1)}>+1</button>
+      <button onClick={() => handleChange(count - 1)}>-1</button>
+      {error && <p style={{ color: 'red' }}>⚠️ {error}</p>}
+    </div>
+  );
+}
+```
+
+---
+
+### Paso 5: Manejo Avanzado (Optimistic Updates)
+
+```jsx
+export default function CounterV5() {
+  const [count, setCount] = useState(0);
+  const [pending, setPending] = useState([]);
+  const [serverCount, setServerCount] = useState(0);
+
+  // Optimistic update: mostrar cambio inmediatamente
+  // Mientras sincronizamos con servidor en background
+  const handleIncrement = async () => {
+    const newCount = count + 1;
+
+    // Mostrar cambio inmediatamente (optimistic)
+    setCount(newCount);
+    setPending([...pending, newCount]);
+
+    try {
+      const res = await fetch('/api/count', {
+        method: 'POST',
+        body: JSON.stringify({ value: newCount })
+      });
+
+      if (res.ok) {
+        const { value } = await res.json();
+        setServerCount(value);
+        setPending([]); // Limpiar pending
+      } else {
+        // Si falla, revertir
+        setCount(serverCount);
+        setPending([]);
+      }
+    } catch (err) {
+      setCount(serverCount);
+      setPending([]);
+    }
+  };
+
+  return (
+    <div>
+      <p>Contador: {count}</p>
+      <p style={{ opacity: 0.6 }}>Servidor: {serverCount}</p>
+      <button onClick={handleIncrement}>+1</button>
+      {pending.length > 0 && <p>📤 Sincronizando {pending.length} cambios...</p>}
+    </div>
+  );
+}
+```
+
+---
+
+## 📝 Tests
+
+```javascript
+// counter.test.js
+import { validateCounterChange } from './validator';
+
+describe('Counter State Management', () => {
+  it('allows valid increments', () => {
+    const result = validateCounterChange(5, 6);
+    expect(result.valid).toBe(true);
+  });
+
+  it('rejects negative values', () => {
+    const result = validateCounterChange(0, -1);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('Count cannot be negative');
+  });
+
+  it('rejects changes > 1000', () => {
+    const result = validateCounterChange(0, 1001);
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects large jumps', () => {
+    const result = validateCounterChange(0, 15);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('Change too large in single update');
+  });
+});
+```
+
+---
+
+## 🔗 Conceptos Relacionados
+
+- **State Management**: Redux, Zustand, Jotai
+- **Persistence**: localStorage, IndexedDB, SQLite
+- **Real-time Sync**: WebSockets, Server-Sent Events
+- **Conflict Resolution**: Operational Transformation, CRDT
+- **Agent State**: En agents, el estado es el contexto para tomar decisiones
+
+---
+
+## 🎓 Aprendizajes Clave
+
+1. **Estado en memoria** es rápido pero se pierde
+2. **localStorage** persiste pero es local y limitado (5-10MB)
+3. **Servidor** es source of truth pero require sincronización
+4. **Validación** previene cambios inválidos
+5. **Optimistic updates** hacen UX más rápida
+
+En el contexto de **agentes IA**:
+- El estado incluye contexto de conversación
+- Se valida antes de ejecutar acciones
+- Se sincroniza entre replicas del agente
+- Se audita para compliance
+
+---
+
+**Siguiente:** [Ejercicios Intermedios](/03-validacion/ejercicios/intermedio/00-contenido)
+**Anterior:** [Ejercicios Básicos](/03-validacion/ejercicios/basico/00-contenido)

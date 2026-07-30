@@ -4,9 +4,9 @@ Solución 03 – Registro de proveedores y streaming
 Módulo 00: Introducción al Vercel AI SDK
 """
 
-import time
 import random
-from typing import Iterator
+import time
+from collections.abc import Iterator
 
 
 class RegistroProveedores:
@@ -41,7 +41,9 @@ def main():
         registro.resolver("openai", "gpt-4o")
         print("\nStreaming con gpt-4o:")
         print("  ", end="", flush=True)
-        for token in stream_tokens("gpt-4o", "El stock es de 1500 unidades disponibles en sede central."):
+        for token in stream_tokens(
+            "gpt-4o", "El stock es de 1500 unidades disponibles en sede central."
+        ):
             print(token, end="", flush=True)
         print()
     except (KeyError, ValueError) as e:

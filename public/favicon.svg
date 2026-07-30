@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <!-- Background circle -->
   <circle cx="100" cy="100" r="100" fill="#0f172a"/>
-  
+
   <!-- Chat bubble background -->
   <g>
     <!-- Main chat bubble -->
@@ -9,7 +9,7 @@
     <!-- Chat bubble tail -->
     <polygon points="50,140 70,140 60,160" fill="#3b82f6" opacity="0.9"/>
   </g>
-  
+
   <!-- Medical cross (medicina) -->
   <g transform="translate(100, 85)">
     <!-- Vertical bar -->
@@ -17,7 +17,7 @@
     <!-- Horizontal bar -->
     <rect x="-25" y="-8" width="50" height="16" fill="white" rx="4"/>
   </g>
-  
+
   <!-- Sparkle stars (sabiduría/sage) -->
   <g fill="white" opacity="0.95">
     <!-- Top left star -->
@@ -27,7 +27,7 @@
     <!-- Bottom right star -->
     <circle cx="155" cy="120" r="3.5"/>
   </g>
-  
+
   <!-- Chat lines (para enfatizar el aspecto de chat) -->
   <line x1="50" y1="70" x2="90" y2="70" stroke="white" stroke-width="2" opacity="0.7" stroke-linecap="round"/>
   <line x1="50" y1="85" x2="110" y2="85" stroke="white" stroke-width="2" opacity="0.7" stroke-linecap="round"/>

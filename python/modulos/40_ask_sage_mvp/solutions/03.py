@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Solución del ejercicio 3 del módulo Ask Sage MVP."""
 
-from dataclasses import dataclass, field
 import uuid
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -18,10 +18,10 @@ class DocumentManager:
     def ingest(self, text: str) -> None:
         words = text.split()
         for start in range(0, len(words), 10):
-            self.chunks.append(" ".join(words[start:start + 10]))
+            self.chunks.append(" ".join(words[start : start + 10]))
 
     def retrieve(self, question: str) -> list[str]:
-        tokens = {token.lower().strip('¿?.,') for token in question.split() if len(token) > 3}
+        tokens = {token.lower().strip("¿?.,") for token in question.split() if len(token) > 3}
         return [chunk for chunk in self.chunks if any(token in chunk.lower() for token in tokens)]
 
 
@@ -44,7 +44,9 @@ class MockLLM:
 
 def main() -> None:
     docs = DocumentManager()
-    docs.ingest("Ask Sage conserva historial de sesiones y recupera chunks relevantes antes de responder al usuario final.")
+    docs.ingest(
+        "Ask Sage conserva historial de sesiones y recupera chunks relevantes antes de responder al usuario final."
+    )
     session = SessionManager().create()
     question = "¿Qué hace Ask Sage antes de responder?"
     answer = MockLLM().answer(question, docs.retrieve(question))

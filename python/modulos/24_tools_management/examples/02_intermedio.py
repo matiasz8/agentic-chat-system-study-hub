@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Tuple
+from typing import Any
 
-
-TYPE_MAP: Dict[str, Tuple[type, ...]] = {
+TYPE_MAP: dict[str, tuple[type, ...]] = {
     "string": (str,),
     "integer": (int,),
     "number": (int, float),
@@ -23,18 +23,18 @@ class ToolExecutionError(RuntimeError):
 class ToolSpec:
     name: str
     func: Callable[..., Any]
-    input_schema: Dict[str, Any]
+    input_schema: dict[str, Any]
     output_type: type
 
 
 class ToolExecutor:
     def __init__(self) -> None:
-        self._tools: Dict[str, ToolSpec] = {}
+        self._tools: dict[str, ToolSpec] = {}
 
     def register(self, spec: ToolSpec) -> None:
         self._tools[spec.name] = spec
 
-    def invoke(self, name: str, payload: Dict[str, Any]) -> Any:
+    def invoke(self, name: str, payload: dict[str, Any]) -> Any:
         spec = self._tools[name]
         self._validate(payload, spec.input_schema)
         try:
@@ -47,7 +47,7 @@ class ToolExecutor:
             )
         return result
 
-    def _validate(self, payload: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate(self, payload: dict[str, Any], schema: dict[str, Any]) -> None:
         if schema.get("type") != "object" or not isinstance(payload, dict):
             raise ToolExecutionError("El payload debe ser un objeto")
         for key in schema.get("required", []):

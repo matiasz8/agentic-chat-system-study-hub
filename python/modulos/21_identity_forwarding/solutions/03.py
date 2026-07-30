@@ -4,23 +4,27 @@ Solución 03 – Registro de auditoría y motor de políticas
 Módulo 21: Identity Forwarding
 """
 
-import time
 import functools
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 POLITICAS = [
-    ("farmaceutico", "leer",     "stock"),
-    ("farmaceutico", "leer",     "reportes"),
-    ("supervisor",   "leer",     "stock"),
-    ("supervisor",   "escribir", "requisicion"),
-    ("administrador", "*",       "*"),
+    ("farmaceutico", "leer", "stock"),
+    ("farmaceutico", "leer", "reportes"),
+    ("supervisor", "leer", "stock"),
+    ("supervisor", "escribir", "requisicion"),
+    ("administrador", "*", "*"),
 ]
 
 
 def esta_autorizado(rol: str, accion: str, recurso: str) -> bool:
     for p_rol, p_acc, p_rec in POLITICAS:
-        if (p_rol == rol or p_rol == "*") and (p_acc == accion or p_acc == "*") and (p_rec == recurso or p_rec == "*"):
+        if (
+            (p_rol == rol or p_rol == "*")
+            and (p_acc == accion or p_acc == "*")
+            and (p_rec == recurso or p_rec == "*")
+        ):
             return True
     return False
 
@@ -30,7 +34,14 @@ class RegistroAuditoria:
         self._log: list[dict] = []
 
     def registrar(self, usuario: str, operacion: str, resultado: str):
-        self._log.append({"ts": time.strftime("%H:%M:%S"), "usuario": usuario, "op": operacion, "resultado": resultado})
+        self._log.append(
+            {
+                "ts": time.strftime("%H:%M:%S"),
+                "usuario": usuario,
+                "op": operacion,
+                "resultado": resultado,
+            }
+        )
         icono = "✅" if resultado == "ok" else "❌"
         print(f"  [AUDIT {icono}] {usuario} | {operacion} | {resultado}")
 
@@ -59,7 +70,9 @@ def autorizar(accion: str, recurso: str) -> Callable:
             resultado = func(ctx, *args, **kwargs)
             auditoria.registrar(ctx.usuario_id, f"{accion}:{recurso}", "ok")
             return resultado
+
         return wrapper
+
     return decorador
 
 
@@ -75,7 +88,7 @@ def crear_requisicion(ctx: Ctx) -> dict:
 
 def main():
     farm = Ctx("javier", "farmaceutico")
-    sup  = Ctx("mariana", "supervisor")
+    sup = Ctx("mariana", "supervisor")
 
     leer_stock(farm)
     leer_stock(sup)

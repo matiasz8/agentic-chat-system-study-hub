@@ -30,31 +30,31 @@ def merge_state(base: MessageState, update: dict[str, Any]) -> MessageState:
 
 def receive_message(state: MessageState) -> dict[str, Any]:
     return {
-        'messages': ['Usuario: Necesito ayuda con mi pedido'],
-        'current_step': 'received',
+        "messages": ["Usuario: Necesito ayuda con mi pedido"],
+        "current_step": "received",
     }
 
 
 def analyze_sentiment(state: MessageState) -> dict[str, Any]:
-    latest = state['messages'][-1].lower()
-    sentiment = 'negative' if 'ayuda' in latest else 'neutral'
+    latest = state["messages"][-1].lower()
+    sentiment = "negative" if "ayuda" in latest else "neutral"
     return {
-        'messages': [f'Sistema: sentiment={sentiment}'],
-        'current_step': 'analyzed',
-        'sentiment': sentiment,
+        "messages": [f"Sistema: sentiment={sentiment}"],
+        "current_step": "analyzed",
+        "sentiment": sentiment,
     }
 
 
 def main() -> None:
     state: MessageState = {
-        'messages': [],
-        'current_step': 'created',
-        'sentiment': 'unknown',
+        "messages": [],
+        "current_step": "created",
+        "sentiment": "unknown",
     }
     for node in (receive_message, analyze_sentiment):
         state = merge_state(state, node(state))
-    print('Estado final:', state)
+    print("Estado final:", state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

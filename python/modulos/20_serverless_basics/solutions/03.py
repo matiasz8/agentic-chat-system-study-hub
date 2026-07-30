@@ -59,7 +59,7 @@ def worker(cola: Cola):
             if m.intentos >= m.max_intentos:
                 cola.enviar_dlq(m)
             else:
-                time.sleep(0.02 * (2 ** m.intentos))
+                time.sleep(0.02 * (2**m.intentos))
                 cola.reencolar(m)
 
 

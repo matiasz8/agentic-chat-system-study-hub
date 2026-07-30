@@ -4,9 +4,9 @@ Testing Prompts - Ejemplos de cómo testear prompts y outputs de LLM
 FASE 3: Validation & Testing - Módulo 01
 """
 
-import pytest
 import json
-from typing import Dict, Any
+
+import pytest
 
 # Imports para testing
 from .mock_llm import MockAnthropic, get_test_response
@@ -70,8 +70,9 @@ class TestPromptValidation:
         )
 
         response_text = response.content[0].text
-        assert "Error" in response_text or "error" in response_text.lower(), \
+        assert "Error" in response_text or "error" in response_text.lower(), (
             "Should contain error message"
+        )
 
     def test_mock_llm_call_tracking(self):
         """
@@ -121,8 +122,9 @@ class TestPromptFormats:
         Test parametrizado: prueba múltiples inputs con expected outputs.
         """
         response = get_test_response(input_text)
-        assert expected_in_output in response or expected_in_output.lower() in response.lower(), \
+        assert expected_in_output in response or expected_in_output.lower() in response.lower(), (
             f"Expected '{expected_in_output}' in response: {response}"
+        )
 
     def test_response_type_is_string(self):
         """Verificar que la respuesta siempre es string"""
@@ -158,7 +160,7 @@ class TestPromptInjectionSafety:
         """
         special_inputs = [
             "¿Cuál es el stock del paracetamol? \n\n\n",
-            "{\"hack\": true}",
+            '{"hack": true}',
             "SELECT * FROM ...",
         ]
 

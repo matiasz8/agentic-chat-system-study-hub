@@ -7,15 +7,15 @@ Muestra cómo configurar parámetros del proveedor (temperatura, tokens máximos
 y cómo añadir middleware de logging/métricas antes y después de cada llamada.
 """
 
-import time
 import functools
-from dataclasses import dataclass, field
-from typing import Callable
-
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # Modelos de datos
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class ConfigProveedor:
@@ -39,12 +39,14 @@ class Respuesta:
 # Middleware (decorador de función)
 # ---------------------------------------------------------------------------
 
+
 def middleware_logging(func: Callable) -> Callable:
     """
     Middleware que registra cada llamada al SDK.
     Equivale al middleware customizable del Vercel AI SDK:
         wrapLanguageModel({ model, middleware: [...] })
     """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         ts_inicio = time.perf_counter()
@@ -58,12 +60,14 @@ def middleware_logging(func: Callable) -> Callable:
             duracion = (time.perf_counter() - ts_inicio) * 1000
             print(f"  [LOG] ← ERROR en {duracion:.1f} ms: {exc}")
             raise
+
     return wrapper
 
 
 # ---------------------------------------------------------------------------
 # Cliente del SDK
 # ---------------------------------------------------------------------------
+
 
 class ClienteSDK:
     def __init__(self, config: ConfigProveedor):
@@ -80,8 +84,7 @@ class ClienteSDK:
         tokens_in = len(contenido_usuario.split())
         tokens_out = min(self.config.max_tokens, 20)
         texto = (
-            f"[{self.config.modelo} T={self.config.temperatura}] "
-            f"Respondo a: «{contenido_usuario}»"
+            f"[{self.config.modelo} T={self.config.temperatura}] Respondo a: «{contenido_usuario}»"
         )
         return Respuesta(
             texto=texto,
@@ -96,6 +99,7 @@ class ClienteSDK:
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 00 – Ejemplo 02: Configuración y middleware")
@@ -105,11 +109,11 @@ def main():
     config = ConfigProveedor(
         nombre="anthropic",
         modelo="claude-3-5-sonnet",
-        temperatura=0.3,   # más determinista para farmacéutica
+        temperatura=0.3,  # más determinista para farmacéutica
         max_tokens=512,
         timeout_seg=15.0,
     )
-    print(f"\n1. Configuración del proveedor:")
+    print("\n1. Configuración del proveedor:")
     print(f"   Modelo      : {config.modelo}")
     print(f"   Temperatura : {config.temperatura}")
     print(f"   Max tokens  : {config.max_tokens}")
@@ -125,7 +129,7 @@ def main():
     respuesta = cliente.generar_texto(mensajes)
 
     # 3. Mostrar resultado
-    print(f"\n3. Resultado:")
+    print("\n3. Resultado:")
     print(f"   Texto        : {respuesta.texto}")
     print(f"   Tokens E/S   : {respuesta.tokens_entrada}/{respuesta.tokens_salida}")
     print(f"   Duración     : {respuesta.duracion_ms:.1f} ms")

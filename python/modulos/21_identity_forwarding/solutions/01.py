@@ -48,7 +48,14 @@ def main():
     token = crear_token("javier.garcia", ["consultar"])
 
     print("Caso 1 – Acceso permitido:")
-    print(api_gateway({"headers": {"Authorization": token}, "body": {"accion": "consultar", "medicamento_id": "MED-001"}}))
+    print(
+        api_gateway(
+            {
+                "headers": {"Authorization": token},
+                "body": {"accion": "consultar", "medicamento_id": "MED-001"},
+            }
+        )
+    )
 
     print("\nCaso 2 – Acceso denegado:")
     print(api_gateway({"headers": {"Authorization": token}, "body": {"accion": "cancelar"}}))

@@ -1,30 +1,37 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict
+from typing import Any
 
 
 @dataclass
 class ToolDefinition:
     name: str
     description: str
-    schema: Dict[str, Any]
+    schema: dict[str, Any]
     func: Callable[..., Any]
 
 
 class ToolRegistry:
     def __init__(self) -> None:
-        self._tools: Dict[str, ToolDefinition] = {}
+        self._tools: dict[str, ToolDefinition] = {}
 
-    def register(self, name: str, description: str, schema: Dict[str, Any]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def register(
+        self, name: str, description: str, schema: dict[str, Any]
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             self._tools[name] = ToolDefinition(name, description, schema, func)
             return func
+
         return decorator
 
     def describe(self) -> list[str]:
-        return [f"- {tool.name}: {tool.description} | schema={tool.schema}" for tool in self._tools.values()]
+        return [
+            f"- {tool.name}: {tool.description} | schema={tool.schema}"
+            for tool in self._tools.values()
+        ]
 
     def invoke(self, name: str, **payload: Any) -> Any:
         return self._tools[name].func(**payload)

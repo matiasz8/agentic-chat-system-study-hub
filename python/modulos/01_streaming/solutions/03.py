@@ -6,12 +6,12 @@ from __future__ import annotations
 import queue
 import threading
 import time
-from typing import Iterable
+from collections.abc import Iterable
 
 END = object()
 
 
-def safe_put(outbox: "queue.Queue[object]", item: object, cancelled: threading.Event) -> bool:
+def safe_put(outbox: queue.Queue[object], item: object, cancelled: threading.Event) -> bool:
     while not cancelled.is_set():
         try:
             outbox.put(item, timeout=0.1)
@@ -21,7 +21,9 @@ def safe_put(outbox: "queue.Queue[object]", item: object, cancelled: threading.E
     return False
 
 
-def producer(tokens: Iterable[str], outbox: "queue.Queue[object]", cancelled: threading.Event) -> None:
+def producer(
+    tokens: Iterable[str], outbox: queue.Queue[object], cancelled: threading.Event
+) -> None:
     for token in tokens:
         if cancelled.is_set():
             break
@@ -32,8 +34,8 @@ def producer(tokens: Iterable[str], outbox: "queue.Queue[object]", cancelled: th
 
 
 def proxy(
-    inbox: "queue.Queue[object]",
-    consumers: list["queue.Queue[object]"],
+    inbox: queue.Queue[object],
+    consumers: list[queue.Queue[object]],
     cancelled: threading.Event,
 ) -> None:
     while True:
@@ -59,7 +61,7 @@ def proxy(
 
 def consumer(
     name: str,
-    inbox: "queue.Queue[object]",
+    inbox: queue.Queue[object],
     cancelled: threading.Event,
     delay: float,
     cancel_after: int | None = None,
@@ -87,15 +89,17 @@ def consumer(
 
 def main() -> None:
     cancelled = threading.Event()
-    source: "queue.Queue[object]" = queue.Queue(maxsize=2)
-    fast: "queue.Queue[object]" = queue.Queue(maxsize=2)
-    slow: "queue.Queue[object]" = queue.Queue(maxsize=2)
-    tokens = "proxy de streaming con cancelación cooperativa".split()
+    source: queue.Queue[object] = queue.Queue(maxsize=2)
+    fast: queue.Queue[object] = queue.Queue(maxsize=2)
+    slow: queue.Queue[object] = queue.Queue(maxsize=2)
+    tokens = ["proxy", "de", "streaming", "con", "cancelación", "cooperativa"]
 
     threads = [
         threading.Thread(target=producer, args=(tokens, source, cancelled), daemon=True),
         threading.Thread(target=proxy, args=(source, [fast, slow], cancelled), daemon=True),
-        threading.Thread(target=consumer, args=("rápido", fast, cancelled, 0.03, None), daemon=True),
+        threading.Thread(
+            target=consumer, args=("rápido", fast, cancelled, 0.03, None), daemon=True
+        ),
         threading.Thread(target=consumer, args=("lento", slow, cancelled, 0.15, 4), daemon=True),
     ]
 

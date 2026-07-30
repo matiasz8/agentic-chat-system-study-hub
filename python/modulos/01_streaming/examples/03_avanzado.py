@@ -6,8 +6,8 @@ from __future__ import annotations
 import queue
 import threading
 import time
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
 END = object()
 
@@ -18,7 +18,7 @@ class TokenEvent:
     token: str
 
 
-def safe_put(outbox: "queue.Queue[object]", item: object, cancelled: threading.Event) -> bool:
+def safe_put(outbox: queue.Queue[object], item: object, cancelled: threading.Event) -> bool:
     while not cancelled.is_set():
         try:
             outbox.put(item, timeout=0.1)
@@ -30,7 +30,7 @@ def safe_put(outbox: "queue.Queue[object]", item: object, cancelled: threading.E
 
 def safe_broadcast(
     item: object,
-    consumers: list["queue.Queue[object]"],
+    consumers: list[queue.Queue[object]],
     cancelled: threading.Event,
 ) -> None:
     for consumer in consumers:
@@ -45,7 +45,7 @@ def safe_broadcast(
 
 def slow_producer(
     tokens: Iterable[str],
-    outbox: "queue.Queue[object]",
+    outbox: queue.Queue[object],
     cancelled: threading.Event,
 ) -> None:
     for sequence, token in enumerate(tokens, start=1):
@@ -58,8 +58,8 @@ def slow_producer(
 
 
 def proxy(
-    source: "queue.Queue[object]",
-    consumers: list["queue.Queue[object]"],
+    source: queue.Queue[object],
+    consumers: list[queue.Queue[object]],
     cancelled: threading.Event,
 ) -> None:
     while True:
@@ -77,7 +77,7 @@ def proxy(
 
 def consumer(
     name: str,
-    inbox: "queue.Queue[object]",
+    inbox: queue.Queue[object],
     cancelled: threading.Event,
     delay: float,
     stop_after: int | None = None,
@@ -112,9 +112,9 @@ def main() -> None:
     tokens = texto.split()
 
     cancelled = threading.Event()
-    source: "queue.Queue[object]" = queue.Queue(maxsize=3)
-    fast_consumer: "queue.Queue[object]" = queue.Queue(maxsize=2)
-    slow_consumer: "queue.Queue[object]" = queue.Queue(maxsize=2)
+    source: queue.Queue[object] = queue.Queue(maxsize=3)
+    fast_consumer: queue.Queue[object] = queue.Queue(maxsize=2)
+    slow_consumer: queue.Queue[object] = queue.Queue(maxsize=2)
 
     threads = [
         threading.Thread(

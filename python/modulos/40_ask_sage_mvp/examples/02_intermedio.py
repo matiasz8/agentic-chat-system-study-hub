@@ -18,13 +18,21 @@ def split_into_chunks(text: str, chunk_size: int) -> list[Chunk]:
     words = text.split()
     chunks: list[Chunk] = []
     for index, start in enumerate(range(0, len(words), chunk_size), start=1):
-        chunk_words = words[start:start + chunk_size]
-        chunks.append(Chunk("playbook", f"playbook-{index}", " ".join(chunk_words), start, start + len(chunk_words) - 1))
+        chunk_words = words[start : start + chunk_size]
+        chunks.append(
+            Chunk(
+                "playbook",
+                f"playbook-{index}",
+                " ".join(chunk_words),
+                start,
+                start + len(chunk_words) - 1,
+            )
+        )
     return chunks
 
 
 def rank_chunks(question: str, chunks: list[Chunk]) -> list[Chunk]:
-    tokens = {token.lower().strip('¿?.,') for token in question.split() if len(token) > 3}
+    tokens = {token.lower().strip("¿?.,") for token in question.split() if len(token) > 3}
     scored: list[tuple[int, Chunk]] = []
     for chunk in chunks:
         score = sum(token in chunk.text.lower() for token in tokens)
@@ -36,13 +44,17 @@ def rank_chunks(question: str, chunks: list[Chunk]) -> list[Chunk]:
 
 def build_prompt(question: str, relevant_chunks: list[Chunk]) -> str:
     context = "\n".join(f"- {chunk.text}" for chunk in relevant_chunks[:2])
-    return f"Responde usando solo el contexto recuperado.\nPregunta: {question}\nContexto:\n{context}"
+    return (
+        f"Responde usando solo el contexto recuperado.\nPregunta: {question}\nContexto:\n{context}"
+    )
 
 
 def generate_mock_answer(question: str, relevant_chunks: list[Chunk]) -> str:
     if not relevant_chunks:
         return "No recuperé chunks útiles; necesito más documentos o una pregunta más específica."
-    summary = "; ".join(shorten(chunk.text, width=80, placeholder="...") for chunk in relevant_chunks[:2])
+    summary = "; ".join(
+        shorten(chunk.text, width=80, placeholder="...") for chunk in relevant_chunks[:2]
+    )
     return f"Para '{question}', el contexto indica: {summary}"
 
 

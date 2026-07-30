@@ -1,0 +1,54 @@
+# Cedar: Lenguaje de Políticas para Agentes
+
+> Cedar Policies
+Lenguaje para políticas de acceso.
+
+**Cedar** es un lenguaje de políticas creado por AWS. Define QUIÉN puede hacer QUÉ en tu agente.
+
+Piénsalo como un "contrato de seguridad" escrito en código. 📜
+
+---
+
+## 🔐 Cedar vs Otros Lenguajes
+
+```
+❌ Código tradicional:
+if user.role == "admin" and action == "delete" and resource.type == "critical":
+    # Permitir...
+
+✅ Cedar:
+permit(
+  principal == User::"admin",
+  action == Action::"delete",
+  resource == Database::"critical"
+);
+```
+
+**Ventajas de Cedar**:
+- Fácil de leer y verificar
+- Diseñado para seguridad (no como side-effect)
+- Auditable formalmente
+- Integrado en AWS AgentCore
+
+---
+
+## 💻 Nivel 1: Política Básica
+
+---
+
+## 💻 Nivel 2: Políticas Complejas
+
+**Lógica**:
+- `permit`: Explícitamente permitir
+- `when`: Condición adicional
+- `deny`: Explícitamente rechazar
+
+---
+
+## 💻 Nivel 3: Cedar en AWS
+
+---
+
+**Última actualización:** 2026-05-31
+**Dificultad:** ⭐⭐ Intermedia
+**Duración:** 60 minutos

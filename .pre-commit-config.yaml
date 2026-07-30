@@ -1,0 +1,30 @@
+# Deliberately fast. mypy and pytest are NOT here: a slow hook gets bypassed with
+# --no-verify, and a routinely bypassed hook is worse than no hook. `make check` is
+# the real gate.
+#
+# The ruff `rev` below MUST match the exact ruff pin in pyproject.toml. When they
+# drifted (project 0.16.0, hook 0.8.6) the two reformatted each other on every
+# commit, undoing what `make lint` had just approved.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+        # Lockfiles are meant to be committed and are legitimately large --
+        # agentic-chat's uv.lock is 540 KB and tripped the 500 KB default,
+        # silently aborting every commit. Exclude them; keep the guard for
+        # everything else, which is what it is actually for.
+        exclude: '^(uv\.lock|.*/?package-lock\.json)$'
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-yaml
+      - id: check-toml
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

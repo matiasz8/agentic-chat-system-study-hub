@@ -2,10 +2,9 @@
 import math
 import re
 from collections import Counter
-from typing import Iterable
+from collections.abc import Iterable
 
-
-TOKEN_PATTERN = re.compile(r'[a-záéíóúñ0-9]+', re.IGNORECASE)
+TOKEN_PATTERN = re.compile(r"[a-záéíóúñ0-9]+", re.IGNORECASE)
 
 
 def tokenize(text: str) -> list[str]:
@@ -47,21 +46,21 @@ def cosine_similarity(vector_a: list[float], vector_b: list[float]) -> float:
 
 def main() -> None:
     documents = [
-        'Python se usa para automatización y agentes.',
-        'Los embeddings sirven para búsqueda semántica.',
-        'Una base vectorial recupera documentos por similitud.',
+        "Python se usa para automatización y agentes.",
+        "Los embeddings sirven para búsqueda semántica.",
+        "Una base vectorial recupera documentos por similitud.",
     ]
-    query = 'python para búsqueda semántica'
+    query = "python para búsqueda semántica"
     embedder = FakeTfidfEmbedder(documents + [query])
     query_vector = embedder.embed(query)
 
-    print('=== Embeddings básicos y cosine similarity ===')
+    print("=== Embeddings básicos y cosine similarity ===")
     for document in documents:
         score = cosine_similarity(query_vector, embedder.embed(document))
-        print(f'- Score={score:.3f} :: {document}')
+        print(f"- Score={score:.3f} :: {document}")
 
     print("\nInterpretación: documentos con términos y contexto cercanos obtienen mejor score.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

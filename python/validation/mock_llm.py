@@ -4,19 +4,20 @@ Mock LLM para testing. Simula respuestas de Claude sin gastar dinero.
 FASE 3: Validation & Testing
 """
 
-from typing import Optional, Dict, Any
 from dataclasses import dataclass
 
 
 @dataclass
 class MockMessage:
     """Simula un mensaje de respuesta de Anthropic"""
+
     text: str
 
 
 @dataclass
 class MockResponse:
     """Simula una respuesta de Anthropic API"""
+
     content: list
 
 
@@ -29,15 +30,15 @@ class MockAnthropic:
     def __init__(self, api_key: str = "mock-key"):
         self.api_key = api_key
         self.call_count = 0
-        self.last_message = None
+        self.last_message: dict | None = None
 
     def create_message(
         self,
         model: str,
         max_tokens: int,
-        system: Optional[str] = None,
-        messages: Optional[list] = None,
-        **kwargs
+        system: str | None = None,
+        messages: list | None = None,
+        **kwargs,
     ) -> MockResponse:
         """
         Simula una llamada a API.
@@ -68,16 +69,12 @@ class MockAnthropic:
                 )
 
             elif "json" in user_content:
-                return MockResponse(
-                    content=[MockMessage(text='{"response": "valid json"}')]
-                )
+                return MockResponse(content=[MockMessage(text='{"response": "valid json"}')])
 
             elif "error" in user_content:
                 return MockResponse(
                     content=[
-                        MockMessage(
-                            text="Error: No tienes permiso para realizar esta acción."
-                        )
+                        MockMessage(text="Error: No tienes permiso para realizar esta acción.")
                     ]
                 )
 

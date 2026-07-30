@@ -184,10 +184,10 @@ class TestMyFeature:
         """
         # Setup
         mock = MockAnthropic()
-        
+
         # Action
         result = mock.create_message(...)
-        
+
         # Assert
         assert result is not None
 

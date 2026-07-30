@@ -33,8 +33,22 @@ class MultiTenantStore:
 
 def main() -> None:
     store = MultiTenantStore()
-    store.add_document(TenantDocument("acme", "doc-1", "Playbook comercial", "Las cuotas trimestrales se revisan con revenue operations."))
-    store.add_document(TenantDocument("globex", "doc-2", "Compliance financiero", "Las transferencias mayores a 10000 requieren doble aprobación."))
+    store.add_document(
+        TenantDocument(
+            "acme",
+            "doc-1",
+            "Playbook comercial",
+            "Las cuotas trimestrales se revisan con revenue operations.",
+        )
+    )
+    store.add_document(
+        TenantDocument(
+            "globex",
+            "doc-2",
+            "Compliance financiero",
+            "Las transferencias mayores a 10000 requieren doble aprobación.",
+        )
+    )
 
     print("=== Ask Sage Enterprise · Básico ===")
     acme_results = store.search("acme", "¿Cómo se revisan las cuotas?")

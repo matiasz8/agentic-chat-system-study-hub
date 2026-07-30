@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable
 
 ToolHandler = Callable[[dict[str, str]], dict[str, str]]
 
@@ -72,7 +72,9 @@ class ChatController:
                 self.set_state(TurnState.ERROR)
                 print(f"[error] intento {attempt}: {error}")
                 if attempt >= self.retry_limit:
-                    fallback = "No pude completar la acción; muestra un botón de reintento en la UI."
+                    fallback = (
+                        "No pude completar la acción; muestra un botón de reintento en la UI."
+                    )
                     self.add_message("assistant", fallback)
                     print(f"[assistant] {fallback}")
                     self.set_state(TurnState.IDLE)

@@ -3,7 +3,6 @@
 
 from dataclasses import dataclass
 
-
 ROLE_PERMISSIONS = {
     "admin": {"read_public", "read_restricted"},
     "editor": {"read_public", "read_restricted"},
@@ -27,7 +26,9 @@ class Document:
 
 
 def can_access(user: User, document: Document) -> bool:
-    return user.tenant_id == document.tenant_id and document.permission in ROLE_PERMISSIONS[user.role]
+    return (
+        user.tenant_id == document.tenant_id and document.permission in ROLE_PERMISSIONS[user.role]
+    )
 
 
 def search(user: User, question: str, documents: list[Document]) -> list[Document]:

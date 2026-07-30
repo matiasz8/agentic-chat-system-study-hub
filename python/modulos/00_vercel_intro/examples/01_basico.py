@@ -10,10 +10,10 @@ configurar el proveedor, construir el mensaje y procesar la respuesta.
 import json
 import time
 
-
 # ---------------------------------------------------------------------------
 # Simulación mínima del SDK (sin dependencias externas)
 # ---------------------------------------------------------------------------
+
 
 class ProveedorIA:
     """Representa un proveedor de modelos de lenguaje (ej. OpenAI, Anthropic)."""
@@ -51,6 +51,7 @@ def generar_texto(proveedor: ProveedorIA, mensajes: list[dict]) -> dict:
 # Flujo principal
 # ---------------------------------------------------------------------------
 
+
 def main():
     print("=" * 60)
     print("Módulo 00 – Ejemplo 01: Petición básica a proveedor IA")
@@ -65,7 +66,7 @@ def main():
         {"rol": "sistema", "content": "Eres un asistente farmacéutico de Ask Sage."},
         {"rol": "usuario", "content": "¿Cuál es el stock del medicamento X?"},
     ]
-    print(f"\n2. Mensajes preparados:")
+    print("\n2. Mensajes preparados:")
     for m in mensajes:
         print(f"   {m['rol'].upper()}: {m['content']}")
 

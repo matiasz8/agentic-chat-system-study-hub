@@ -1,0 +1,452 @@
+# Serverless en AWS
+
+> Serverless Basics
+Funciones sin gestión de servidores.
+
+# ☁️ Módulo 5: Serverless en AWS y Bedrock
+
+> **Cómo sube tu código Python a AWS y corre sin servidores físicos**
+
+---
+
+## 1️⃣ CONCEPTO: ¿Qué es Serverless?
+
+### La Idea Central
+
+**Antes (Servidor Tradicional):**
+```
+Tu máquina virtual vive 24/7
+Aunque nadie la use, gasta dinero
+
+Usuario 1: "¿Hola?"  → Tu servidor responde
+Usuario 2: "¿Hola?"  → Tu servidor responde
+Nadie: ...           → Tu servidor sigue corriendo (desperdicio)
+```
+
+**Con Serverless (AWS Lambda):**
+```
+Usuario 1: "¿Hola?" → AWS CREA una mini instancia
+                    → Tu código corre
+                    → Instancia desaparece
+                    → Pagas solo esos milisegundos
+
+Usuario 2: "¿Hola?" → AWS CREA otra mini instancia
+                    → Tu código corre
+                    → Instancia desaparece
+                    → Pagas solo esos milisegundos
+
+Nadie:               → Nada corre, NO pagas nada
+```
+
+### El Problema: "Stateless"
+
+**El gran desafío del serverless:**
+
+```
+Instancia 1 (Usuario 1)
+└── Variables locales: contexto_usuario = {...}
+    Instancia desaparece
+    Variables SE PIERDEN ❌
+
+Instancia 2 (Usuario 1 pregunta de nuevo)
+└── "¿Dónde está contexto_usuario?"
+    NO EXISTE
+    Necesita venir de una BD ✅
+```
+
+**Por eso LangGraph con Checkpoints es PERFECTO para serverless:**
+- Cada ejecución guarda en BD
+- Siguiente ejecución carga de BD
+- Sin pérdida de contexto
+
+---
+
+## 2️⃣ PARA QUÉ SIRVE
+
+### Caso 1: Ask Sage en AWS
+
+```
+Javier abre Ask Sage (10 AM)
+└─ AWS crea mini instancia
+   └─ Tu código LangGraph corre
+      └─ "¿Qué quieres, Javier?"
+         Javier: "Stock del medicamento X"
+         AWS guarda respuesta en BD (Checkpoint)
+         Instancia se destruye
+         ⏱️ 0.5 segundos = $0.0001
+
+Mariana abre Ask Sage (10:05 AM, otra región)
+└─ AWS crea OTRA mini instancia EN PARALELO
+   └─ Tu código LangGraph corre
+      └─ "¿Qué quieres, Mariana?"
+         Instancia se destruye
+         ⏱️ 0.8 segundos = $0.0002
+
+Javier hace otra pregunta (10:10 AM)
+└─ AWS crea TERCERA mini instancia
+   └─ Tu código carga el Checkpoint anterior
+      └─ "Hola Javier, continuamos..."
+         Instancia se destruye
+```
+
+**Ventajas:**
+- 2 usuarios simultáneos sin "esperar cola"
+- Pagas por lo que usas (no por máquina 24/7)
+- Escalado automático
+
+---
+
+## 3️⃣ HISTORIA: ¿Por Qué Serverless?
+
+### 2005-2020: La Era de los Servidores
+```
+Empresa: "Queremos una app"
+Opción 1: Servidor propio (caro, ruidoso)
+Opción 2: Hosting compartido (lento, limpio)
+Opción 3: VPS (control total, complicado)
+```
+
+### 2015-2024: Nace Serverless
+```
+Amazon crea AWS Lambda (2014)
+"Sube tu función Python, nosotros corremos"
+
+Ventajas:
+✅ No administras servidores
+✅ Escalado automático
+✅ Pagas por ejecución
+✅ Integración con otras AWS services
+
+Desventaja:
+❌ Tu código DEBE ser stateless
+❌ Máximo ~15 min de ejecución
+❌ Frío start (primero tarda más)
+```
+
+### 2024: Agentes de IA + Serverless
+
+**El problema:**
+```
+Agentes LLM pueden tardar mucho
+(pensar, consultar BD, repensar)
+Máx 15 min en Lambda no alcanza
+```
+
+**La solución: AWS AgentCore**
+```
+Diseñado ESPECÍFICAMENTE para agentes LLM
+Soporta ejecuciones largas
+Control de seguridad integrado
+Identity Forwarding automático
+```
+
+---
+
+## 4️⃣ EJEMPLOS BÁSICOS
+
+### Ejemplo 1: Lambda Tradicional vs Serverless
+
+**Servidor Tradicional (Heroku, Digital Ocean):**
+```python
+# Tu app vive siempre aquí
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    # Ejecuta
+    response = llm.invoke("¿Qué quieres?")
+    return {"response": response}
+
+if __name__ == "__main__":
+    app.run()  # Corre 24/7
+```
+
+**AWS Lambda Function (Serverless):**
+```python
+# Tu código SOLO corre cuando lo llaman
+def lambda_handler(event, context):
+    """
+    AWS llama a esta función
+    event = los datos que enviaron
+    context = info sobre la ejecución
+    """
+    user_message = event["body"]
+
+    # Procesa
+    response = llm.invoke(user_message)
+
+    return {
+        "statusCode": 200,
+        "body": response
+    }
+    # Función termina, instancia desaparece
+```
+
+**Diferencia clave:**
+- Servidor tradicional: Vive siempre
+- Lambda: Existe solo durante la ejecución
+
+---
+
+### Ejemplo 2: Stateless Design (Crítico para Serverless)
+
+**❌ MAL: Guardando estado en memoria**
+```python
+# ESTO NO FUNCIONA EN SERVERLESS
+memory = {}  # Variable global
+
+def lambda_handler(event, context):
+    user_id = event["user_id"]
+
+    # Guardas en memoria
+    memory[user_id] = {"last_question": "..."}
+
+    # Próxima ejecución (nueva instancia)
+    # memory está VACÍO
+    # El usuario perdió su contexto
+    return {}
+```
+
+**✅ BIEN: Guardando en BD**
+```python
+import boto3
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("UserContexts")
+
+def lambda_handler(event, context):
+    user_id = event["user_id"]
+
+    # Carga del último Checkpoint
+    response = table.get_item(Key={"user_id": user_id})
+    last_state = response.get("Item", {})
+
+    # Procesa con el estado anterior
+    new_state = process_with_llm(last_state)
+
+    # Guarda para próxima ejecución
+    table.put_item(Item={"user_id": user_id, "state": new_state})
+
+    return {"response": new_state}
+```
+
+**La regla de oro:**
+> En Serverless, **TODO lo que necesites después debe estar en una BD**, no en memoria.
+
+---
+
+### Ejemplo 3: AWS Bedrock (LLM en AWS)
+
+**Sintaxis tradicional (Anthropic directo):**
+```python
+from anthropic import Anthropic
+
+client = Anthropic()
+response = client.messages.create(
+    model="claude-3-5-sonnet",
+    messages=[{"role": "user", "content": "Hola"}]
+)
+```
+
+**Sintaxis con AWS Bedrock:**
+```python
+import boto3
+
+bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
+
+response = bedrock.invoke_model(
+    modelId="anthropic.claude-3-5-sonnet-20241022-v2:0",
+    body=json.dumps({
+        "messages": [{"role": "user", "content": "Hola"}],
+        "max_tokens": 1024
+    })
+)
+```
+
+**¿Por qué Bedrock en AWS?**
+- ✅ Identity Forwarding automático (próximo módulo)
+- ✅ Integración con AgentCore
+- ✅ Políticas Cedar de seguridad
+- ✅ Mismo presupuesto AWS (facturación integrada)
+
+---
+
+## 5️⃣ EJERCICIOS
+
+### Ejercicio 1: Diseña un Flujo Serverless
+
+**Enunciado:**
+Javier pregunta "¿Cuál es el stock?" en Ask Sage.
+
+Dibuja:
+1. ¿Dónde corre tu código?
+2. ¿Cómo se guarda el contexto?
+3. ¿Qué pasa en la próxima pregunta?
+
+**Solución esperada:**
+
+```
+EJECUCIÓN 1
+┌─────────────────┐
+│ AWS Lambda crea │
+│ mini instancia  │
+│ (milisegundos)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Carga checkpoint│
+│ de DynamoDB     │
+│ (Historial)     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ LangGraph       │
+│ ejecuta nodos   │
+│ + consulta BD   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Guarda nuevo    │
+│ checkpoint en   │
+│ DynamoDB        │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Instancia       │
+│ desaparece      │
+└─────────────────┘
+
+5 segundos después (EJECUCIÓN 2)
+
+┌─────────────────┐
+│ AWS Lambda crea │
+│ NUEVA instancia │
+│ (milisegundos)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Carga checkpoint│
+│ guardado antes  │
+│ "Javier, aquí  │
+│  estábamos..."  │
+└────────┬────────┘
+```
+
+---
+
+### Ejercicio 2: Identifica Errores Comunes
+
+**Código:**
+```python
+# Lambda function
+user_memory = {}  # ❌ ERROR?
+
+def lambda_handler(event, context):
+    user_id = event["user_id"]
+
+    if user_id in user_memory:
+        context = user_memory[user_id]
+    else:
+        context = {"history": []}
+
+    # Procesa
+    response = llm.invoke("Hola", context)
+
+    # Guarda en memoria
+    user_memory[user_id] = {"history": [...]}
+
+    return response
+```
+
+**Preguntas:**
+1. ¿Cuál es el error?
+2. ¿Cómo lo arreglas?
+3. ¿Qué BD usarías?
+
+**Respuesta:**
+```
+Error: user_memory es local. Cada invocación es una instancia nueva.
+Solución: Guardar en DynamoDB o RDS.
+
+Cuál BD:
+- DynamoDB: Si necesitas rápido, flexible
+- RDS (PostgreSQL): Si necesitas relaciones complejas
+- S3: Si necesitas guardar archivos
+```
+
+---
+
+## 🎯 Conceptos Clave
+
+| Término | Significado | En Agentes |
+|---------|-----------|-----------|
+| **Lambda** | Función en AWS que corre bajo demanda | Tu LangGraph |
+| **Stateless** | Sin memoria local persistente | TODO va a BD |
+| **Checkpoint** | Foto del Estado guardada | DynamoDB almacena |
+| **Cold Start** | Primer Lambda tarda más | ~100-200ms extra |
+| **Warm Start** | Lambda reutilizado | ~10ms |
+| **Bedrock** | LLM managed por AWS | Reemplaza Anthropic client |
+
+---
+
+## 📚 Próximo Módulo
+
+👉 **Módulo 6: AWS AgentCore (La Verdadera Magia)**
+
+Aquí es donde:
+- Identity Forwarding automático
+- Políticas Cedar de seguridad
+- Deployment de agentes
+
+---
+
+## 💡 Tips
+
+1. **Serverless es para APIs pequeñas y rápidas**
+   - Si tu función tarda > 5 minutos, reconsider
+   - Para agentes: AgentCore es mejor (próximo módulo)
+
+2. **Checkpoints son TU responsabilidad**
+   - LangGraph los guarda
+   - Pero TÚ defines dónde (DynamoDB, RDS, etc)
+
+3. **AWS gratis por 12 meses**
+   - Lambda: 1 millón de invocaciones gratis
+   - DynamoDB: 25GB gratis
+   - Usa sandbox para experimentar
+
+---
+
+**Versión:** 1.0
+**Duración estimada:** 60 minutos
+
+
+---
+
+## Código Fuente
+
+El código para este módulo está disponible en:
+
+\`\`\`
+python/modulos/20_serverless_basics/
+\`\`\`
+
+Incluye:
+- 📖 README.md (este contenido)
+- 💻 Ejemplos prácticos en `examples/`
+- 🏋️ Ejercicios en `exercises/`
+
+## Próximos Pasos
+
+Completa los ejercicios y procede al siguiente módulo.
+
+---
+
+**Última actualización:** 2026-05-31

@@ -11,7 +11,7 @@ def merge_unique_docs(
     seen: set[str] = set()
     merged: list[dict[str, str]] = []
     for item in current + update:
-        doc_id = item['id']
+        doc_id = item["id"]
         if doc_id not in seen:
             seen.add(doc_id)
             merged.append(item)
@@ -43,35 +43,35 @@ def merge_state(base: SearchState, update: dict[str, Any]) -> SearchState:
 
 
 def collect_query(state: SearchState) -> dict[str, Any]:
-    return {'queries': ['langgraph state'], 'current_step': 'query_collected'}
+    return {"queries": ["langgraph state"], "current_step": "query_collected"}
 
 
 def retrieve_docs(state: SearchState) -> dict[str, Any]:
     return {
-        'documents': [
-            {'id': 'doc-1', 'title': 'State guide'},
-            {'id': 'doc-2', 'title': 'Reducers'},
+        "documents": [
+            {"id": "doc-1", "title": "State guide"},
+            {"id": "doc-2", "title": "Reducers"},
         ],
-        'current_step': 'retrieved',
+        "current_step": "retrieved",
     }
 
 
 def rerank_docs(state: SearchState) -> dict[str, Any]:
     return {
-        'documents': [
-            {'id': 'doc-2', 'title': 'Reducers'},
-            {'id': 'doc-3', 'title': 'TypedDict patterns'},
+        "documents": [
+            {"id": "doc-2", "title": "Reducers"},
+            {"id": "doc-3", "title": "TypedDict patterns"},
         ],
-        'current_step': 'reranked',
+        "current_step": "reranked",
     }
 
 
 def main() -> None:
-    state: SearchState = {'queries': [], 'documents': [], 'current_step': 'created'}
+    state: SearchState = {"queries": [], "documents": [], "current_step": "created"}
     for node in (collect_query, retrieve_docs, rerank_docs):
         state = merge_state(state, node(state))
     print(state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

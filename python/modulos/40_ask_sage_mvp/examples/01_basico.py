@@ -1,13 +1,25 @@
 #!/usr/bin/env python3
 """Ejemplo básico de Ask Sage MVP con búsqueda en memoria."""
 
-from dataclasses import dataclass
 import re
-from typing import Iterable
 import unicodedata
+from collections.abc import Iterable
+from dataclasses import dataclass
 
-
-STOPWORDS = {"como", "qué", "que", "cual", "cuál", "existe", "una", "las", "los", "para", "politica", "política"}
+STOPWORDS = {
+    "como",
+    "qué",
+    "que",
+    "cual",
+    "cuál",
+    "existe",
+    "una",
+    "las",
+    "los",
+    "para",
+    "politica",
+    "política",
+}
 
 
 def normalize(text: str) -> str:
@@ -16,7 +28,11 @@ def normalize(text: str) -> str:
 
 
 def tokenize(text: str) -> list[str]:
-    return [token for token in re.findall(r"[a-z0-9]+", normalize(text)) if len(token) > 2 and token not in STOPWORDS]
+    return [
+        token
+        for token in re.findall(r"[a-z0-9]+", normalize(text))
+        if len(token) > 2 and token not in STOPWORDS
+    ]
 
 
 @dataclass
@@ -51,9 +67,21 @@ def answer_question(store: InMemoryDocumentStore, question: str) -> str:
 
 def main() -> None:
     documents = [
-        Document("hr-001", "Política de vacaciones", "Las vacaciones anuales incluyen 15 días hábiles y deben acordarse con el manager."),
-        Document("it-010", "Acceso remoto", "La VPN corporativa requiere autenticación multifactor y rotación trimestral de credenciales."),
-        Document("ops-201", "Mesa de ayuda", "Los incidentes críticos deben escalarse por Slack y registrarse en la mesa de ayuda."),
+        Document(
+            "hr-001",
+            "Política de vacaciones",
+            "Las vacaciones anuales incluyen 15 días hábiles y deben acordarse con el manager.",
+        ),
+        Document(
+            "it-010",
+            "Acceso remoto",
+            "La VPN corporativa requiere autenticación multifactor y rotación trimestral de credenciales.",
+        ),
+        Document(
+            "ops-201",
+            "Mesa de ayuda",
+            "Los incidentes críticos deben escalarse por Slack y registrarse en la mesa de ayuda.",
+        ),
     ]
     store = InMemoryDocumentStore(documents)
     questions = [

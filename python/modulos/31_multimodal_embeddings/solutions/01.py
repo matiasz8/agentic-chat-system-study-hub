@@ -2,10 +2,9 @@
 import math
 import re
 from collections import Counter
-from typing import Iterable
+from collections.abc import Iterable
 
-
-TOKEN_PATTERN = re.compile(r'[a-záéíóúñ0-9]+', re.IGNORECASE)
+TOKEN_PATTERN = re.compile(r"[a-záéíóúñ0-9]+", re.IGNORECASE)
 
 
 def tokenize(text: str) -> list[str]:
@@ -28,7 +27,10 @@ class SimilaritySearch:
     def _compute_idf(self) -> dict[str, float]:
         total = len(self.documents)
         return {
-            token: math.log((1 + total) / (1 + sum(1 for doc in self.documents if token in set(tokenize(doc))))) + 1
+            token: math.log(
+                (1 + total) / (1 + sum(1 for doc in self.documents if token in set(tokenize(doc))))
+            )
+            + 1
             for token in self.vocabulary
         }
 
@@ -45,15 +47,15 @@ class SimilaritySearch:
 
 def main() -> None:
     documents = [
-        'Embeddings densos capturan similitud semántica.',
-        'BM25 y TF-IDF son enfoques léxicos.',
-        'Las vector databases facilitan nearest-neighbor search.',
+        "Embeddings densos capturan similitud semántica.",
+        "BM25 y TF-IDF son enfoques léxicos.",
+        "Las vector databases facilitan nearest-neighbor search.",
     ]
     searcher = SimilaritySearch(documents)
-    print('=== Solución 01: SimilaritySearch ===')
-    for score, document in searcher.search('búsqueda semántica con vectores'):
-        print(f'{score:.3f} :: {document}')
+    print("=== Solución 01: SimilaritySearch ===")
+    for score, document in searcher.search("búsqueda semántica con vectores"):
+        print(f"{score:.3f} :: {document}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

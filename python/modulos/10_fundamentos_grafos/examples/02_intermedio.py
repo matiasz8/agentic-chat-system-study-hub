@@ -7,12 +7,12 @@ Muestra dos algoritmos de recorrido (BFS y DFS) sobre el grafo del agente,
 y cómo detectar ciclos (importante en LangGraph para evitar loops infinitos).
 """
 
-from collections import deque, defaultdict
-
+from collections import defaultdict, deque
 
 # ---------------------------------------------------------------------------
 # Grafo con algoritmos de recorrido
 # ---------------------------------------------------------------------------
+
 
 class GrafoConRecorrido:
     def __init__(self):
@@ -90,6 +90,7 @@ class GrafoConRecorrido:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

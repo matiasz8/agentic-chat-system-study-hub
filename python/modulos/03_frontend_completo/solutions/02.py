@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import time
-from typing import Callable
+from collections.abc import Callable
 
 ToolHandler = Callable[[dict[str, str]], dict[str, str]]
 
@@ -14,7 +14,9 @@ def search_docs(payload: dict[str, str]) -> dict[str, str]:
     return {"answer": f"Guía encontrada para {topic}"}
 
 
-def dispatch_tool(name: str, payload: dict[str, str], registry: dict[str, ToolHandler]) -> dict[str, str]:
+def dispatch_tool(
+    name: str, payload: dict[str, str], registry: dict[str, ToolHandler]
+) -> dict[str, str]:
     started = time.perf_counter()
     handler = registry.get(name)
     if handler is None:

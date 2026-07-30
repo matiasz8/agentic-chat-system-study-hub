@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
 
 
 @dataclass
@@ -15,7 +14,7 @@ class Message:
 
 @dataclass
 class ChatSession:
-    messages: List[Message] = field(default_factory=list)
+    messages: list[Message] = field(default_factory=list)
     turn_number: int = 0
 
     def add_message(self, role: str, content: str) -> None:

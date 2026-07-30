@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+import time
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List
-import time
+from typing import Any
 
 
 @dataclass
@@ -13,7 +15,7 @@ class ToolVersion:
     name: str
     version: str
     category: str
-    schema: Dict[str, Any]
+    schema: dict[str, Any]
     timeout_seconds: float
     func: Callable[..., Any]
 
@@ -28,20 +30,20 @@ class AuditEntry:
 
 class ToolManager:
     def __init__(self) -> None:
-        self._tools: Dict[str, Dict[str, ToolVersion]] = {}
-        self.audit: List[AuditEntry] = []
+        self._tools: dict[str, dict[str, ToolVersion]] = {}
+        self.audit: list[AuditEntry] = []
 
     def register(self, tool: ToolVersion) -> None:
         self._tools.setdefault(tool.name, {})[tool.version] = tool
 
-    def categories(self) -> Dict[str, List[str]]:
-        grouped: Dict[str, List[str]] = {}
+    def categories(self) -> dict[str, list[str]]:
+        grouped: dict[str, list[str]] = {}
         for versions in self._tools.values():
             latest = sorted(versions.values(), key=lambda item: item.version)[-1]
             grouped.setdefault(latest.category, []).append(f"{latest.name}@{latest.version}")
         return grouped
 
-    def invoke(self, name: str, payload: Dict[str, Any], version: str | None = None) -> Any:
+    def invoke(self, name: str, payload: dict[str, Any], version: str | None = None) -> Any:
         tool = self._resolve(name, version)
         self._validate(payload, tool.schema)
         sandbox_payload = deepcopy(payload)
@@ -52,7 +54,9 @@ class ToolManager:
                 self.audit.append(AuditEntry(tool.name, tool.version, "ok", repr(result)))
                 return result
             except FuturesTimeoutError:
-                self.audit.append(AuditEntry(tool.name, tool.version, "timeout", "Se excedió el timeout"))
+                self.audit.append(
+                    AuditEntry(tool.name, tool.version, "timeout", "Se excedió el timeout")
+                )
                 return {"status": "timeout", "tool": tool.name, "version": tool.version}
             except Exception as exc:
                 self.audit.append(AuditEntry(tool.name, tool.version, "error", str(exc)))
@@ -64,7 +68,7 @@ class ToolManager:
             return versions[version]
         return sorted(versions.values(), key=lambda item: item.version)[-1]
 
-    def _validate(self, payload: Dict[str, Any], schema: Dict[str, Any]) -> None:
+    def _validate(self, payload: dict[str, Any], schema: dict[str, Any]) -> None:
         for field in schema.get("required", []):
             if field not in payload:
                 raise ValueError(f"Falta {field}")
@@ -86,16 +90,26 @@ def slow_lookup(query: str) -> str:
 
 def main() -> None:
     manager = ToolManager()
-    manager.register(ToolVersion("summarize", "1.0.0", "nlp", {"required": ["text"]}, 1.0, summarize_v1))
-    manager.register(ToolVersion("summarize", "2.0.0", "nlp", {"required": ["text"]}, 1.0, summarize_v2))
-    manager.register(ToolVersion("slow_lookup", "1.0.0", "io", {"required": ["query"]}, 0.05, slow_lookup))
+    manager.register(
+        ToolVersion("summarize", "1.0.0", "nlp", {"required": ["text"]}, 1.0, summarize_v1)
+    )
+    manager.register(
+        ToolVersion("summarize", "2.0.0", "nlp", {"required": ["text"]}, 1.0, summarize_v2)
+    )
+    manager.register(
+        ToolVersion("slow_lookup", "1.0.0", "io", {"required": ["query"]}, 0.05, slow_lookup)
+    )
 
     print("== Categorías y tools activas ==")
     for category, tools in manager.categories().items():
         print(category, "->", tools)
 
     print("\n== Hot reload simulado (usa la versión más nueva) ==")
-    print(manager.invoke("summarize", {"text": "las tools necesitan validación, versionado y observabilidad"}))
+    print(
+        manager.invoke(
+            "summarize", {"text": "las tools necesitan validación, versionado y observabilidad"}
+        )
+    )
 
     print("\n== Invocación fija a versión anterior ==")
     print(manager.invoke("summarize", {"text": "texto corto para comparar"}, version="1.0.0"))

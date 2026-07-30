@@ -5,7 +5,6 @@ Cómo validar que un prompt devuelve JSON válido.
 """
 
 import json
-from typing import Optional
 
 
 def format_stock_response(medication: str, quantity: int) -> str:
@@ -13,15 +12,17 @@ def format_stock_response(medication: str, quantity: int) -> str:
     Simula respuesta de LLM para query de stock.
     En producción, esto vendría de Claude.
     """
-    return json.dumps({
-        "medication": medication,
-        "stock": quantity,
-        "status": "available" if quantity > 0 else "out_of_stock",
-        "timestamp": "2024-01-01T00:00:00Z"
-    })
+    return json.dumps(
+        {
+            "medication": medication,
+            "stock": quantity,
+            "status": "available" if quantity > 0 else "out_of_stock",
+            "timestamp": "2024-01-01T00:00:00Z",
+        }
+    )
 
 
-def validate_json_response(response: str) -> tuple[bool, Optional[dict], str]:
+def validate_json_response(response: str) -> tuple[bool, dict | None, str]:
     """
     Valida que la respuesta es JSON válido.
 
@@ -61,7 +62,7 @@ def test_prompt_validates_fields():
     for field in required_fields:
         assert field in data, f"Missing required field: {field}"
 
-    print(f"✅ All required fields present")
+    print("✅ All required fields present")
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ class Chunk:
 
 
 def rank_chunks(question: str, chunks: list[Chunk]) -> list[Chunk]:
-    tokens = {token.lower().strip('¿?.,') for token in question.split() if len(token) > 3}
+    tokens = {token.lower().strip("¿?.,") for token in question.split() if len(token) > 3}
     scored: list[tuple[int, Chunk]] = []
     for chunk in chunks:
         score = sum(token in chunk.text.lower() for token in tokens)

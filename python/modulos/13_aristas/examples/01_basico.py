@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import operator
-from typing import Annotated, Callable, TypedDict
+from collections.abc import Callable
+from typing import Annotated, TypedDict
 
 
 class PipelineState(TypedDict):
@@ -11,15 +12,15 @@ class PipelineState(TypedDict):
 
 
 def collect(state: PipelineState) -> dict[str, object]:
-    return {'steps': ['collect'], 'result': state['raw_text'].strip()}
+    return {"steps": ["collect"], "result": state["raw_text"].strip()}
 
 
 def uppercase(state: PipelineState) -> dict[str, object]:
-    return {'steps': ['uppercase'], 'result': state['result'].upper()}
+    return {"steps": ["uppercase"], "result": state["result"].upper()}
 
 
 def store(state: PipelineState) -> dict[str, object]:
-    return {'steps': ['store'], 'result': f'STORED::{state["result"]}'}
+    return {"steps": ["store"], "result": f"STORED::{state['result']}"}
 
 
 def apply_edge(
@@ -27,17 +28,17 @@ def apply_edge(
     state: PipelineState,
 ) -> PipelineState:
     update = node(state)
-    state['steps'] += update['steps']  # type: ignore[operator]
-    state['result'] = update['result']  # type: ignore[assignment]
+    state["steps"] += update["steps"]  # type: ignore[operator]
+    state["result"] = update["result"]  # type: ignore[assignment]
     return state
 
 
 def main() -> None:
-    state: PipelineState = {'raw_text': ' cerrar ticket ', 'steps': [], 'result': ''}
+    state: PipelineState = {"raw_text": " cerrar ticket ", "steps": [], "result": ""}
     for node in (collect, uppercase, store):
         state = apply_edge(node, state)
     print(state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

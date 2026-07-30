@@ -43,35 +43,35 @@ def merge_state(base: SearchState, update: dict[str, Any]) -> SearchState:
 
 
 def collect_query(state: SearchState) -> dict[str, Any]:
-    return {'queries': ['langgraph reducers'], 'current_step': 'query_collected'}
+    return {"queries": ["langgraph reducers"], "current_step": "query_collected"}
 
 
 def fetch_docs(state: SearchState) -> dict[str, Any]:
     return {
-        'documents': [
-            {'id': 'a', 'title': 'Reducers guide'},
-            {'id': 'b', 'title': 'TypedDict reference'},
+        "documents": [
+            {"id": "a", "title": "Reducers guide"},
+            {"id": "b", "title": "TypedDict reference"},
         ],
-        'current_step': 'docs_fetched',
+        "current_step": "docs_fetched",
     }
 
 
 def rerank_docs(state: SearchState) -> dict[str, Any]:
     return {
-        'documents': [
-            {'id': 'b', 'title': 'TypedDict reference'},
-            {'id': 'c', 'title': 'State merge patterns'},
+        "documents": [
+            {"id": "b", "title": "TypedDict reference"},
+            {"id": "c", "title": "State merge patterns"},
         ],
-        'current_step': 'reranked',
+        "current_step": "reranked",
     }
 
 
 def main() -> None:
-    state: SearchState = {'queries': [], 'documents': [], 'current_step': 'created'}
+    state: SearchState = {"queries": [], "documents": [], "current_step": "created"}
     for node in (collect_query, fetch_docs, rerank_docs):
         state = merge_state(state, node(state))
-    print('Documentos únicos:', state['documents'])
+    print("Documentos únicos:", state["documents"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

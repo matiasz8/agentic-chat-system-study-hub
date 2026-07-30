@@ -13,10 +13,8 @@ Implementado con Python stdlib + generadores (sin librerías externas).
 """
 
 import time
-import json
-from dataclasses import dataclass, field
-from typing import Iterator
-
+from collections.abc import Iterator
+from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # Registro de componentes UI
@@ -27,9 +25,11 @@ REGISTRO_COMPONENTES: dict[str, type] = {}
 
 def componente(nombre: str):
     """Decorador que registra una clase como componente UI."""
+
     def decorador(cls):
         REGISTRO_COMPONENTES[nombre] = cls
         return cls
+
     return decorador
 
 
@@ -81,6 +81,7 @@ class RequisicionForm:
 # Motor del agente (simula tool calls del LLM)
 # ---------------------------------------------------------------------------
 
+
 def _simular_tool_calls(mensaje_usuario: str) -> list[dict]:
     """
     El LLM real devolvería tool calls; aquí los simulamos.
@@ -124,6 +125,7 @@ def _simular_tool_calls(mensaje_usuario: str) -> list[dict]:
 # Pipeline: mensaje → tool calls → componentes streamados
 # ---------------------------------------------------------------------------
 
+
 def pipeline_generative_ui(mensaje: str) -> Iterator[str]:
     """
     Genera componentes UI de forma incremental (simulando streaming).
@@ -149,6 +151,7 @@ def pipeline_generative_ui(mensaje: str) -> Iterator[str]:
 # ---------------------------------------------------------------------------
 # Flujo principal
 # ---------------------------------------------------------------------------
+
 
 def main():
     print("=" * 60)

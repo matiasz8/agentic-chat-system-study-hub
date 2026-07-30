@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
-from typing import Any, Callable, Dict, List
-import json
+from typing import Any
 
 
 @dataclass
@@ -12,7 +13,7 @@ class AuditRecord:
     timestamp: str
     agent_id: str
     tool_name: str
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
     output: Any
     success: bool
     error: str | None = None
@@ -20,7 +21,7 @@ class AuditRecord:
 
 class AuditLogger:
     def __init__(self) -> None:
-        self.records: List[AuditRecord] = []
+        self.records: list[AuditRecord] = []
 
     def call(self, agent_id: str, tool_name: str, func: Callable[..., Any], **payload: Any) -> Any:
         timestamp = datetime.now(UTC).isoformat()
@@ -29,7 +30,9 @@ class AuditLogger:
             self.records.append(AuditRecord(timestamp, agent_id, tool_name, payload, output, True))
             return output
         except Exception as exc:
-            self.records.append(AuditRecord(timestamp, agent_id, tool_name, payload, None, False, str(exc)))
+            self.records.append(
+                AuditRecord(timestamp, agent_id, tool_name, payload, None, False, str(exc))
+            )
             raise
 
 
@@ -41,7 +44,9 @@ def uppercase_message(message: str) -> str:
 
 def main() -> None:
     logger = AuditLogger()
-    print(logger.call("agent-demo", "uppercase_message", uppercase_message, message="hola gobernanza"))
+    print(
+        logger.call("agent-demo", "uppercase_message", uppercase_message, message="hola gobernanza")
+    )
 
     try:
         logger.call("agent-demo", "uppercase_message", uppercase_message, message="")

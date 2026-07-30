@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from fnmatch import fnmatch
-from typing import Dict, List
 
 
 @dataclass
@@ -12,21 +11,21 @@ class Policy:
     principal: str
     action: str
     resource: str
-    conditions: Dict[str, str] = field(default_factory=dict)
+    conditions: dict[str, str] = field(default_factory=dict)
 
 
 class MultiPolicyEvaluator:
     def __init__(
         self,
-        policies: List[Policy],
-        principal_groups: Dict[str, List[str]],
-        resource_parents: Dict[str, str],
+        policies: list[Policy],
+        principal_groups: dict[str, list[str]],
+        resource_parents: dict[str, str],
     ) -> None:
         self.policies = policies
         self.principal_groups = principal_groups
         self.resource_parents = resource_parents
 
-    def evaluate(self, principal: str, action: str, resource: str, context: Dict[str, str]) -> str:
+    def evaluate(self, principal: str, action: str, resource: str, context: dict[str, str]) -> str:
         principal_scope = {principal, *self.principal_groups.get(principal, [])}
         resource_scope = self._resource_scope(resource)
         matched = []
@@ -61,7 +60,9 @@ class MultiPolicyEvaluator:
 def main() -> None:
     evaluator = MultiPolicyEvaluator(
         policies=[
-            Policy("permit", "group:analysts", "read", "folder:finance", {"environment": "internal"}),
+            Policy(
+                "permit", "group:analysts", "read", "folder:finance", {"environment": "internal"}
+            ),
             Policy("forbid", "group:interns", "read", "folder:finance"),
             Policy("permit", "user:cfo", "edit", "doc:budget"),
         ],
@@ -83,7 +84,9 @@ def main() -> None:
 
     print("== Grupos, jerarquías y contexto ==")
     for principal, action, resource, context in requests:
-        print(f"{principal} {action} {resource} {context} -> {evaluator.evaluate(principal, action, resource, context)}")
+        print(
+            f"{principal} {action} {resource} {context} -> {evaluator.evaluate(principal, action, resource, context)}"
+        )
 
 
 if __name__ == "__main__":

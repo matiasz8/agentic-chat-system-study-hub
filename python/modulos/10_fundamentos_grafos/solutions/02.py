@@ -4,7 +4,7 @@ Solución 02 – BFS/DFS y detección de ciclos
 Módulo 10: Fundamentos de Grafos
 """
 
-from collections import deque, defaultdict
+from collections import defaultdict, deque
 
 
 class GrafoConRecorrido:
@@ -54,8 +54,12 @@ class GrafoConRecorrido:
 
 def main():
     g1 = GrafoConRecorrido()
-    for u, v in [("inicio", "clasificar"), ("clasificar", "consultar"),
-                 ("consultar", "responder"), ("responder", "fin")]:
+    for u, v in [
+        ("inicio", "clasificar"),
+        ("clasificar", "consultar"),
+        ("consultar", "responder"),
+        ("responder", "fin"),
+    ]:
         g1.agregar_arista(u, v)
 
     print("Grafo acíclico:")
@@ -64,9 +68,13 @@ def main():
     print(f"  Ciclo: {g1.tiene_ciclo()}")
 
     g2 = GrafoConRecorrido()
-    for u, v in [("inicio", "clasificar"), ("clasificar", "ejecutar"),
-                 ("ejecutar", "verificar"), ("verificar", "clasificar"),
-                 ("verificar", "fin")]:
+    for u, v in [
+        ("inicio", "clasificar"),
+        ("clasificar", "ejecutar"),
+        ("ejecutar", "verificar"),
+        ("verificar", "clasificar"),
+        ("verificar", "fin"),
+    ]:
         g2.agregar_arista(u, v)
 
     print("\nGrafo con ciclo:")

@@ -11,7 +11,7 @@ Muestra:
 
 import random
 import time
-from typing import Iterator
+from collections.abc import Iterator
 
 # ---------------------------------------------------------------------------
 # Simulación de streaming (Server-Sent Events)
@@ -61,9 +61,7 @@ class RegistroProveedores:
     def __init__(self):
         self._proveedores: dict[str, dict] = {}
 
-    def registrar(
-        self, id_proveedor: str, modelos: list[str], region: str = "us-east-1"
-    ):
+    def registrar(self, id_proveedor: str, modelos: list[str], region: str = "us-east-1"):
         self._proveedores[id_proveedor] = {"modelos": modelos, "region": region}
         print(f"  [REGISTRY] Registrado: {id_proveedor} ({', '.join(modelos)})")
 

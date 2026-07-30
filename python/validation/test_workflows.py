@@ -4,8 +4,9 @@ Testing Workflows - Ejemplos de cómo testear LangGraph workflows
 FASE 3: Validation & Testing - Módulo 02
 """
 
+from unittest.mock import MagicMock
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 
 class MockState:
@@ -33,7 +34,7 @@ class MockState:
 class MockNode:
     """Mock Node para simular nodos de LangGraph"""
 
-    def __init__(self, name: str, output: dict = None):
+    def __init__(self, name: str, output: dict | None = None):
         self.name = name
         self.output = output or {}
         self.call_count = 0
@@ -193,10 +194,7 @@ class TestWorkflowErrorHandling:
         def validate_state(state: MockState) -> bool:
             """Valida que state tenga campos requeridos"""
             required_fields = ["user_id", "action"]
-            for field in required_fields:
-                if field not in state.data:
-                    return False
-            return True
+            return all(field in state.data for field in required_fields)
 
         state = MockState()
         assert not validate_state(state), "Should fail validation"
@@ -252,13 +250,12 @@ class TestWorkflowIntegration:
         """
 
         def execute_action(action: str) -> dict:
-            if action == "query":
-                return {"data": [1, 2, 3]}
-            elif action == "insert":
-                return {"status": "inserted"}
-            elif action == "delete":
-                return {"status": "deleted"}
-            return {}
+            results: dict[str, dict] = {
+                "query": {"data": [1, 2, 3]},
+                "insert": {"status": "inserted"},
+                "delete": {"status": "deleted"},
+            }
+            return results.get(action, {})
 
         result = execute_action(action)
         assert result == expected
@@ -271,8 +268,7 @@ class TestWorkflowMocking:
         """
         Test 11: Workflow que usa database mockeada.
         """
-        from unittest.mock import MagicMock
-        
+
         # Crear un mock directo sin patch
         mock_db = MagicMock()
         mock_db.return_value = [{"id": 1, "name": "Paracetamol"}]
@@ -286,8 +282,7 @@ class TestWorkflowMocking:
         """
         Test 12: Workflow que llama API mockeada.
         """
-        from unittest.mock import MagicMock
-        
+
         # Crear un mock directo sin patch
         mock_api = MagicMock()
         mock_api.return_value = {"status": 200, "data": "ok"}

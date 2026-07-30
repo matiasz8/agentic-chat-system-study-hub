@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Solución del ejercicio 2 del módulo Deployment AWS."""
 
-from dataclasses import asdict, dataclass, field
 import json
+from dataclasses import asdict, dataclass, field
 
 
 @dataclass

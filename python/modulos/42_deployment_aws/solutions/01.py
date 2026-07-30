@@ -27,10 +27,12 @@ def lambda_handler(event: dict) -> dict:
 
 
 def main() -> None:
-    event = {"Records": [
-        {"body": json.dumps({"action": "index-document", "document_id": "a1"})},
-        {"body": json.dumps({"action": "delete-prod", "document_id": "a2"})},
-    ]}
+    event = {
+        "Records": [
+            {"body": json.dumps({"action": "index-document", "document_id": "a1"})},
+            {"body": json.dumps({"action": "delete-prod", "document_id": "a2"})},
+        ]
+    }
     print("=== Solución 1 ===")
     print(json.dumps(lambda_handler(event), indent=2, ensure_ascii=False))
 

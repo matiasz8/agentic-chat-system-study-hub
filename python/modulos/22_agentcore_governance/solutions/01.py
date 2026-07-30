@@ -2,21 +2,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 
 @dataclass
 class Agent:
     agent_id: str
     name: str
-    capabilities: List[str]
+    capabilities: list[str]
     owner: str
     status: str
 
 
 class AgentRegistry:
     def __init__(self) -> None:
-        self._agents: Dict[str, Agent] = {}
+        self._agents: dict[str, Agent] = {}
 
     def add(self, agent: Agent) -> None:
         if agent.agent_id in self._agents:
@@ -26,7 +25,7 @@ class AgentRegistry:
     def get(self, agent_id: str) -> Agent:
         return self._agents[agent_id]
 
-    def find_by_capability(self, capability: str) -> List[Agent]:
+    def find_by_capability(self, capability: str) -> list[Agent]:
         return [agent for agent in self._agents.values() if capability in agent.capabilities]
 
 

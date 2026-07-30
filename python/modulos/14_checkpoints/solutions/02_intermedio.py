@@ -20,11 +20,11 @@ class CheckpointState(TypedDict):
 class DBCheckpoint:
     def __init__(self, db_path: Path) -> None:
         self.db_path = db_path
-        self.mode = 'sqlite' if sqlite3 is not None else 'json'
-        if self.mode == 'sqlite':
+        self.mode = "sqlite" if sqlite3 is not None else "json"
+        if self.mode == "sqlite":
             self.connection = sqlite3.connect(db_path)
             self.connection.execute(
-                '''
+                """
                 CREATE TABLE IF NOT EXISTS checkpoints (
                     thread_id TEXT,
                     version INTEGER,
@@ -32,67 +32,64 @@ class DBCheckpoint:
                     payload TEXT,
                     PRIMARY KEY (thread_id, version)
                 )
-                '''
+                """
             )
             self.connection.commit()
         else:
             self.connection = None
             if not self.db_path.exists():
-                self.db_path.write_text('[]', encoding='utf-8')
+                self.db_path.write_text("[]", encoding="utf-8")
 
     def save(self, state: CheckpointState) -> None:
-        if self.mode == 'sqlite':
+        if self.mode == "sqlite":
             assert self.connection is not None
             self.connection.execute(
-                'INSERT OR REPLACE INTO checkpoints VALUES (?, ?, ?, ?)',
+                "INSERT OR REPLACE INTO checkpoints VALUES (?, ?, ?, ?)",
                 (
-                    state['thread_id'],
-                    state['version'],
-                    state['step'],
-                    json.dumps(state['payload'], sort_keys=True),
+                    state["thread_id"],
+                    state["version"],
+                    state["step"],
+                    json.dumps(state["payload"], sort_keys=True),
                 ),
             )
             self.connection.commit()
             return
-        rows = json.loads(self.db_path.read_text(encoding='utf-8'))
+        rows = json.loads(self.db_path.read_text(encoding="utf-8"))
         rows = [
             row
             for row in rows
-            if not (
-                row['thread_id'] == state['thread_id']
-                and row['version'] == state['version']
-            )
+            if not (row["thread_id"] == state["thread_id"] and row["version"] == state["version"])
         ]
         rows.append(state)
-        rows.sort(key=lambda row: (row['thread_id'], row['version']))
-        self.db_path.write_text(json.dumps(rows, indent=2), encoding='utf-8')
+        rows.sort(key=lambda row: (row["thread_id"], row["version"]))
+        self.db_path.write_text(json.dumps(rows, indent=2), encoding="utf-8")
 
     def load_latest(self, thread_id: str) -> CheckpointState:
-        if self.mode == 'sqlite':
+        if self.mode == "sqlite":
             assert self.connection is not None
             row = self.connection.execute(
-                '''
+                """
                 SELECT thread_id, step, version, payload
                 FROM checkpoints
                 WHERE thread_id = ?
                 ORDER BY version DESC
                 LIMIT 1
-                ''',
+                """,
                 (thread_id,),
             ).fetchone()
             if row is None:
-                raise LookupError(f'Checkpoint not found for {thread_id}')
+                raise LookupError(f"Checkpoint not found for {thread_id}")
             return {
-                'thread_id': row[0],
-                'step': row[1],
-                'version': row[2],
-                'payload': json.loads(row[3]),
+                "thread_id": row[0],
+                "step": row[1],
+                "version": row[2],
+                "payload": json.loads(row[3]),
             }
-        rows = json.loads(self.db_path.read_text(encoding='utf-8'))
-        matches = [row for row in rows if row['thread_id'] == thread_id]
+        rows = json.loads(self.db_path.read_text(encoding="utf-8"))
+        matches = [row for row in rows if row["thread_id"] == thread_id]
         if not matches:
-            raise LookupError(f'Checkpoint not found for {thread_id}')
-        return max(matches, key=lambda row: row['version'])
+            raise LookupError(f"Checkpoint not found for {thread_id}")
+        return max(matches, key=lambda row: row["version"])
 
     def close(self) -> None:
         if self.connection is not None:
@@ -100,32 +97,32 @@ class DBCheckpoint:
 
 
 def main() -> None:
-    suffix = '.sqlite3' if sqlite3 is not None else '.json'
-    db_path = Path(__file__).with_name(f'runtime_solution_checkpoints{suffix}')
+    suffix = ".sqlite3" if sqlite3 is not None else ".json"
+    db_path = Path(__file__).with_name(f"runtime_solution_checkpoints{suffix}")
     store = DBCheckpoint(db_path)
     try:
         store.save(
             {
-                'thread_id': 'approval-7',
-                'step': 'collect',
-                'version': 1,
-                'payload': {'status': 'received'},
+                "thread_id": "approval-7",
+                "step": "collect",
+                "version": 1,
+                "payload": {"status": "received"},
             }
         )
         store.save(
             {
-                'thread_id': 'approval-7',
-                'step': 'approved',
-                'version': 2,
-                'payload': {'status': 'approved'},
+                "thread_id": "approval-7",
+                "step": "approved",
+                "version": 2,
+                "payload": {"status": "approved"},
             }
         )
-        print('Backend:', store.mode)
-        print(store.load_latest('approval-7'))
+        print("Backend:", store.mode)
+        print(store.load_latest("approval-7"))
     finally:
         store.close()
         db_path.unlink(missing_ok=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

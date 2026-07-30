@@ -79,7 +79,7 @@ def cancel_order(order_id):
     # ❌ ¿Quién está cancelando? ¿Tiene permisos?
     # ❌ ¿Dónde valido seguridad?
     # ❌ ¿Cómo sé que es el usuario legítimo?
-    
+
     order_db.delete(order_id)
     return "Cancelado"
 ```
@@ -89,11 +89,11 @@ def cancel_order(order_id):
 def cancel_order(order_id, context):
     # ✅ context.user_token = token legítimo del usuario
     # ✅ context.user_id = "javier@empresa.com"
-    
+
     # Valido con el token
     if not user_has_permission(context.user_token, "cancel_order"):
         raise PermissionError("No tienes permiso")
-    
+
     order_db.delete(order_id)
     return f"Cancelado por {context.user_id}"
 ```
@@ -171,14 +171,14 @@ def cancel_order_node(state: AskSageState) -> dict:
     try:
         # AWS inyectó el token aquí
         user_token = state["user_token"]
-        
+
         # Validar con el token
         if not validate_user(user_token):
             raise PermissionError("Token inválido")
-        
+
         order_id = extract_order_id(state["current_action"])
         result = database.cancel_order(order_id, user_id=state["user_id"])
-        
+
         return {"current_action": f"Orden {order_id} cancelada"}
     except PermissionError as e:
         return {"error": f"Sin permisos: {e}"}
@@ -202,14 +202,14 @@ graph = graph_builder.compile(checkpointer=memory)
 # 5. La función que AWS llamará
 def handler(event, context):
     """AWS AgentCore llama a esto"""
-    
+
     # AWS inyecta automáticamente:
     user_id = os.getenv("AWS_USER_ID")
     user_token = os.getenv("AWS_USER_TOKEN")
-    
+
     # El mensaje del usuario
     user_message = event["message"]
-    
+
     # Construir state
     initial_state = {
         "user_id": user_id,
@@ -218,10 +218,10 @@ def handler(event, context):
         "current_action": "",
         "error": ""
     }
-    
+
     # Ejecutar con thread_id para tracking
     config = {"configurable": {"thread_id": f"{user_id}_session"}}
-    
+
     try:
         result = graph.invoke(initial_state, config)
         return {"response": result["messages"][-1]}
@@ -354,20 +354,20 @@ Escribe:
 def cancel_order(order_id: str, state: AskSageState) -> dict:
     user_token = state["user_token"]
     user_id = state["user_id"]
-    
+
     # Validar token
     user_info = validate_token(user_token)
-    
+
     # Autorización en código (primera línea)
     if user_info["role"] not in ["seller", "admin"]:
         raise PermissionError("Solo vendedores pueden cancelar")
-    
+
     # Cedar va a validar más (segunda línea)
     order = database.get_order(order_id)
     order.status = "cancelled"
     order.cancelled_by = user_id
     database.save(order)
-    
+
     return {"status": "cancelled"}
 ```
 
@@ -407,7 +407,7 @@ permit (
 def update_inventory(drug_id, quantity):
     # Cancela la orden del medicamento
     # ❌ IDENTIFICA 3 PROBLEMAS DE SEGURIDAD
-    
+
     db.execute(f"UPDATE drugs SET stock = {quantity} WHERE id = {drug_id}")
     return "Stock actualizado"
 
@@ -437,16 +437,16 @@ def update_inventory(drug_id, quantity, state: AskSageState) -> dict:
         # 1. Validar usuario
         user_token = state["user_token"]
         user_info = validate_token(user_token)
-        
+
         # 2. Validar rol (Cedar va a validar también)
         if user_info["role"] != "pharmacist":
             raise PermissionError("Solo farmacéuticos")
-        
+
         # 3. Query segura (sin SQL injection)
         db.update_drug_stock(drug_id, quantity)
-        
+
         return {"status": "Stock actualizado"}
-    
+
     except PermissionError as e:
         return {"error": f"Permiso denegado: {e}"}
     except Exception as e:
@@ -484,17 +484,17 @@ def handler(event, context):
     try:
         # ✅ Obtén user_token de AWS
         user_token = os.getenv("AWS_USER_TOKEN")
-        
+
         # ✅ Valida
         if not user_token:
             raise PermissionError("Sin autenticación")
-        
+
         # ✅ Corre tu LangGraph
         result = graph.invoke(state, config)
-        
+
         # ✅ Maneja éxito
         return {"response": result}
-    
+
     except PermissionError as e:
         # ✅ Maneja error de permisos gracefully
         return {"error": f"No autorizado: {e}"}
@@ -555,6 +555,6 @@ agentcore deploy \
 
 ---
 
-**Versión:** 1.0  
-**Duración estimada:** 75 minutos  
+**Versión:** 1.0
+**Duración estimada:** 75 minutos
 **Dificultad:** 🟡 Intermedia

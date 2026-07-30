@@ -1,8 +1,0 @@
-{
-  "00-contenido": "📖 Contenido",
-  "10-fundamentos-grafos": "🧠 Fundamentos de Grafos",
-  "11-state": "🔄 El State (Estado Centralizado)",
-  "12-nodos": "⚙️ Nodos: Las Funciones",
-  "13-aristas": "🔀 Aristas: Enrutamiento Inteligente",
-  "14-checkpoints": "💾 Checkpoints: Persistencia"
-}

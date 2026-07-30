@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated, Any, TypedDict, get_args, get_origin, get_type_hints
 
 
@@ -31,7 +31,7 @@ def merge_state(
     observer: StateObserver,
 ) -> AuditState:
     merged = dict(base)
-    before_snapshot = dict(base['record'])
+    before_snapshot = dict(base["record"])
     hints = get_type_hints(AuditState, include_extras=True)
     for key, value in update.items():
         reducer = None
@@ -47,42 +47,42 @@ def merge_state(
             merged[key] = value
     observer.on_event(
         {
-            'actor': observer.actor,
-            'timestamp': datetime.now(timezone.utc).isoformat(),
-            'before': str(before_snapshot),
-            'after': str(merged['record']),
+            "actor": observer.actor,
+            "timestamp": datetime.now(UTC).isoformat(),
+            "before": str(before_snapshot),
+            "after": str(merged["record"]),
         }
     )
     return merged  # type: ignore[return-value]
 
 
 def approve_record(state: AuditState) -> dict[str, Any]:
-    updated = dict(state['record'])
-    updated['status'] = 'approved'
+    updated = dict(state["record"])
+    updated["status"] = "approved"
     return {
-        'record': updated,
-        'audit_log': [
+        "record": updated,
+        "audit_log": [
             {
-                'change': 'status->approved',
-                'timestamp': datetime.now(timezone.utc).isoformat(),
+                "change": "status->approved",
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         ],
-        'current_step': 'approved',
+        "current_step": "approved",
     }
 
 
 def main() -> None:
     observed: list[dict[str, str]] = []
-    observer = StateObserver(actor='reviewer-1', on_event=observed.append)
+    observer = StateObserver(actor="reviewer-1", on_event=observed.append)
     state: AuditState = {
-        'record': {'request_id': 'REQ-7', 'status': 'pending'},
-        'audit_log': [],
-        'current_step': 'created',
+        "record": {"request_id": "REQ-7", "status": "pending"},
+        "audit_log": [],
+        "current_step": "created",
     }
     state = merge_state(state, approve_record(state), observer)
-    print('State:', state)
-    print('Observed events:', observed)
+    print("State:", state)
+    print("Observed events:", observed)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

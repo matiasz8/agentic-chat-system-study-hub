@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
-from typing import Any, Callable, Dict, List
-import json
+from typing import Any
 
 
 @dataclass
@@ -12,7 +13,7 @@ class AuditRecord:
     timestamp: str
     agent_id: str
     tool_name: str
-    inputs: Dict[str, Any]
+    inputs: dict[str, Any]
     output: Any
     success: bool
     error: str | None = None
@@ -20,9 +21,11 @@ class AuditRecord:
 
 class AuditLogger:
     def __init__(self) -> None:
-        self.records: List[AuditRecord] = []
+        self.records: list[AuditRecord] = []
 
-    def invoke(self, agent_id: str, tool_name: str, tool_func: Callable[..., Any], **kwargs: Any) -> Any:
+    def invoke(
+        self, agent_id: str, tool_name: str, tool_func: Callable[..., Any], **kwargs: Any
+    ) -> Any:
         timestamp = datetime.now(UTC).isoformat()
         try:
             result = tool_func(**kwargs)
@@ -35,7 +38,7 @@ class AuditLogger:
             raise
 
 
-def search_kb(query: str, limit: int = 2) -> List[str]:
+def search_kb(query: str, limit: int = 2) -> list[str]:
     corpus = [
         "Politica de devoluciones para productos digitales",
         "Guia de alta de clientes enterprise",

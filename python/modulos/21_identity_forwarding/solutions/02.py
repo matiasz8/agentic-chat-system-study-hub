@@ -8,10 +8,9 @@ import time
 import uuid
 from dataclasses import dataclass, field
 
-
 POLITICAS = {
     "farmaceutico": ["leer:stock", "leer:reportes"],
-    "supervisor":   ["leer:stock", "leer:reportes", "escribir:requisicion"],
+    "supervisor": ["leer:stock", "leer:reportes", "escribir:requisicion"],
 }
 
 
@@ -27,11 +26,17 @@ class TokenAlcance:
         return time.time() < self.expira_en
 
 
-def generar_token(usuario_id: str, rol: str, operacion: str, recurso: str, duracion_seg: int = 300) -> TokenAlcance:
+def generar_token(
+    usuario_id: str, rol: str, operacion: str, recurso: str, duracion_seg: int = 300
+) -> TokenAlcance:
     if operacion not in POLITICAS.get(rol, []):
         raise PermissionError(f"Rol {rol!r} no puede realizar {operacion!r}")
-    return TokenAlcance(usuario_id=usuario_id, operacion=operacion, recurso=recurso,
-                        expira_en=time.time() + duracion_seg)
+    return TokenAlcance(
+        usuario_id=usuario_id,
+        operacion=operacion,
+        recurso=recurso,
+        expira_en=time.time() + duracion_seg,
+    )
 
 
 def validar_token(token: TokenAlcance, operacion_requerida: str) -> bool:
