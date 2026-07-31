@@ -14,9 +14,18 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+
+      # Pinned exactly, unlike the actions around it, because **setup-uv publishes no
+      # moving major tag past v7.** `@v9` does not resolve -- CI fails with "unable to
+      # find version v9", which is how this line got written. Bump to the next exact
+      # tag, or check `git/matching-refs/tags/vN` before assuming a major exists.
+      #
+      # v9 also changed `prune-cache` to default false, to ease load on PyPI. Kept at
+      # the new default: caches are bigger, and GitHub evicts them on its own. Set
+      # `prune-cache: true` if a repository ever runs into its cache quota.
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v9.0.0
         with:
           enable-cache: true
       - name: Install dependencies
@@ -28,8 +37,14 @@ jobs:
     # The only job that needs Node.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+
+      # setup-node v5+ caches automatically when package.json has a
+      # `packageManager` field. This project has none, and must not gain one: the
+      # automatic cache hashes a lockfile, and there is no lockfile here (see
+      # below). Adding `packageManager` would fail this job with "Dependencies lock
+      # file is not found". Set `package-manager-cache: false` if you ever need it.
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: Install docs-site dependencies
