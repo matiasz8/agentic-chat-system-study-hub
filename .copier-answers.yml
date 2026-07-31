@@ -1,18 +1,19 @@
 # Records the template and the answers this project was generated with.
 #
-# Written by hand: this project was retrofitted onto the standard rather than
-# scaffolded from it, so copier never wrote this file and `copier update` could
-# not run at all. `_commit` is pinned to the template revision the retrofit
-# brought it level with, so update applies only what lands AFTER that.
+# This file is what makes `copier update` possible: without it copier has no idea
+# where the project came from or what was answered, and re-applying harness
+# improvements is impossible. That is the entire reason this repo is a copier
+# template rather than something you copy by hand.
 #
-# From here on copier maintains this file. Do not edit by hand.
-_commit: 96863d9
+# Written by copier. Do not edit by hand.
+_commit: cafb5e0
 _src_path: git@github.com:matiasz8/poc-harness-template.git
-needs_service: 'false'
+author_email: nahuel.quiroga@nan-labs.com
+author_name: Nahuel Quiroga
+needs_service: false
 project_name: Agentic Chat System Study Hub
 project_slug: agentic-chat-system-study-hub
 python_package: python
 python_version: '3.14'
-service_image: ''
 short_description: 'A study hub for agentic chat systems: LangGraph workflows, generative
-  UI and prompt validation'
+    UI and prompt validation'
