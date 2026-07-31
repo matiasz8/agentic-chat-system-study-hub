@@ -1,0 +1,18 @@
+# Records the template and the answers this project was generated with.
+#
+# Written by hand: this project was retrofitted onto the standard rather than
+# scaffolded from it, so copier never wrote this file and `copier update` could
+# not run at all. `_commit` is pinned to the template revision the retrofit
+# brought it level with, so update applies only what lands AFTER that.
+#
+# From here on copier maintains this file. Do not edit by hand.
+_commit: 96863d9
+_src_path: git@github.com:matiasz8/poc-harness-template.git
+needs_service: 'false'
+project_name: Agentic Chat System Study Hub
+project_slug: agentic-chat-system-study-hub
+python_package: python
+python_version: '3.14'
+service_image: ''
+short_description: 'A study hub for agentic chat systems: LangGraph workflows, generative
+  UI and prompt validation'
