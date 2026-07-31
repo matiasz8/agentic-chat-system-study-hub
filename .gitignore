@@ -40,7 +40,13 @@ dist/
 venv/
 .venv/
 
-# Secrets
+# Secrets -- never commit .env. Use .env.example.
+# This section was empty: `.env.local` was ignored but plain `.env` was not.
+.env
+
+# Python bytecode. Ten .pyc files were committed before this line existed.
+__pycache__/
+*.pyc
 
 # Tooling caches
 .ruff_cache/

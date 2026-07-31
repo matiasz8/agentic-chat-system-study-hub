@@ -2,7 +2,7 @@
 UV ?= uv
 NPM ?= npm
 
-.PHONY: help setup check test lint fmt typecheck docs docs-build check-snippets check-docs-pages sync-docs-pages clean
+.PHONY: help setup check test lint fmt typecheck compile-examples docs docs-build check-snippets check-docs-pages sync-docs-pages clean
 
 help: ## Show the available targets
 	@grep -hE '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -12,7 +12,7 @@ setup: ## Install Python and docs-site dependencies, plus git hooks
 	$(UV) run pre-commit install
 	cd docs-site && $(NPM) install
 
-check: lint typecheck check-snippets check-docs-pages test ## Everything CI runs
+check: lint typecheck compile-examples check-snippets check-docs-pages test ## Everything CI runs
 
 test: ## Run the test suite
 	$(UV) run python -m pytest -v
@@ -27,6 +27,9 @@ fmt: ## Apply formatting and safe fixes
 
 typecheck: ## Static type check (validation code; examples are standalone scripts)
 	$(UV) run mypy python/validation test_setup.py
+
+compile-examples: ## Syntax-check the study modules mypy deliberately skips
+	$(UV) run python -m compileall -q python/modulos
 
 check-snippets: ## Verify docs-site snippets match the real code
 	$(UV) run python scripts/check_snippets.py
