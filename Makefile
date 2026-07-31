@@ -7,10 +7,16 @@ NPM ?= npm
 help: ## Show the available targets
 	@grep -hE '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Install Python and docs-site dependencies, plus git hooks
+setup: ## Install dependencies and git hooks, and generate the site's pages
+	# `--all-groups`, not the template's `--extra dev`: this project keeps its
+	# dependencies in dependency-groups.
 	$(UV) sync --all-groups
 	$(UV) run pre-commit install
 	cd docs-site && $(NPM) install
+	# The site is a build artefact, so the template ships no pages -- it ships the
+	# `docs/` they come from. Without this line `make check` is red on a fresh
+	# scaffold, which is how it shipped until 2026-07-31.
+	$(UV) run python scripts/sync_docs_pages.py --write
 
 check: lint typecheck compile-examples check-snippets check-docs-pages test ## Everything CI runs
 

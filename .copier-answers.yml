@@ -6,7 +6,7 @@
 # template rather than something you copy by hand.
 #
 # Written by copier. Do not edit by hand.
-_commit: 760637f
+_commit: 87bc09e
 _src_path: git@github.com:matiasz8/poc-harness-template.git
 author_email: nahuel.quiroga@nan-labs.com
 author_name: Nahuel Quiroga

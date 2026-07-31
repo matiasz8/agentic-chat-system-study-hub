@@ -48,10 +48,12 @@ _PROSE_BRACE = re.compile(r"\{([A-Za-z][A-Za-z0-9 ,_/-]*)\}")
 def _escape_for_mdx(markdown: str) -> str:
     """Make plain Markdown safe for an MDX parser, leaving code fences alone.
 
-    Both rules exist because a build failed on real prose, not on a hypothetical.
+    Every rule here exists because a build failed on real prose, not on a
+    hypothetical.
     """
     out: list[str] = []
     in_fence = False
+    in_comment = False
     for line in markdown.split("\n"):
         if line.lstrip().startswith("```"):
             in_fence = not in_fence
@@ -60,6 +62,26 @@ def _escape_for_mdx(markdown: str) -> str:
         if in_fence:
             out.append(line)
             continue
+
+        # An HTML comment is not a comment in MDX -- `<!` starts a broken JSX tag and
+        # the build dies on "Unexpected character `!`". Rewrite the delimiters and
+        # leave the body alone: inside `{/* */}` nothing needs escaping. Tracked as
+        # state rather than a plain replace so a `-->` arrow in prose survives.
+        if in_comment:
+            if "-->" in line:
+                line = line.replace("-->", "*/}", 1)
+                in_comment = False
+            out.append(line)
+            continue
+        if "<!--" in line:
+            line = line.replace("<!--", "{/*", 1)
+            if "-->" in line:
+                line = line.replace("-->", "*/}", 1)
+            else:
+                in_comment = True
+            out.append(line)
+            continue
+
         line = _LT_DIGIT.sub("&lt;", line)
         line = _PROSE_BRACE.sub(lambda m: "\\{" + m.group(1) + "\\}", line)
         out.append(line)
