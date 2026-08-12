@@ -6,10 +6,11 @@
 # template rather than something you copy by hand.
 #
 # Written by copier. Do not edit by hand.
-_commit: 87bc09e
+_commit: edc0caa
 _src_path: git@github.com:matiasz8/poc-harness-template.git
 author_email: nahuel.quiroga@nan-labs.com
 author_name: Nahuel Quiroga
+docs_language: en
 needs_service: false
 project_name: Agentic Chat System Study Hub
 project_slug: agentic-chat-system-study-hub

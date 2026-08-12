@@ -28,3 +28,21 @@ repos:
       - id: ruff-check
         args: [--fix]
       - id: ruff-format
+
+  # A commit that breaks `make docs` should fail before it lands, not the next time
+  # someone runs `make docs`. Costs about 70ms.
+  #
+  # `always_run` rather than a `files:` pattern: the interface can break from a change
+  # to the Makefile, to a script a recipe invokes, or to neither -- deleting a file the
+  # Makefile still names. Enumerating those triggers means eventually missing one.
+  #
+  # Removing a documented target prints a note and does not block; that is usually
+  # deliberate. Removing one the standard requires is an error from `make audit`.
+  - repo: local
+    hooks:
+      - id: check-commands
+        name: documented commands resolve
+        entry: uv run python scripts/check_commands.py
+        language: system
+        always_run: true
+        pass_filenames: false

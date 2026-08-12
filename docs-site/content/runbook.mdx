@@ -1,0 +1,52 @@
+{/* GENERATED FILE -- do not edit.
+    Source: docs/runbook.md
+    Regenerate: uv run python scripts/sync_docs_pages.py --write */}
+
+# Runbook
+
+## Prerequisites
+
+- [uv](https://docs.astral.sh/uv/) — manages its own Python, so the system version
+  does not matter
+- Node 18+ — **only** for the documentation site
+
+
+This file arrived from the harness on 2026-07-31, when a `copier update` noticed the
+project had never had one. Its fresh-scaffold section was dropped: this PoC is not
+fresh, and telling you to replace a README placeholder that was replaced months ago
+would be exactly the kind of untrue documentation `docs/` is supposed to exclude.
+
+## First run
+
+```bash
+make setup
+make check
+```
+
+`make setup` uses `uv sync --all-groups`, not the template's `--extra dev`: this
+project keeps its dependencies in dependency-groups.
+
+**`make sync-docs-pages` is not optional after editing anything under `docs/`.** The
+site's pages are generated from it; editing the source without regenerating leaves them
+stale and `check-docs-pages` fails.
+
+```bash
+make sync-docs-pages
+make check
+```
+
+## Everyday commands
+
+Run `make help`. Every PoC scaffolded from `poc-harness-template` uses the same target
+names, so this list is the same everywhere.
+
+## When it breaks
+
+| Symptom | Fix |
+|---|---|
+| Tests skip and none fail | expected when the external service is down; that is the design, not a broken suite |
+| `uv sync` cannot find Python 3.14 | `uv python install 3.14` |
+| `make check-snippets` fails | `uv run python scripts/check_snippets.py --fix`, then review the diff |
+| `git commit` keeps reformatting files | the ruff pin in `pyproject.toml` and the hook `rev` in `.pre-commit-config.yaml` have drifted apart; make them match |
+| `node: command not found` inside a script | nvm's lazy loader breaks in non-interactive shells; use an absolute path to the node binary |
+| Docs site search finds nothing | Pagefind indexes the *built* HTML — run `make docs-build`, not `make docs` |
